@@ -23,37 +23,54 @@ namespace VisualPinball.Unity.VisualScripting
 	[DisallowMultipleComponent]
 	[RequireComponent(typeof(IGamelogicEngine))]
 	[RequireComponent(typeof(Player))]
-	[AddComponentMenu("Visual Pinball/Game Logic Engine/Visual Scripting Bridge")]
+	[AddComponentMenu("Visual Pinball/Gamelogic Engine/Visual Scripting Bridge")]
 	public class VisualScriptingGamelogicBridge : MonoBehaviour
 	{
-		private IGamelogicEngine _gle;
 		private Player _player;
+		private IGamelogicEngine _gle;
+
+		private bool _init;
 
 		private void Awake()
 		{
-			_gle = GetComponent<IGamelogicEngine>();
+			_init = false;
+
 			_player = GetComponent<Player>();
-			if (_gle == null) {
-				Debug.LogWarning("Cannot find gamelogic engine.");
-				return;
-			}
 			if (_player == null) {
 				Debug.LogWarning("Cannot find player.");
-				return;
 			}
 
-			_player.OnPlayerStarted += OnPlayerStarted; 
+			_gle = GetComponent<IGamelogicEngine>();
+			if (_gle != null) {
+				_gle.OnStarted += OnStarted;
+			}
+			else { 
+				Debug.LogWarning("Cannot find gamelogic engine.");
+			}
 		}
 
-		private void OnDestroy()
-		{
-			if (_player != null) {
-				_player.OnPlayerStarted -= OnPlayerStarted;
-			}
+		private void OnDestroy() { 
 			if (_gle != null) {
-				_gle.OnSwitchChanged -= OnSwitchChanged;
-				_gle.OnCoilChanged -= OnCoilChanged;
-				_gle.OnLampChanged -= OnLampChanged;
+				_gle.OnStarted -= OnStarted;
+
+				if (_init) {
+					_gle.OnSwitchChanged -= OnSwitchChanged;
+					_gle.OnCoilChanged -= OnCoilChanged;
+					_gle.OnLampChanged -= OnLampChanged;
+				}
+			}
+		}
+
+		private void OnStarted(object sender, EventArgs e) 
+		{
+			if (_gle != null) {
+				_gle.OnSwitchChanged += OnSwitchChanged;
+				_gle.OnCoilChanged += OnCoilChanged;
+				_gle.OnLampChanged += OnLampChanged;
+
+				_init = true;
+
+				EventBus.Trigger(VisualScriptingEventNames.GleStartedEvent, e);
 			}
 		}
 
@@ -67,21 +84,9 @@ namespace VisualPinball.Unity.VisualScripting
 			EventBus.Trigger(VisualScriptingEventNames.CoilEvent, e);
 		}
 
-		private void OnPlayerStarted(object sender, EventArgs e)
-		{
-			if (_gle != null) {
-				_gle.OnSwitchChanged += OnSwitchChanged;
-				_gle.OnCoilChanged += OnCoilChanged;
-				_gle.OnLampChanged += OnLampChanged;
-			}
-
-			EventBus.Trigger(VisualScriptingEventNames.PlayerStartedEvent, EventArgs.Empty);
-		}
-
 		private static void OnLampChanged(object sender, LampEventArgs e)
 		{
 			EventBus.Trigger(VisualScriptingEventNames.LampEvent, e);
 		}
-
 	}
 }

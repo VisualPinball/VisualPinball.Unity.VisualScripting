@@ -19,20 +19,15 @@ using Unity.VisualScripting;
 
 namespace VisualPinball.Unity.VisualScripting
 {
-	[UnitTitle("On Player Started Event")]
+	[UnitTitle("On Gamelogic Engine Started Event")]
 	[UnitCategory("Events\\Visual Pinball")]
-	public sealed class PlayerStartedEventUnit : EventUnit<EventArgs>
+	public sealed class GleStartedEventUnit : EventUnit<EventArgs>
 	{
 		protected override bool register => true;
 
 		public override EventHook GetHook(GraphReference reference)
 		{
-			return new EventHook(VisualScriptingEventNames.PlayerStartedEvent);
-		}
-
-		protected override void Definition()
-		{
-			base.Definition();
+			return new EventHook(VisualScriptingEventNames.GleStartedEvent);
 		}
 	}
 }

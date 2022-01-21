@@ -25,7 +25,7 @@ using VisualPinball.Engine.Game.Engines;
 namespace VisualPinball.Unity.VisualScripting
 {
 	[DisallowMultipleComponent]
-	[AddComponentMenu("Visual Pinball/Game Logic Engine/Visual Scripting Game Logic")]
+	[AddComponentMenu("Visual Pinball/Gamelogic Engine/Visual Scripting Game Logic")]
 	public class VisualScriptingGamelogicEngine : MonoBehaviour, IGamelogicEngine
 	{
 		public string Name => "Visual Scripting Gamelogic Engine";
@@ -51,6 +51,7 @@ namespace VisualPinball.Unity.VisualScripting
 		public event EventHandler<LampColorEventArgs> OnLampColorChanged;
 		public event EventHandler<CoilEventArgs> OnCoilChanged;
 		public event EventHandler<SwitchEventArgs2> OnSwitchChanged;
+		public event EventHandler<EventArgs> OnStarted;
 
 		[NonSerialized] public BallManager BallManager;
 		[NonSerialized] private Player _player;
@@ -59,7 +60,8 @@ namespace VisualPinball.Unity.VisualScripting
 		{
 			_player = player;
 			BallManager = ballManager;
-			EventBus.Trigger(VisualScriptingEventNames.PlayerStartedEvent, EventArgs.Empty);
+
+			OnStarted?.Invoke(this, EventArgs.Empty);
 		}
 
 		public void Switch(string id, bool isClosed)

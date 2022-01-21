@@ -18,7 +18,7 @@ namespace VisualPinball.Unity
 {
 	public static class VisualScriptingEventNames
 	{
-		public const string PlayerStartedEvent = "PlayerStartedEvent";
+		public const string GleStartedEvent = "GleStartedEvent";
 		public const string LampEvent = "LampEvent";
 		public const string SwitchEvent = "SwitchEvent";
 		public const string CoilEvent = "CoilEvent";
