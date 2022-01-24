@@ -61,7 +61,7 @@ namespace VisualPinball.Unity.VisualScripting
 			_player = player;
 			BallManager = ballManager;
 
-			OnStarted?.Invoke(this, EventArgs.Empty);
+			EventBus.Trigger(VisualScriptingEventNames.GleStartedEvent, EventArgs.Empty);
 		}
 
 		public void Switch(string id, bool isClosed)

@@ -35,10 +35,10 @@ namespace VisualPinball.Unity.VisualScripting
 
 		[DoNotSerialize]
 		protected Player Player;
-
+		
 		protected bool AssertGle(Flow flow)
 		{
-			if (Gle != null) {
+			if (!UnityObjectUtility.IsUnityNull(Gle)) {
 				return true;
 			}
 			Gle = flow.stack.gameObject.GetComponentInParent<IGamelogicEngine>();
@@ -47,7 +47,7 @@ namespace VisualPinball.Unity.VisualScripting
 
 		protected bool AssertPlayer(Flow flow)
 		{
-			if (Player != null) {
+			if (!UnityObjectUtility.IsUnityNull(Player)) {
 				return true;
 			}
 			Player = flow.stack.gameObject.GetComponentInParent<Player>();
