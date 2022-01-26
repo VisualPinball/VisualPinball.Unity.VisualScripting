@@ -23,23 +23,25 @@ using Unity.VisualScripting;
 
 namespace VisualPinball.Unity.VisualScripting.Editor
 {
-	[Widget(typeof(SwitchEventUnit))]
-	public sealed class SwitchEventUnitWidget : GleUnitWidget<SwitchEventUnit>
+	[Widget(typeof(GetSwitchUnit))]
+	public sealed class GetSwitchUnitWidget : GleUnitWidget<GetSwitchUnit>
 	{
-		private VariableNameInspector _lampIdInspector;
-		private readonly Func<Metadata, VariableNameInspector> _switchIdInspectorConstructor;
-
-		public SwitchEventUnitWidget(FlowCanvas canvas, SwitchEventUnit unit) : base(canvas, unit)
+		public GetSwitchUnitWidget(FlowCanvas canvas, GetSwitchUnit unit) : base(canvas, unit)
 		{
 			_switchIdInspectorConstructor = meta => new VariableNameInspector(meta, GetNameSuggestions);
 		}
 
+		protected override NodeColorMix baseColor => NodeColorMix.TealReadable;
+
+		private VariableNameInspector _switchIdInspector;
+		private readonly Func<Metadata, VariableNameInspector> _switchIdInspectorConstructor;
+
 		public override Inspector GetPortInspector(IUnitPort port, Metadata meta)
 		{
 			if (port == unit.Id) {
-				InspectorProvider.instance.Renew(ref _lampIdInspector, meta, _switchIdInspectorConstructor);
+				InspectorProvider.instance.Renew(ref _switchIdInspector, meta, _switchIdInspectorConstructor);
 
-				return _lampIdInspector;
+				return _switchIdInspector;
 			}
 
 			return base.GetPortInspector(port, meta);
