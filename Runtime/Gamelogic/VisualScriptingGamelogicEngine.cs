@@ -66,8 +66,15 @@ namespace VisualPinball.Unity.VisualScripting
 
 		public void Switch(string id, bool isClosed)
 		{
-			OnSwitchChanged?.Invoke(this, new SwitchEventArgs2(id, isClosed));
-			EventBus.Trigger(VisualScriptingEventNames.SwitchEvent, new SwitchEventArgs2(id, isClosed));
+			var args = new SwitchEventArgs2(id, isClosed);
+
+			OnSwitchChanged?.Invoke(this, args);
+
+			EventBus.Trigger(VisualScriptingEventNames.SwitchEvent, args);
+
+			if (isClosed) {
+				EventBus.Trigger(VisualScriptingEventNames.SwitchEnabledEvent, args);
+			}
 		}
 
 		public void SetCoil(string id, bool isEnabled)
