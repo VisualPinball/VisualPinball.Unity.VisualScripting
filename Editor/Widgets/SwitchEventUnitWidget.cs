@@ -26,7 +26,7 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 	[Widget(typeof(SwitchEventUnit))]
 	public sealed class SwitchEventUnitWidget : GleUnitWidget<SwitchEventUnit>
 	{
-		private VariableNameInspector _lampIdInspector;
+		private VariableNameInspector _switchIdInspector;
 		private readonly Func<Metadata, VariableNameInspector> _switchIdInspectorConstructor;
 
 		public SwitchEventUnitWidget(FlowCanvas canvas, SwitchEventUnit unit) : base(canvas, unit)
@@ -37,9 +37,9 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 		public override Inspector GetPortInspector(IUnitPort port, Metadata meta)
 		{
 			if (port == unit.Id) {
-				InspectorProvider.instance.Renew(ref _lampIdInspector, meta, _switchIdInspectorConstructor);
+				InspectorProvider.instance.Renew(ref _switchIdInspector, meta, _switchIdInspectorConstructor);
 
-				return _lampIdInspector;
+				return _switchIdInspector;
 			}
 
 			return base.GetPortInspector(port, meta);
