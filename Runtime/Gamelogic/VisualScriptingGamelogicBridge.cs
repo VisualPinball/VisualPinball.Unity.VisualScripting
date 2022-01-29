@@ -79,10 +79,6 @@ namespace VisualPinball.Unity.VisualScripting
 			var args = new SwitchEventArgs2(e.Id, e.IsEnabled);
 
 			EventBus.Trigger(VisualScriptingEventNames.SwitchEvent, args);
-
-			if (e.IsEnabled) {
-				EventBus.Trigger(VisualScriptingEventNames.SwitchEnabledEvent, args);
-			}
 		}
 
 		private static void OnCoilChanged(object sender, CoilEventArgs e)

@@ -21,7 +21,6 @@ namespace VisualPinball.Unity
 		public const string GleStartedEvent = "GleStartedEvent";
 		public const string LampEvent = "LampEvent";
 		public const string SwitchEvent = "SwitchEvent";
-		public const string SwitchEnabledEvent = "SwitchEnabledEvent";
 		public const string CoilEvent = "CoilEvent";
 	}
 }

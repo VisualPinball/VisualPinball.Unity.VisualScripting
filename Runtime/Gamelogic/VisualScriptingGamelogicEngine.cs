@@ -61,6 +61,7 @@ namespace VisualPinball.Unity.VisualScripting
 			_player = player;
 			BallManager = ballManager;
 
+			OnStarted?.Invoke(this, EventArgs.Empty);
 			EventBus.Trigger(VisualScriptingEventNames.GleStartedEvent, EventArgs.Empty);
 		}
 
@@ -71,10 +72,6 @@ namespace VisualPinball.Unity.VisualScripting
 			OnSwitchChanged?.Invoke(this, args);
 
 			EventBus.Trigger(VisualScriptingEventNames.SwitchEvent, args);
-
-			if (isClosed) {
-				EventBus.Trigger(VisualScriptingEventNames.SwitchEnabledEvent, args);
-			}
 		}
 
 		public void SetCoil(string id, bool isEnabled)

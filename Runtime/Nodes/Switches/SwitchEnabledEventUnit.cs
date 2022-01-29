@@ -31,21 +31,17 @@ namespace VisualPinball.Unity.VisualScripting
 		protected override bool register => true;
 
 		// Adding an EventHook with the name of the event to the list of visual scripting events.
-		public override EventHook GetHook(GraphReference reference)
-		{
-			return new EventHook(VisualScriptingEventNames.SwitchEnabledEvent);
-		}
+		public override EventHook GetHook(GraphReference reference) => new EventHook(VisualScriptingEventNames.SwitchEvent);
 
 		protected override void Definition()
 		{
 			base.Definition();
-
 			Id = ValueInput(nameof(Id), string.Empty);
 		}
 
 		protected override bool ShouldTrigger(Flow flow, SwitchEventArgs2 args)
 		{
-			return flow.GetValue<string>(Id) == args.Id;
+			return flow.GetValue<string>(Id) == args.Id && args.IsEnabled;
 		}
 	}
 }
