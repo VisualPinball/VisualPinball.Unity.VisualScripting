@@ -82,9 +82,10 @@ namespace VisualPinball.Unity.VisualScripting
 				return OutputTrigger;
 			}
 
+			var pulseDuration = flow.GetValue<int>(PulseDuration);
+
 			foreach (var id in Ids) {
 				var idValue = flow.GetValue<string>(id);
-				var pulseDuration = flow.GetValue<int>(PulseDuration);
 
 				Gle.SetCoil(idValue, true);
 				Player.ScheduleAction(pulseDuration, () => Gle.SetCoil(idValue, false));
