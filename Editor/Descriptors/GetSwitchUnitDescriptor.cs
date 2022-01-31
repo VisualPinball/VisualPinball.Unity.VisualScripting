@@ -41,8 +41,8 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 			base.DefinedPort(port, desc);
 
 			switch (port.key) {
-				case nameof(GetSwitchUnit.Id):
-					desc.summary = "The ID of the switch for which to get current status.";
+				case nameof(GetSwitchUnit.Ids):
+					desc.summary = "The IDs of the switches for which to get the current status.";
 					break;
 				case nameof(GetSwitchUnit.IsEnabled):
 					desc.summary = "Whether the switch is enabled.";

@@ -26,20 +26,28 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 	[Widget(typeof(SwitchEnabledEventUnit))]
 	public sealed class SwitchEnabledEventUnitWidget : GleUnitWidget<SwitchEnabledEventUnit>
 	{
-		private VariableNameInspector _switchIdInspector;
-		private readonly Func<Metadata, VariableNameInspector> _switchIdInspectorConstructor;
+		private readonly List<Func<Metadata, VariableNameInspector>> _switchIdInspectorConstructorList;
 
 		public SwitchEnabledEventUnitWidget(FlowCanvas canvas, SwitchEnabledEventUnit unit) : base(canvas, unit)
 		{
-			_switchIdInspectorConstructor = meta => new VariableNameInspector(meta, GetNameSuggestions);
+			_switchIdInspectorConstructorList = new List<Func<Metadata, VariableNameInspector>>();
 		}
 
 		public override Inspector GetPortInspector(IUnitPort port, Metadata meta)
 		{
-			if (port == unit.Id) {
-				InspectorProvider.instance.Renew(ref _switchIdInspector, meta, _switchIdInspectorConstructor);
+			if (_switchIdInspectorConstructorList.Count() < unit.idCount) {
+				for (var index = 0; index < unit.idCount - _switchIdInspectorConstructorList.Count(); index++) {
+					_switchIdInspectorConstructorList.Add(meta => new VariableNameInspector(meta, GetNameSuggestions));
+				}
+			}
 
-				return _switchIdInspector;
+			for (var index = 0; index < unit.idCount; index++) {
+				if (unit.Ids[index] == port) {
+					VariableNameInspector switchIdInspector = new VariableNameInspector(meta, GetNameSuggestions);
+					InspectorProvider.instance.Renew(ref switchIdInspector, meta, _switchIdInspectorConstructorList[index]);
+
+					return switchIdInspector;
+				}
 			}
 
 			return base.GetPortInspector(port, meta);

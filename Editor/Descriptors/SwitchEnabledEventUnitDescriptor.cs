@@ -29,7 +29,7 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 
 		protected override string DefinedSummary()
 		{
-			return "This node triggers an event when a switch with a given ID is enabled.";
+			return "This node triggers an event when a switch in the list of given ID is enabled.";
 		}
 
 		protected override EditorTexture DefinedIcon() => EditorTexture.Single(Unity.Editor.Icons.SwitchEvent);
@@ -39,8 +39,8 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 			base.DefinedPort(port, desc);
 
 			switch (port.key) {
-				case nameof(SwitchEnabledEventUnit.Id):
-					desc.summary = "The ID of the switch that was enabled.";
+				case nameof(SwitchEnabledEventUnit.Ids):
+					desc.summary = "The IDs of the switches for which to look for enabled status.";
 					break;
 			}
 		}

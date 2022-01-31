@@ -14,7 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEngine;
 
 namespace VisualPinball.Unity.VisualScripting
 {
@@ -23,9 +25,19 @@ namespace VisualPinball.Unity.VisualScripting
 	[UnitCategory("Events\\Visual Pinball")]
 	public class SwitchEnabledEventUnit : GleEventUnit<SwitchEventArgs2>
 	{
+		[SerializeAs(nameof(idCount))]
+		private int _idCount = 1;
+
 		[DoNotSerialize]
-		[PortLabel("Switch ID")]
-		public ValueInput Id { get; private set; }
+		[Inspectable, UnitHeaderInspectable("Switch IDs")]
+		public int idCount
+		{
+			get => _idCount;
+			set => _idCount = Mathf.Clamp(value, 1, 10);
+		}
+
+		[DoNotSerialize]
+		public List<ValueInput> Ids { get; private set; }
 
 		[DoNotSerialize]
 		protected override bool register => true;
@@ -36,12 +48,24 @@ namespace VisualPinball.Unity.VisualScripting
 		protected override void Definition()
 		{
 			base.Definition();
-			Id = ValueInput(nameof(Id), string.Empty);
+
+			Ids = new List<ValueInput>();
+
+			for (var i = 0; i < idCount; i++) {
+				var id = ValueInput<string>("Switch ID " + (i + 1), string.Empty);
+				Ids.Add(id);
+			}
 		}
 
 		protected override bool ShouldTrigger(Flow flow, SwitchEventArgs2 args)
 		{
-			return flow.GetValue<string>(Id) == args.Id && args.IsEnabled;
+			foreach(var id in Ids) {
+				if (flow.GetValue<string>(id) == args.Id && args.IsEnabled) {
+					return true;
+				}
+			}
+			
+			return false;
 		}
 	}
 }
