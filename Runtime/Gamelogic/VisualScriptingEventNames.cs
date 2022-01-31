@@ -22,5 +22,7 @@ namespace VisualPinball.Unity
 		public const string LampEvent = "LampEvent";
 		public const string SwitchEvent = "SwitchEvent";
 		public const string CoilEvent = "CoilEvent";
+		public const string CurrentPlayerChanged = "CurrentPlayerChanged";
+		public const string CurrentPlayerStateChanged = "CurrentPlayerStateChanged";
 	}
 }

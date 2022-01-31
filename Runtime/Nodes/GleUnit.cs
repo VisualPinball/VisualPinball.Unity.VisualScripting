@@ -23,6 +23,30 @@ namespace VisualPinball.Unity.VisualScripting
 	{
 		[DoNotSerialize]
 		public List<string> Errors { get; } = new();
+
+		[DoNotSerialize]
+		protected IGamelogicEngine Gle;
+
+		[DoNotSerialize]
+		protected Player Player;
+
+		protected bool AssertGle(Flow flow)
+		{
+			if (!Gle.IsUnityNull()) {
+				return true;
+			}
+			Gle = flow.stack.gameObject.GetComponentInParent<IGamelogicEngine>();
+			return Gle != null;
+		}
+
+		protected bool AssertPlayer(Flow flow)
+		{
+			if (!Player.IsUnityNull()) {
+				return true;
+			}
+			Player = flow.stack.gameObject.GetComponentInParent<Player>();
+			return Player != null;
+		}
 	}
 
 	public abstract class GleUnit : Unit, IGleUnit
@@ -34,20 +58,32 @@ namespace VisualPinball.Unity.VisualScripting
 		protected IGamelogicEngine Gle;
 
 		[DoNotSerialize]
+		protected VisualScriptingGamelogicEngine VsGle;
+
+		[DoNotSerialize]
 		protected Player Player;
-		
+
 		protected bool AssertGle(Flow flow)
 		{
-			if (!UnityObjectUtility.IsUnityNull(Gle)) {
+			if (!Gle.IsUnityNull()) {
 				return true;
 			}
 			Gle = flow.stack.gameObject.GetComponentInParent<IGamelogicEngine>();
 			return Gle != null;
 		}
 
+		protected bool AssertVsGle(Flow flow)
+		{
+			if (!VsGle.IsUnityNull()) {
+				return true;
+			}
+			VsGle = flow.stack.gameObject.GetComponentInParent<VisualScriptingGamelogicEngine>();
+			return VsGle != null;
+		}
+
 		protected bool AssertPlayer(Flow flow)
 		{
-			if (!UnityObjectUtility.IsUnityNull(Player)) {
+			if (!Player.IsUnityNull()) {
 				return true;
 			}
 			Player = flow.stack.gameObject.GetComponentInParent<Player>();
