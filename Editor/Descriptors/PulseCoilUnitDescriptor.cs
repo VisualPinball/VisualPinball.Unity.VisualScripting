@@ -44,11 +44,11 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 			base.DefinedPort(port, desc);
 
 			switch (port.key) {
-				case nameof(PulseCoilUnit.Id):
-					desc.summary = "The ID of the coil to be pulsed.";
+				case nameof(PulseCoilUnit.Ids):
+					desc.summary = "The IDs of the coils to be pulsed.";
 					break;
 				case nameof(PulseCoilUnit.PulseDuration):
-					desc.summary = "The time in milliseconds until the coil is disabled again.";
+					desc.summary = "The time in milliseconds until the coils are disabled again.";
 					break;
 			}
 		}

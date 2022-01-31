@@ -26,19 +26,28 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 	[Widget(typeof(PulseCoilUnit))]
 	public sealed class PulseCoilUnitWidget : GleUnitWidget<PulseCoilUnit>
 	{
-		private VariableNameInspector _coilIdInspector;
-		private readonly Func<Metadata, VariableNameInspector> _setCoilInspectorConstructor;
+		private readonly List<Func<Metadata, VariableNameInspector>> _coilIdInspectorConstructorList;
 
 		public PulseCoilUnitWidget(FlowCanvas canvas, PulseCoilUnit unit) : base(canvas, unit)
 		{
-			_setCoilInspectorConstructor = meta => new VariableNameInspector(meta, GetNameSuggestions);
+			_coilIdInspectorConstructorList = new List<Func<Metadata, VariableNameInspector>>();
 		}
 
 		public override Inspector GetPortInspector(IUnitPort port, Metadata meta)
 		{
-			if (port == unit.Id) {
-				InspectorProvider.instance.Renew(ref _coilIdInspector, meta, _setCoilInspectorConstructor);
-				return _coilIdInspector;
+			if (_coilIdInspectorConstructorList.Count() < unit.idCount) {
+				for (var index = 0; index < unit.idCount - _coilIdInspectorConstructorList.Count(); index++) {
+					_coilIdInspectorConstructorList.Add(meta => new VariableNameInspector(meta, GetNameSuggestions));
+				}
+			}
+
+			for (var index = 0; index < unit.idCount; index++) {
+				if (unit.Ids[index] == port) {
+					VariableNameInspector coilIdInspector = new VariableNameInspector(meta, GetNameSuggestions);
+					InspectorProvider.instance.Renew(ref coilIdInspector, meta, _coilIdInspectorConstructorList[index]);
+
+					return coilIdInspector;
+				}
 			}
 
 			return base.GetPortInspector(port, meta);

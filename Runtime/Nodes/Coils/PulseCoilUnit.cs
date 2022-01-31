@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -32,9 +33,19 @@ namespace VisualPinball.Unity.VisualScripting
 		[PortLabelHidden]
 		public ControlOutput OutputTrigger;
 
+		[SerializeAs(nameof(idCount))]
+		private int _idCount = 1;
+
 		[DoNotSerialize]
-		[PortLabel("Coil ID")]
-		public ValueInput Id { get; private set; }
+		[Inspectable, UnitHeaderInspectable("Coil IDs")]
+		public int idCount
+		{
+			get => _idCount;
+			set => _idCount = Mathf.Clamp(value, 1, 10);
+		}
+
+		[DoNotSerialize]
+		public List<ValueInput> Ids { get; private set; }
 
 		[DoNotSerialize]
 		[PortLabel("Duration (ms)")]
@@ -45,10 +56,17 @@ namespace VisualPinball.Unity.VisualScripting
 			InputTrigger = ControlInput(nameof(InputTrigger), Process);
 			OutputTrigger = ControlOutput(nameof(OutputTrigger));
 
-			Id = ValueInput<string>(nameof(Id), string.Empty);
+			Ids = new List<ValueInput>();
+
+			for (var i = 0; i < idCount; i++) {
+				var id = ValueInput<string>("Coil ID " + (i + 1), string.Empty);
+				Ids.Add(id);
+
+				Requirement(id, InputTrigger);
+			}
+
 			PulseDuration = ValueInput<int>(nameof(PulseDuration), 80);
 
-			Requirement(Id, InputTrigger);
 			Succession(InputTrigger, OutputTrigger);
 		}
 
@@ -60,15 +78,17 @@ namespace VisualPinball.Unity.VisualScripting
 			}
 
 			if (!AssertPlayer(flow)) {
-				Debug.LogError("Cannot find GLE.");
+				Debug.LogError("Cannot find Player.");
 				return OutputTrigger;
 			}
 
-			var id = flow.GetValue<string>(Id);
-			var pulseDuration = flow.GetValue<int>(PulseDuration);
+			foreach (var id in Ids) {
+				var idValue = flow.GetValue<string>(id);
+				var pulseDuration = flow.GetValue<int>(PulseDuration);
 
-			Gle.SetCoil(id, true);
-			Player.ScheduleAction(pulseDuration, () => Gle.SetCoil(id, false));
+				Gle.SetCoil(idValue, true);
+				Player.ScheduleAction(pulseDuration, () => Gle.SetCoil(idValue, false));
+			}
 
 			return OutputTrigger;
 		}
