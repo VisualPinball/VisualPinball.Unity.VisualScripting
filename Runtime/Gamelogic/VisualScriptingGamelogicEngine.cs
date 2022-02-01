@@ -27,7 +27,7 @@ namespace VisualPinball.Unity.VisualScripting
 {
 	[DisallowMultipleComponent]
 	[AddComponentMenu("Visual Pinball/Gamelogic Engine/Visual Scripting Game Logic")]
-	public class VisualScriptingGamelogicEngine : MonoBehaviour, IGamelogicEngine
+	public class VisualScriptingGamelogicEngine : MonoBehaviour, IGamelogicEngine, ISerializationCallbackReceiver
 	{
 		public string Name => "Visual Scripting Gamelogic Engine";
 
@@ -150,6 +150,24 @@ namespace VisualPinball.Unity.VisualScripting
 		public bool GetCoil(string id)
 		{
 			return _player.CoilStatuses.ContainsKey(id) && _player.CoilStatuses[id];
+		}
+
+
+		public void OnBeforeSerialize()
+		{
+			#if UNITY_EDITOR
+
+			var ids = new HashSet<string>();
+			foreach (var def in PlayerStateDefinition) {
+				if (!def.HasId || ids.Contains(def.Id)) {
+					def.GenerateId();
+				}
+				ids.Add(def.Id);
+			}
+			#endif
+		}
+		public void OnAfterDeserialize()
+		{
 		}
 	}
 }

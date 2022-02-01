@@ -24,6 +24,7 @@ namespace VisualPinball.Unity.VisualScripting
 	[Serializable]
 	public class VisualScriptingPlayerStatePropertyDefinition
 	{
+		public string Id;
 		public string Name;
 		public VisualScriptingPropertyType Type;
 
@@ -47,6 +48,9 @@ namespace VisualPinball.Unity.VisualScripting
 					throw new ArgumentOutOfRangeException();
 			}
 		}
+
+		public bool HasId => !string.IsNullOrEmpty(Id);
+		public void GenerateId() => Id = Guid.NewGuid().ToString()[..13];
 	}
 
 	public enum VisualScriptingPropertyType

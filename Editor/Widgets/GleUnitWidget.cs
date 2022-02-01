@@ -23,7 +23,9 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 		protected override NodeColorMix baseColor => GleAvailable ? NodeColorMix.TealReadable : new NodeColorMix { red = 1f, green = 0f, blue = 0f };
 		protected bool GameObjectAvailable => reference != null && reference.gameObject != null;
 		protected IGamelogicEngine Gle => reference.gameObject.GetComponentInParent<IGamelogicEngine>();
+		protected VisualScriptingGamelogicEngine VsGle => reference.gameObject.GetComponentInParent<VisualScriptingGamelogicEngine>();
 		private bool GleAvailable => GameObjectAvailable && Gle != null;
+		private bool VsGleAvailable => GameObjectAvailable && VsGle != null;
 
 		protected GleUnitWidget(FlowCanvas canvas, TUnit unit) : base(canvas, unit)
 		{
