@@ -48,6 +48,28 @@ namespace VisualPinball.Unity.VisualScripting
 			return _variables[variableId].Get<T>();
 		}
 
+		public object Get(string variableId)
+		{
+			if (!_variables.ContainsKey(variableId)) {
+				throw new ArgumentException($"No such variable ID ({variableId}).", nameof(variableId));
+			}
+
+			if (_variables[variableId].Type == typeof(string)) {
+				return Get<string>(variableId);
+			}
+			if (_variables[variableId].Type == typeof(Integer)) {
+				return Get<Integer>(variableId);
+			}
+			if (_variables[variableId].Type == typeof(Float)) {
+				return Get<Float>(variableId);
+			}
+			if (_variables[variableId].Type == typeof(Bool)) {
+				return Get<Bool>(variableId);
+			}
+
+			throw new InvalidOperationException($"Unknown type of variable {_variables[variableId].Name}.");
+		}
+
 		public void Set<T>(string variableId, T value) where T : class
 		{
 			if (!_variables.ContainsKey(variableId)) {
@@ -61,7 +83,10 @@ namespace VisualPinball.Unity.VisualScripting
 			_variables[variableId].Set(value);
 
 			if (currentValue != value) {
-				EventBus.Trigger(VisualScriptingEventNames.CurrentPlayerStateChanged, new PlayerVariableChangedArgs(variableId));
+				EventBus.Trigger(
+					VisualScriptingEventNames.PlayerVariableChanged,
+					new PlayerVariableChangedArgs(variableId)
+				);
 			}
 		}
 	}
@@ -79,6 +104,7 @@ namespace VisualPinball.Unity.VisualScripting
 		public static Integer operator /(Integer lhs, Integer rhs) => new(lhs._value / rhs._value);
 		public static implicit operator int(Integer num) => num._value;
 		public static implicit operator Integer(int num) => new(num);
+		public override string ToString() => _value.ToString();
 	}
 
 	public class Float
@@ -94,6 +120,7 @@ namespace VisualPinball.Unity.VisualScripting
 		public static Float operator /(Float lhs, Float rhs) => new(lhs._value / rhs._value);
 		public static implicit operator float(Float num) => num._value;
 		public static implicit operator Float(float num) => new(num);
+		public override string ToString() => _value.ToString();
 	}
 
 	public class Bool
@@ -105,6 +132,7 @@ namespace VisualPinball.Unity.VisualScripting
 		}
 		public static implicit operator bool(Bool num) => num._value;
 		public static implicit operator Bool(bool num) => new(num);
+		public override string ToString() => _value.ToString();
 	}
 
 	public readonly struct PlayerVariableChangedArgs

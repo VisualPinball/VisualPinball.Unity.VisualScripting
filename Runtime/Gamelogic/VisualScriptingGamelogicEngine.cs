@@ -60,21 +60,21 @@ namespace VisualPinball.Unity.VisualScripting
 		[NonSerialized] private Player _player;
 
 		[NonSerialized] private int _currentPlayer;
-		[NonSerialized] private readonly Dictionary<int, PlayerState> _playerStates = new ();
+		[NonSerialized] public readonly Dictionary<int, PlayerState> PlayerStates = new ();
 
 		public PlayerState CurrentPlayerState {
 			get {
-				if (!_playerStates.ContainsKey(_currentPlayer)) {
+				if (!PlayerStates.ContainsKey(_currentPlayer)) {
 					throw new InvalidOperationException("Must create a player state before accessing it!");
 				}
-				return _playerStates[_currentPlayer];
+				return PlayerStates[_currentPlayer];
 			}
 		}
 
 		public int CurrentPlayer {
 			get => _currentPlayer;
 			set {
-				if (!_playerStates.ContainsKey(value)) {
+				if (!PlayerStates.ContainsKey(value)) {
 					Debug.LogError($"Cannot change to non-existing player {value}.");
 					return;
 				}
@@ -88,7 +88,7 @@ namespace VisualPinball.Unity.VisualScripting
 
 		public void CreatePlayerState(int playerId)
 		{
-			if (_playerStates.ContainsKey(playerId)) {
+			if (PlayerStates.ContainsKey(playerId)) {
 				Debug.LogWarning($"Tried to create new player state for existing state {playerId}, skipping.");
 				return;
 			}
@@ -96,10 +96,10 @@ namespace VisualPinball.Unity.VisualScripting
 			foreach (var propertyDefinition in PlayerVariableDefinitions) {
 				playerState.AddProperty(propertyDefinition.Instantiate());
 			}
-			_playerStates[playerId] = playerState;
+			PlayerStates[playerId] = playerState;
 
 			// switch to this state if current state is invalid
-			if (!_playerStates.ContainsKey(_currentPlayer)) {
+			if (!PlayerStates.ContainsKey(_currentPlayer)) {
 				CurrentPlayer = playerId;
 			}
 		}

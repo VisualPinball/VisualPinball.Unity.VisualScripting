@@ -18,31 +18,34 @@ using Unity.VisualScripting;
 using VisualPinball.Unity;
 using VisualPinball.Unity.VisualScripting;
 
-public abstract class GleInspector : Inspector
+namespace VisualPinball.Unity.VisualScripting.Editor
 {
-	protected GleInspector(Metadata metadata) : base(metadata) { }
+	public abstract class GleInspector : Inspector
+	{
+		protected GleInspector(Metadata metadata) : base(metadata) { }
 
-	private const string NoGleError = "Unable to find Gamelogic Engine in scene.";
+		private const string NoGleError = "Unable to find Gamelogic Engine in scene.";
 
-	protected VisualScriptingGamelogicEngine Gle {
-		get {
-			if (_gle != null) {
+		protected VisualScriptingGamelogicEngine Gle {
+			get {
+				if (_gle != null) {
+					return _gle;
+				}
+				var tableComponent = TableSelector.Instance.SelectedOrFirstTable;
+				if (tableComponent != null) {
+					_gle = tableComponent.GetComponentInChildren<VisualScriptingGamelogicEngine>();
+				}
+				if (_gle == null && ErrorMessage == null) {
+					ErrorMessage = NoGleError;
+
+				} else if (_gle != null && ErrorMessage == NoGleError) {
+					ErrorMessage = null;
+				}
 				return _gle;
 			}
-			var tableComponent = TableSelector.Instance.SelectedOrFirstTable;
-			if (tableComponent != null) {
-				_gle = tableComponent.GetComponentInChildren<VisualScriptingGamelogicEngine>();
-			}
-			if (_gle == null && ErrorMessage == null) {
-				ErrorMessage = NoGleError;
-
-			} else if (_gle != null && ErrorMessage == NoGleError) {
-				ErrorMessage = null;
-			}
-			return _gle;
 		}
-	}
-	protected string ErrorMessage;
+		protected string ErrorMessage;
 
-	private VisualScriptingGamelogicEngine _gle;
+		private VisualScriptingGamelogicEngine _gle;
+	}
 }

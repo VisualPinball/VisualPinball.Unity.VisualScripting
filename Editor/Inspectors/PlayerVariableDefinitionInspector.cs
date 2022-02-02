@@ -19,56 +19,59 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
-using VisualPinball.Unity.VisualScripting;
 
-[Inspector(typeof(PlayerVariableDefinition))]
-public class PlayerVariableDefinitionInspector : GleInspector
+namespace VisualPinball.Unity.VisualScripting.Editor
 {
-	public PlayerVariableDefinitionInspector(Metadata metadata) : base(metadata) { }
 
-	protected override void OnGUI(Rect position, GUIContent label)
+	[Inspector(typeof(PlayerVariableDefinition))]
+	public class PlayerVariableDefinitionInspector : GleInspector
 	{
-		// can't get this from the flow
-		var gle = Gle;
-		if (gle != null) {
-			var varDefinitions = gle.PlayerVariableDefinitions;
-			if (varDefinitions == null || varDefinitions.Count(p => !string.IsNullOrEmpty(p.Name)) == 0) {
-				ErrorMessage = "No variables defined.";
+		public PlayerVariableDefinitionInspector(Metadata metadata) : base(metadata) { }
 
-			} else {
-				var varNames = new List<string> { "None" }
-					.Concat(varDefinitions.Select(d => d.Name))
-					.ToArray();
-				var currentVarDef = metadata.value as PlayerVariableDefinition;
-				var currentIndex = 0;
-				if (currentVarDef != null) {
-					var playerVarDef = varDefinitions.FirstOrDefault(p => p.Id == currentVarDef!.Id);
-					currentIndex = playerVarDef != null ? varDefinitions.IndexOf(playerVarDef) + 1 : 0;
+		protected override void OnGUI(Rect position, GUIContent label)
+		{
+			// can't get this from the flow
+			var gle = Gle;
+			if (gle != null) {
+				var varDefinitions = gle.PlayerVariableDefinitions;
+				if (varDefinitions == null || varDefinitions.Count(p => !string.IsNullOrEmpty(p.Name)) == 0) {
+					ErrorMessage = "No variables defined.";
+
+				} else {
+					var varNames = new List<string> { "None" }
+						.Concat(varDefinitions.Select(d => d.Name))
+						.ToArray();
+					var currentVarDef = metadata.value as PlayerVariableDefinition;
+					var currentIndex = 0;
+					if (currentVarDef != null) {
+						var playerVarDef = varDefinitions.FirstOrDefault(p => p.Id == currentVarDef!.Id);
+						currentIndex = playerVarDef != null ? varDefinitions.IndexOf(playerVarDef) + 1 : 0;
+					}
+
+					var newIndex = EditorGUI.Popup(position, currentIndex, varNames);
+					metadata.RecordUndo();
+					metadata.value = newIndex == 0 ? null : varDefinitions[newIndex - 1];
+					ErrorMessage = null;
 				}
+			}
 
-				var newIndex = EditorGUI.Popup(position, currentIndex, varNames);
-				metadata.RecordUndo();
-				metadata.value = newIndex == 0 ? null : varDefinitions[newIndex - 1];
-				ErrorMessage = null;
+			if (ErrorMessage != null) {
+				position.height -= EditorGUIUtility.standardVerticalSpacing;
+				EditorGUI.HelpBox(position, ErrorMessage, MessageType.Error);
 			}
 		}
 
-		if (ErrorMessage != null) {
-			position.height -= EditorGUIUtility.standardVerticalSpacing;
-			EditorGUI.HelpBox(position, ErrorMessage, MessageType.Error);
+		public override float GetAdaptiveWidth() => LudiqGUIUtility.currentInspectorWidth;
+
+		protected override float GetHeight(float width, GUIContent label)
+		{
+			if (ErrorMessage != null) {
+				var height = LudiqGUIUtility.GetHelpBoxHeight(ErrorMessage, MessageType.Error, width);
+				height += EditorGUIUtility.standardVerticalSpacing;
+				return height;
+			}
+
+			return EditorGUIUtility.singleLineHeight;
 		}
-	}
-
-	public override float GetAdaptiveWidth() => LudiqGUIUtility.currentInspectorWidth;
-
-	protected override float GetHeight(float width, GUIContent label)
-	{
-		if (ErrorMessage != null) {
-			var height = LudiqGUIUtility.GetHelpBoxHeight(ErrorMessage, MessageType.Error, width);
-			height += EditorGUIUtility.standardVerticalSpacing;
-			return height;
-		}
-
-		return EditorGUIUtility.singleLineHeight;
 	}
 }

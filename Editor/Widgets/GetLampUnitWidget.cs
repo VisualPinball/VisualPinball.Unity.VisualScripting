@@ -31,8 +31,6 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 			_lampIdInspectorConstructor = meta => new VariableNameInspector(meta, GetNameSuggestions);
 		}
 
-		protected override NodeColorMix baseColor => NodeColorMix.TealReadable;
-
 		private VariableNameInspector _lampIdInspector;
 		private readonly Func<Metadata, VariableNameInspector> _lampIdInspectorConstructor;
 

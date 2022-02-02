@@ -1,0 +1,92 @@
+﻿// Visual Pinball Engine
+// Copyright (C) 2022 freezy and VPE Team
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see <https://www.gnu.org/licenses/>.
+
+// ReSharper disable AssignmentInConditionalExpression
+
+using System.Collections.Generic;
+using UnityEditor;
+using UnityEngine;
+using VisualPinball.Unity.Editor;
+
+namespace VisualPinball.Unity.VisualScripting.Editor
+{
+	[CustomEditor(typeof(VisualScriptingGamelogicEngine))]
+	public class VisualScriptingGamelogicEngineInspector : BaseEditor<VisualScriptingGamelogicEngine>
+	{
+		private VisualScriptingGamelogicEngine _gle;
+		private SerializedProperty _switchesProperty;
+		private SerializedProperty _soilsProperty;
+		private SerializedProperty _lampsProperty;
+		private SerializedProperty _playerVariableDefinitionsProperty;
+
+		private readonly Dictionary<int, bool> _playerVarFoldout = new();
+
+		private void OnEnable()
+		{
+			_gle = target as VisualScriptingGamelogicEngine;
+
+			_switchesProperty = serializedObject.FindProperty(nameof(VisualScriptingGamelogicEngine.Switches));
+			_soilsProperty = serializedObject.FindProperty(nameof(VisualScriptingGamelogicEngine.Coils));
+			_lampsProperty = serializedObject.FindProperty(nameof(VisualScriptingGamelogicEngine.Lamps));
+
+			_playerVariableDefinitionsProperty = serializedObject.FindProperty(nameof(VisualScriptingGamelogicEngine.PlayerVariableDefinitions));
+		}
+
+		public override void OnInspectorGUI()
+		{
+			serializedObject.Update();
+
+			EditorGUILayout.PropertyField(_switchesProperty);
+			EditorGUILayout.PropertyField(_soilsProperty);
+			EditorGUILayout.PropertyField(_lampsProperty);
+
+			EditorGUILayout.PropertyField(_playerVariableDefinitionsProperty);
+
+			serializedObject.ApplyModifiedProperties();
+
+			// what follows is runtime data
+			if (!Application.isPlaying) {
+				return;
+			}
+			if (_gle.PlayerStates.Count == 0) {
+				EditorGUILayout.HelpBox("No player states created.", MessageType.Info);
+				return;
+			}
+
+			EditorGUILayout.TextField("Player States", new GUIStyle(EditorStyles.boldLabel));
+			foreach (var playerId in _gle.PlayerStates.Keys) {
+				if (!_playerVarFoldout.ContainsKey(playerId)) {
+					_playerVarFoldout[playerId] = true;
+				}
+				if (_playerVarFoldout[playerId] = EditorGUILayout.BeginFoldoutHeaderGroup(_playerVarFoldout[playerId], $"Player {playerId}")) {
+					EditorGUI.indentLevel++;
+
+					var playerState = _gle.PlayerStates[playerId];
+					if (_gle.CurrentPlayerState == playerState) {
+						EditorGUILayout.HelpBox("Current Player", MessageType.Info);
+					}
+
+					foreach (var varDef in _gle.PlayerVariableDefinitions) {
+						EditorGUILayout.LabelField(varDef.Name, playerState.Get(varDef.Id).ToString());
+					}
+
+					EditorGUI.indentLevel--;
+				}
+				EditorGUILayout.EndFoldoutHeaderGroup();
+			}
+		}
+	}
+}

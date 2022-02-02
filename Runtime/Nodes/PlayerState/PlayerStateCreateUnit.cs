@@ -14,8 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+using System;
+using System.Linq;
 using Unity.VisualScripting;
-using UnityEngine;
 
 namespace VisualPinball.Unity.VisualScripting
 {
@@ -24,6 +25,9 @@ namespace VisualPinball.Unity.VisualScripting
 	[UnitCategory("Visual Pinball/State")]
 	public class PlayerStateCreateUnit : GleUnit
 	{
+		[Serialize, Inspectable, UnitHeaderInspectable("Auto-increment")]
+		public bool AutoIncrement { get; set; }
+
 		[DoNotSerialize]
 		[PortLabelHidden]
 		public ControlInput InputTrigger;
@@ -36,25 +40,43 @@ namespace VisualPinball.Unity.VisualScripting
 		[PortLabel("Player ID")]
 		public ValueInput PlayerId { get; private set; }
 
+		[DoNotSerialize]
+		[PortLabel("Set as Active")]
+		public ValueInput SetAsActive { get; set; }
+
 		protected override void Definition()
 		{
-			PlayerId = ValueInput(nameof(PlayerId), 0);
-
 			InputTrigger = ControlInput(nameof(InputTrigger), Process);
 			OutputTrigger = ControlOutput(nameof(OutputTrigger));
 
-			Requirement(PlayerId, InputTrigger);
+			if (!AutoIncrement) {
+				PlayerId = ValueInput(nameof(PlayerId), 0);
+				Requirement(PlayerId, InputTrigger);
+			}
+
+			SetAsActive = ValueInput(nameof(SetAsActive), false);
+
 			Succession(InputTrigger, OutputTrigger);
 		}
 
 		private ControlOutput Process(Flow flow)
 		{
 			if (!AssertVsGle(flow)) {
-				Debug.LogError("Cannot find GLE.");
-				return OutputTrigger;
+				throw new InvalidOperationException("Cannot retrieve GLE from unit.");
 			}
 
-			VsGle.CreatePlayerState(flow.GetValue<int>(PlayerId));
+			// determine new player id
+			var newPlayerId = AutoIncrement && VsGle.PlayerStates.Count > 0
+				? VsGle.PlayerStates.Keys.Max() + 1
+				: VsGle.PlayerStates.Count == 0 ? 0 : flow.GetValue<int>(PlayerId);
+
+			// create new state
+			VsGle.CreatePlayerState(newPlayerId);
+
+			// set as active
+			if (flow.GetValue<bool>(SetAsActive)) {
+				VsGle.CurrentPlayer = newPlayerId;
+			}
 
 			return OutputTrigger;
 		}

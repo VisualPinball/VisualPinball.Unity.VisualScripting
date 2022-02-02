@@ -22,7 +22,7 @@ namespace VisualPinball.Unity.VisualScripting
 	{
 		public string Id;
 		public string Name;
-		public Type Type;
+		public Type Type; // always *object* type (string, Integer, Float, Bool)
 		private object _value;
 
 		public PlayerVariable(string id, string name, string initialValue) : this(id, name, typeof(string), initialValue)

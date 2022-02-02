@@ -25,27 +25,15 @@ namespace VisualPinball.Unity.VisualScripting
 		public List<string> Errors { get; } = new();
 
 		[DoNotSerialize]
-		protected IGamelogicEngine Gle;
+		protected VisualScriptingGamelogicEngine VsGle;
 
-		[DoNotSerialize]
-		protected Player Player;
-
-		protected bool AssertGle(Flow flow)
+		protected bool AssertVsGle(Flow flow)
 		{
-			if (!Gle.IsUnityNull()) {
+			if (!VsGle.IsUnityNull()) {
 				return true;
 			}
-			Gle = flow.stack.gameObject.GetComponentInParent<IGamelogicEngine>();
-			return Gle != null;
-		}
-
-		protected bool AssertPlayer(Flow flow)
-		{
-			if (!Player.IsUnityNull()) {
-				return true;
-			}
-			Player = flow.stack.gameObject.GetComponentInParent<Player>();
-			return Player != null;
+			VsGle = flow.stack.gameObject.GetComponentInParent<VisualScriptingGamelogicEngine>();
+			return VsGle != null;
 		}
 	}
 

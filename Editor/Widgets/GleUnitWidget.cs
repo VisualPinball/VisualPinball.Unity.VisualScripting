@@ -18,9 +18,18 @@ using Unity.VisualScripting;
 
 namespace VisualPinball.Unity.VisualScripting.Editor
 {
+	public static class GleUnitWidget
+	{
+		public static readonly NodeColorMix Color = new() {
+			red = 0.92549019607843137254901960784314f,
+			green = 0.51764705882352941176470588235294f,
+			blue = 0.23921568627450980392156862745098f
+		};
+	}
+
 	public abstract class GleUnitWidget<TUnit> : UnitWidget<TUnit> where TUnit : Unit, IGleUnit
 	{
-		protected override NodeColorMix baseColor => GleAvailable ? new NodeColorMix(NodeColor.Orange) : new NodeColorMix { red = 1f, green = 0f, blue = 0f };
+		protected override NodeColorMix baseColor => GleAvailable ? GleUnitWidget.Color : NodeColor.Red;
 		protected bool GameObjectAvailable => reference != null && reference.gameObject != null;
 		protected IGamelogicEngine Gle => reference.gameObject.GetComponentInParent<IGamelogicEngine>();
 		protected VisualScriptingGamelogicEngine VsGle => reference.gameObject.GetComponentInParent<VisualScriptingGamelogicEngine>();

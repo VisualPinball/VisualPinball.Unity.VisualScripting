@@ -33,8 +33,6 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 			_switchIdInspectorConstructorList = new List<Func<Metadata, VariableNameInspector>>();
 		}
 
-		protected override NodeColorMix baseColor => NodeColorMix.TealReadable;
-
 		public override Inspector GetPortInspector(IUnitPort port, Metadata meta)
 		{
 			if (_switchIdInspectorConstructorList.Count() < unit.idCount) {

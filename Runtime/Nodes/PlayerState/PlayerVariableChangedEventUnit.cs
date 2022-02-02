@@ -16,49 +16,46 @@
 
 using System;
 using Unity.VisualScripting;
-using UnityEngine;
 
 namespace VisualPinball.Unity.VisualScripting
 {
-	[UnitTitle("Set Player Variable")]
-	[UnitSurtitle("Player State")]
-	[UnitCategory("Visual Pinball/State")]
-	public class PlayerVariableSetUnit : GleUnit
+	[UnitTitle("On Player Variable Changed")]
+	[UnitSurtitle("Gamelogic Engine")]
+	[UnitCategory("Events\\Visual Pinball")]
+	public class PlayerVariableChangedEventUnit : GleEventUnit<PlayerVariableChangedArgs>
 	{
-		[DoNotSerialize, PortLabelHidden]
-		public ControlInput InputTrigger;
-
-		[DoNotSerialize, PortLabelHidden]
-		public ControlOutput OutputTrigger;
-
 		[Serialize, Inspectable, UnitHeaderInspectable]
 		public PlayerVariableDefinition Variable { get; set; }
 
 		[DoNotSerialize, PortLabel("Value"), Inspectable]
-		public ValueInput Value { get; private set; }
+		public ValueOutput Value { get; private set; }
+
+		public override EventHook GetHook(GraphReference reference) => new EventHook(VisualScriptingEventNames.PlayerVariableChanged);
+		protected override bool register => true;
 
 		protected override void Definition()
 		{
-			InputTrigger = ControlInput(nameof(InputTrigger), Process);
-			OutputTrigger = ControlOutput(nameof(OutputTrigger));
-
-			Succession(InputTrigger, OutputTrigger);
+			base.Definition();
 
 			if (Variable == null) {
 				return;
 			}
 
 			Value = Variable.Type switch {
-				VariableType.String => ValueInput<string>(nameof(Value), string.Empty),
-				VariableType.Integer => ValueInput<int>(nameof(Value), 0),
-				VariableType.Float => ValueInput<float>(nameof(Value), 0f),
-				VariableType.Boolean => ValueInput<bool>(nameof(Value), false),
+				VariableType.String => ValueOutput<string>(nameof(Value)),
+				VariableType.Integer => ValueOutput<int>(nameof(Value)),
+				VariableType.Float => ValueOutput<float>(nameof(Value)),
+				VariableType.Boolean => ValueOutput<bool>(nameof(Value)),
 				_ => throw new ArgumentOutOfRangeException()
 			};
-			Requirement(Value, InputTrigger);
 		}
 
-		private ControlOutput Process(Flow flow)
+		protected override bool ShouldTrigger(Flow flow, PlayerVariableChangedArgs args)
+		{
+			return Variable.Id == args.VariableId;
+		}
+
+		protected override void AssignArguments(Flow flow, PlayerVariableChangedArgs args)
 		{
 			if (!AssertVsGle(flow)) {
 				throw new InvalidOperationException("Cannot retrieve GLE from unit.");
@@ -66,22 +63,20 @@ namespace VisualPinball.Unity.VisualScripting
 
 			switch (Variable.Type) {
 				case VariableType.String:
-					VsGle.CurrentPlayerState.Set(Variable.Id, flow.GetValue<string>(Value));
+					flow.SetValue(Value,  VsGle.CurrentPlayerState.Get<string>(Variable.Id));
 					break;
 				case VariableType.Integer:
-					VsGle.CurrentPlayerState.Set(Variable.Id, new Integer(flow.GetValue<int>(Value)));
+					flow.SetValue(Value,  (int)VsGle.CurrentPlayerState.Get<Integer>(Variable.Id));
 					break;
 				case VariableType.Float:
-					VsGle.CurrentPlayerState.Set(Variable.Id, new Float(flow.GetValue<float>(Value)));
+					flow.SetValue(Value,  (float)VsGle.CurrentPlayerState.Get<Float>(Variable.Id));
 					break;
 				case VariableType.Boolean:
-					VsGle.CurrentPlayerState.Set(Variable.Id, new Bool(flow.GetValue<bool>(Value)));
+					flow.SetValue(Value,  (bool)VsGle.CurrentPlayerState.Get<Bool>(Variable.Id));
 					break;
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
-
-			return OutputTrigger;
 		}
 	}
 }

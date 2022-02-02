@@ -16,14 +16,13 @@
 
 using System;
 using Unity.VisualScripting;
-using UnityEngine;
 
 namespace VisualPinball.Unity.VisualScripting
 {
-	[UnitTitle("Set Player Variable")]
+	[UnitTitle("Increase Player Variable")]
 	[UnitSurtitle("Player State")]
 	[UnitCategory("Visual Pinball/State")]
-	public class PlayerVariableSetUnit : GleUnit
+	public class PlayerVariableIncreaseUnit : GleUnit
 	{
 		[DoNotSerialize, PortLabelHidden]
 		public ControlInput InputTrigger;
@@ -49,11 +48,9 @@ namespace VisualPinball.Unity.VisualScripting
 			}
 
 			Value = Variable.Type switch {
-				VariableType.String => ValueInput<string>(nameof(Value), string.Empty),
 				VariableType.Integer => ValueInput<int>(nameof(Value), 0),
 				VariableType.Float => ValueInput<float>(nameof(Value), 0f),
-				VariableType.Boolean => ValueInput<bool>(nameof(Value), false),
-				_ => throw new ArgumentOutOfRangeException()
+				_ => throw new ArgumentOutOfRangeException($"Type must be integer or float.")
 			};
 			Requirement(Value, InputTrigger);
 		}
@@ -65,20 +62,18 @@ namespace VisualPinball.Unity.VisualScripting
 			}
 
 			switch (Variable.Type) {
-				case VariableType.String:
-					VsGle.CurrentPlayerState.Set(Variable.Id, flow.GetValue<string>(Value));
+				case VariableType.Integer: {
+					var current = (int)VsGle.CurrentPlayerState.Get<Integer>(Variable.Id);
+					VsGle.CurrentPlayerState.Set(Variable.Id, new Integer(current + flow.GetValue<int>(Value)));
 					break;
-				case VariableType.Integer:
-					VsGle.CurrentPlayerState.Set(Variable.Id, new Integer(flow.GetValue<int>(Value)));
+				}
+				case VariableType.Float: {
+					var current = (float)VsGle.CurrentPlayerState.Get<Float>(Variable.Id);
+					VsGle.CurrentPlayerState.Set(Variable.Id, new Float(current + flow.GetValue<float>(Value)));
 					break;
-				case VariableType.Float:
-					VsGle.CurrentPlayerState.Set(Variable.Id, new Float(flow.GetValue<float>(Value)));
-					break;
-				case VariableType.Boolean:
-					VsGle.CurrentPlayerState.Set(Variable.Id, new Bool(flow.GetValue<bool>(Value)));
-					break;
+				}
 				default:
-					throw new ArgumentOutOfRangeException();
+					throw new ArgumentOutOfRangeException($"Type must be integer or float.");
 			}
 
 			return OutputTrigger;
