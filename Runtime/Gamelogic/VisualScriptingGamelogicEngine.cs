@@ -31,7 +31,7 @@ namespace VisualPinball.Unity.VisualScripting
 	{
 		public string Name => "Visual Scripting Gamelogic Engine";
 
-		public List<VisualScriptingPlayerStatePropertyDefinition> PlayerStateDefinition;
+		public List<PlayerVariableDefinition> PlayerVariableDefinitions;
 
 		[Tooltip("The switches that are exposed in the Visual Scripting nodes.")]
 		public VisualScriptingSwitch[] Switches;
@@ -60,9 +60,9 @@ namespace VisualPinball.Unity.VisualScripting
 		[NonSerialized] private Player _player;
 
 		[NonSerialized] private int _currentPlayer;
-		[NonSerialized] private readonly Dictionary<int, VisualScriptingPlayerState> _playerStates = new ();
+		[NonSerialized] private readonly Dictionary<int, PlayerState> _playerStates = new ();
 
-		public VisualScriptingPlayerState CurrentPlayerState {
+		public PlayerState CurrentPlayerState {
 			get {
 				if (!_playerStates.ContainsKey(_currentPlayer)) {
 					throw new InvalidOperationException("Must create a player state before accessing it!");
@@ -92,8 +92,8 @@ namespace VisualPinball.Unity.VisualScripting
 				Debug.LogWarning($"Tried to create new player state for existing state {playerId}, skipping.");
 				return;
 			}
-			var playerState = new VisualScriptingPlayerState(playerId);
-			foreach (var propertyDefinition in PlayerStateDefinition) {
+			var playerState = new PlayerState(playerId);
+			foreach (var propertyDefinition in PlayerVariableDefinitions) {
 				playerState.AddProperty(propertyDefinition.Instantiate());
 			}
 			_playerStates[playerId] = playerState;
@@ -158,7 +158,7 @@ namespace VisualPinball.Unity.VisualScripting
 			#if UNITY_EDITOR
 
 			var ids = new HashSet<string>();
-			foreach (var def in PlayerStateDefinition) {
+			foreach (var def in PlayerVariableDefinitions) {
 				if (!def.HasId || ids.Contains(def.Id)) {
 					def.GenerateId();
 				}

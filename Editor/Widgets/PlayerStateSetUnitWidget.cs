@@ -16,44 +16,44 @@
 
 // ReSharper disable UnusedType.Global
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Unity.VisualScripting;
 
 namespace VisualPinball.Unity.VisualScripting.Editor
 {
-	[Widget(typeof(PlayerStateSetUnit))]
-	public sealed class PlayerStateSetUnitWidget : GleUnitWidget<PlayerStateSetUnit>
+	[Widget(typeof(PlayerVariableSetUnit))]
+	public sealed class PlayerStateSetUnitWidget : GleUnitWidget<PlayerVariableSetUnit>
 	{
-		public PlayerStateSetUnitWidget(FlowCanvas canvas, PlayerStateSetUnit unit) : base(canvas, unit)
+		public PlayerStateSetUnitWidget(FlowCanvas canvas, PlayerVariableSetUnit unit) : base(canvas, unit)
 		{
-			_propertyNameInspectorConstructor = meta => new VariableNameInspector(meta, GetNameSuggestions);
+			//_intInspectorConstructor = meta => new IntInspector(meta);
 		}
 
-		protected override NodeColorMix baseColor => NodeColorMix.TealReadable;
+		// private IntInspector _intInspector;
+		//
+		// private readonly Func<Metadata, IntInspector> _intInspectorConstructor;
 
-		private VariableNameInspector _propertyNameInspector;
-		private readonly Func<Metadata, VariableNameInspector> _propertyNameInspectorConstructor;
+		// public override Inspector GetPortInspector(IUnitPort port, Metadata meta)
+		// {
+		// 	if (port != unit.Value) {
+		// 		return base.GetPortInspector(port, meta);
+		// 	}
+		//
+		// 	switch (unit.Property.Type) {
+		// 		case VisualScriptingPropertyType.String:
+		// 			break;
+		// 		case VisualScriptingPropertyType.Integer:
+		// 			InspectorProvider.instance.Renew(ref _intInspector, meta, _intInspectorConstructor);
+		// 			return _intInspector;
+		// 		case VisualScriptingPropertyType.Float:
+		// 			break;
+		// 		case VisualScriptingPropertyType.Boolean:
+		// 			break;
+		// 		default:
+		// 			throw new ArgumentOutOfRangeException();
+		// 	}
+		//
+		// 	return base.GetPortInspector(port, meta);
+		// }
 
-		public override Inspector GetPortInspector(IUnitPort port, Metadata meta)
-		{
-			// if (port == unit.PropertyName) {
-			// 	InspectorProvider.instance.Renew(ref _propertyNameInspector, meta, _propertyNameInspectorConstructor);
-			//
-			// 	return _propertyNameInspector;
-			// }
-
-			return base.GetPortInspector(port, meta);
-		}
-
-		private IEnumerable<string> GetNameSuggestions()
-		{
-			if (!GameObjectAvailable) {
-				return new List<string>();
-			}
-			var gle = VsGle;
-			return gle == null ? new List<string>() : gle.PlayerStateDefinition.Select(prop => prop.Name).ToList();
-		}
 	}
 }

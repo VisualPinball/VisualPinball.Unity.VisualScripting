@@ -14,42 +14,44 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using VisualPinball.Unity.VisualScripting;
 
-[Inspector(typeof(VisualScriptingPlayerStatePropertyDefinition))]
-public class VisualScriptingPlayerStatePropertyDefinitionInspector : GleInspector
+[Inspector(typeof(PlayerVariableDefinition))]
+public class PlayerVariableDefinitionInspector : GleInspector
 {
-	public VisualScriptingPlayerStatePropertyDefinitionInspector(Metadata metadata) : base(metadata) { }
+	public PlayerVariableDefinitionInspector(Metadata metadata) : base(metadata) { }
 
 	protected override void OnGUI(Rect position, GUIContent label)
 	{
 		// can't get this from the flow
 		var gle = Gle;
 		if (gle != null) {
-			var propDefinitions = gle.PlayerStateDefinition;
-
-			if (propDefinitions.Count == 0) {
-				ErrorMessage = "No properties defined.";
+			var varDefinitions = gle.PlayerVariableDefinitions;
+			if (varDefinitions == null || varDefinitions.Count(p => !string.IsNullOrEmpty(p.Name)) == 0) {
+				ErrorMessage = "No variables defined.";
 
 			} else {
-				var propNames = propDefinitions.Select(d => d.Name).ToArray();
-				var currentPropDef = metadata.value as VisualScriptingPlayerStatePropertyDefinition;
-				var playerPropDef = propDefinitions.FirstOrDefault(p => p.Id == currentPropDef!.Id);
-				var currentIndex = playerPropDef != null ? propDefinitions.IndexOf(playerPropDef) : 0;
-
-				var newIndex = EditorGUI.Popup(position, currentIndex, propNames);
-				if (EndBlock(metadata))
-				{
-					metadata.RecordUndo();
-					metadata.value = propDefinitions[newIndex];
+				var varNames = new List<string> { "None" }
+					.Concat(varDefinitions.Select(d => d.Name))
+					.ToArray();
+				var currentVarDef = metadata.value as PlayerVariableDefinition;
+				var currentIndex = 0;
+				if (currentVarDef != null) {
+					var playerVarDef = varDefinitions.FirstOrDefault(p => p.Id == currentVarDef!.Id);
+					currentIndex = playerVarDef != null ? varDefinitions.IndexOf(playerVarDef) + 1 : 0;
 				}
+
+				var newIndex = EditorGUI.Popup(position, currentIndex, varNames);
+				metadata.RecordUndo();
+				metadata.value = newIndex == 0 ? null : varDefinitions[newIndex - 1];
+				ErrorMessage = null;
 			}
 		}
-
 
 		if (ErrorMessage != null) {
 			position.height -= EditorGUIUtility.standardVerticalSpacing;

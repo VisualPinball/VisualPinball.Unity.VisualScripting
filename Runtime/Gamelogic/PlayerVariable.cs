@@ -18,27 +18,29 @@ using System;
 
 namespace VisualPinball.Unity.VisualScripting
 {
-	public class VisualScriptingPlayerStateProperty
+	public class PlayerVariable
 	{
+		public string Id;
 		public string Name;
 		public Type Type;
 		private object _value;
 
-		public VisualScriptingPlayerStateProperty(string name, string initialValue) : this(name, typeof(string), initialValue)
+		public PlayerVariable(string id, string name, string initialValue) : this(id, name, typeof(string), initialValue)
 		{
 		}
-		public VisualScriptingPlayerStateProperty(string name, int initialValue) : this(name, typeof(Integer),new Integer(initialValue))
+		public PlayerVariable(string id, string name, int initialValue) : this(id, name, typeof(Integer),new Integer(initialValue))
 		{
 		}
-		public VisualScriptingPlayerStateProperty(string name, float initialValue) : this(name, typeof(Float), new Float(initialValue))
+		public PlayerVariable(string id, string name, float initialValue) : this(id, name, typeof(Float), new Float(initialValue))
 		{
 		}
-		public VisualScriptingPlayerStateProperty(string name, bool initialValue) : this(name, typeof(Bool), new Bool(initialValue))
+		public PlayerVariable(string id, string name, bool initialValue) : this(id, name, typeof(Bool), new Bool(initialValue))
 		{
 		}
 
-		private VisualScriptingPlayerStateProperty(string name, Type type, object initialValue)
+		private PlayerVariable(string id, string name, Type type, object initialValue)
 		{
+			Id = id;
 			Name = name;
 			Type = type;
 			_value = initialValue;

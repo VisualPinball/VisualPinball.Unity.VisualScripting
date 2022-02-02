@@ -14,40 +14,48 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+using System;
 using Unity.VisualScripting;
 using UnityEngine;
 
 namespace VisualPinball.Unity.VisualScripting
 {
-	[UnitTitle("Set Player State Value")]
+	[UnitTitle("Set Player Variable")]
 	[UnitSurtitle("Player State")]
 	[UnitCategory("Visual Pinball/State")]
-	public class PlayerStateSetUnit : GleUnit
+	public class PlayerVariableSetUnit : GleUnit
 	{
-		[DoNotSerialize]
-		[PortLabelHidden]
+		[DoNotSerialize, PortLabelHidden]
 		public ControlInput InputTrigger;
 
-		[DoNotSerialize]
-		[PortLabelHidden]
+		[DoNotSerialize, PortLabelHidden]
 		public ControlOutput OutputTrigger;
 
 		[Serialize, Inspectable, UnitHeaderInspectable]
-		public VisualScriptingPlayerStatePropertyDefinition Property { get; set; }
+		public PlayerVariableDefinition Variable { get; set; }
 
-		[DoNotSerialize]
-		[PortLabel("Value")]
+		[DoNotSerialize, PortLabel("Value"), Inspectable]
 		public ValueInput Value { get; private set; }
 
 		protected override void Definition()
 		{
-			Value = ValueInput<object>(nameof(Value), null);
-
 			InputTrigger = ControlInput(nameof(InputTrigger), Process);
 			OutputTrigger = ControlOutput(nameof(OutputTrigger));
 
-			Requirement(Value, InputTrigger);
 			Succession(InputTrigger, OutputTrigger);
+
+			if (Variable == null) {
+				return;
+			}
+
+			Value = Variable.Type switch {
+				VariableType.String => ValueInput<string>(nameof(Value), string.Empty),
+				VariableType.Integer => ValueInput<int>(nameof(Value), 0),
+				VariableType.Float => ValueInput<float>(nameof(Value), 0f),
+				VariableType.Boolean => ValueInput<bool>(nameof(Value), false),
+				_ => throw new ArgumentOutOfRangeException()
+			};
+			Requirement(Value, InputTrigger);
 		}
 
 		private ControlOutput Process(Flow flow)
@@ -57,9 +65,23 @@ namespace VisualPinball.Unity.VisualScripting
 				return OutputTrigger;
 			}
 
-			var val = flow.GetValue<int>(Value);
+			switch (Variable.Type) {
+				case VariableType.String:
+					VsGle.CurrentPlayerState.Set(Variable.Id, flow.GetValue<string>(Value));
+					break;
+				case VariableType.Integer:
+					VsGle.CurrentPlayerState.Set(Variable.Id, new Integer(flow.GetValue<int>(Value)));
+					break;
+				case VariableType.Float:
+					VsGle.CurrentPlayerState.Set(Variable.Id, new Float(flow.GetValue<float>(Value)));
+					break;
+				case VariableType.Boolean:
+					VsGle.CurrentPlayerState.Set(Variable.Id, new Bool(flow.GetValue<bool>(Value)));
+					break;
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
 
-			Debug.Log($"Prop = {Property?.Name}, val = {val}");
 			return OutputTrigger;
 		}
 	}

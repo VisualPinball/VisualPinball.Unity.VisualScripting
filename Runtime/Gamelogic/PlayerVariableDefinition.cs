@@ -22,28 +22,28 @@ namespace VisualPinball.Unity.VisualScripting
 {
 
 	[Serializable]
-	public class VisualScriptingPlayerStatePropertyDefinition
+	public class PlayerVariableDefinition
 	{
 		public string Id;
 		public string Name;
-		public VisualScriptingPropertyType Type;
+		public VariableType Type;
 
 		public string StringDefaultValue;
 		public int IntegerDefaultValue;
 		public float FloatDefaultValue;
 		public bool BooleanDefaultValue;
 
-		public VisualScriptingPlayerStateProperty Instantiate()
+		public PlayerVariable Instantiate()
 		{
 			switch (Type) {
-				case VisualScriptingPropertyType.String:
-					return new VisualScriptingPlayerStateProperty(Name, StringDefaultValue);
-				case VisualScriptingPropertyType.Integer:
-					return new VisualScriptingPlayerStateProperty(Name, IntegerDefaultValue);
-				case VisualScriptingPropertyType.Float:
-					return new VisualScriptingPlayerStateProperty(Name, FloatDefaultValue);
-				case VisualScriptingPropertyType.Boolean:
-					return new VisualScriptingPlayerStateProperty(Name, BooleanDefaultValue);
+				case VariableType.String:
+					return new PlayerVariable(Id, Name, StringDefaultValue);
+				case VariableType.Integer:
+					return new PlayerVariable(Id, Name, IntegerDefaultValue);
+				case VariableType.Float:
+					return new PlayerVariable(Id, Name, FloatDefaultValue);
+				case VariableType.Boolean:
+					return new PlayerVariable(Id, Name, BooleanDefaultValue);
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
@@ -53,7 +53,7 @@ namespace VisualPinball.Unity.VisualScripting
 		public void GenerateId() => Id = Guid.NewGuid().ToString()[..13];
 	}
 
-	public enum VisualScriptingPropertyType
+	public enum VariableType
 	{
 		String, Integer, Float, Boolean
 	}

@@ -20,52 +20,50 @@ using Unity.VisualScripting;
 
 namespace VisualPinball.Unity.VisualScripting
 {
-	public class VisualScriptingPlayerState
+	public class PlayerState
 	{
 		public readonly int Id;
 
-		private readonly Dictionary<string, VisualScriptingPlayerStateProperty> _properties = new();
+		private readonly Dictionary<string, PlayerVariable> _variables = new();
 
-		public VisualScriptingPlayerState(int id)
+		public PlayerState(int id)
 		{
 			Id = id;
 		}
 
-		public void AddProperty(VisualScriptingPlayerStateProperty property)
+		public void AddProperty(PlayerVariable variable)
 		{
-			_properties[property.Name] = property;
+			_variables[variable.Id] = variable;
 		}
 
-		public T Get<T>(string propertyName) where T : class
+		public T Get<T>(string variableId) where T : class
 		{
-			if (!_properties.ContainsKey(propertyName)) {
-				throw new ArgumentException($"No such property name ({propertyName}).", nameof(propertyName));
+			if (!_variables.ContainsKey(variableId)) {
+				throw new ArgumentException($"No such variable ID ({variableId}).", nameof(variableId));
 			}
-			if (_properties[propertyName].Type != typeof(T)) {
-				throw new InvalidOperationException($"Property \"{propertyName}\" is of type {_properties[propertyName].Type}, but you asked for a {typeof(T)}.");
+			if (_variables[variableId].Type != typeof(T)) {
+				throw new InvalidOperationException($"Variable \"{variableId}\" is of type {_variables[variableId].Type}, but you asked for a {typeof(T)}.");
 			}
 
-			return _properties[propertyName].Get<T>();
+			return _variables[variableId].Get<T>();
 		}
 
-		public void Set<T>(string propertyName, T value) where T : class
+		public void Set<T>(string variableId, T value) where T : class
 		{
-			if (!_properties.ContainsKey(propertyName)) {
-				throw new ArgumentException($"No such property name ({propertyName}).", nameof(propertyName));
+			if (!_variables.ContainsKey(variableId)) {
+				throw new ArgumentException($"No such variable ID ({variableId}).", nameof(variableId));
 			}
-			if (_properties[propertyName].Type != value.GetType()) {
-				throw new ArgumentException($"Property \"{propertyName}\" is of type {_properties[propertyName].Type}, but you provided a {value.GetType()}.", nameof(value));
+			if (_variables[variableId].Type != value.GetType()) {
+				throw new ArgumentException($"Variable \"{variableId}\" is of type {_variables[variableId].Type}, but you provided a {value.GetType()}.", nameof(value));
 			}
 
-			var currentValue = _properties[propertyName].Get<T>();
-			_properties[propertyName].Set(value);
+			var currentValue = _variables[variableId].Get<T>();
+			_variables[variableId].Set(value);
 
 			if (currentValue != value) {
-				EventBus.Trigger(VisualScriptingEventNames.CurrentPlayerStateChanged, new PlayerStateChangedArgs(propertyName));
+				EventBus.Trigger(VisualScriptingEventNames.CurrentPlayerStateChanged, new PlayerVariableChangedArgs(variableId));
 			}
 		}
-
-		internal bool Has<T>(string propertyName) => _properties.ContainsKey(propertyName) && typeof(T) == _properties[propertyName].Type;
 	}
 
 	public class Integer
@@ -109,13 +107,13 @@ namespace VisualPinball.Unity.VisualScripting
 		public static implicit operator Bool(bool num) => new(num);
 	}
 
-	public readonly struct PlayerStateChangedArgs
+	public readonly struct PlayerVariableChangedArgs
 	{
-		public readonly string PropertyName;
+		public readonly string VariableId;
 
-		public PlayerStateChangedArgs(string propertyName)
+		public PlayerVariableChangedArgs(string variableId)
 		{
-			PropertyName = propertyName;
+			VariableId = variableId;
 		}
 	}
 }
