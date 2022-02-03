@@ -22,7 +22,7 @@ using Unity.VisualScripting;
 namespace VisualPinball.Unity.VisualScripting.Editor
 {
 	[Widget(typeof(SetLightSequenceUnit))]
-	public sealed class SetLightSequenceUnitWidget : UnitWidget<SetLightSequenceUnit>
+	public sealed class SetLightSequenceUnitWidget : GleUnitWidget<SetLightSequenceUnit>
 	{
 		private ObjectPickerInspector<LightGroupComponent> _objectInspector;
 		private readonly Func<Metadata, ObjectPickerInspector<LightGroupComponent>> _setObjectInspectorConstructor;

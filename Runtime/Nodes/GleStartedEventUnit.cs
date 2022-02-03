@@ -21,7 +21,7 @@ namespace VisualPinball.Unity.VisualScripting
 {
 	[UnitTitle("On Gamelogic Engine Started Event")]
 	[UnitCategory("Events\\Visual Pinball")]
-	public sealed class GleStartedEventUnit : EventUnit<EventArgs>
+	public sealed class GleStartedEventUnit : GleEventUnit<EventArgs>
 	{
 		protected override bool register => true;
 
