@@ -20,10 +20,10 @@ using UnityEngine;
 namespace VisualPinball.Unity.VisualScripting
 {
 	[UnitShortTitle("Set Lamp")]
-	[UnitTitle("Set Lamp (ID, Intensity)")]
+	[UnitTitle("Set Lamp (ID, on/off)")]
 	[UnitSurtitle("Gamelogic Engine")]
 	[UnitCategory("Visual Pinball")]
-	public class SetLampUnit : GleUnit
+	public class SetLampEnabledUnit : GleUnit
 	{
 		[DoNotSerialize]
 		[PortLabelHidden]
@@ -38,34 +38,32 @@ namespace VisualPinball.Unity.VisualScripting
 		public ValueInput Id { get; private set; }
 
 		[DoNotSerialize]
-		[PortLabel("Value")]
-		public ValueInput Value { get; private set; }
+		[PortLabel("Is Enabled")]
+		public ValueInput IsEnabled { get; private set; }
 
 		protected override void Definition()
 		{
 			InputTrigger = ControlInput(nameof(InputTrigger), Process);
 			OutputTrigger = ControlOutput(nameof(OutputTrigger));
 
-			Id = ValueInput<string>(nameof(Id), string.Empty);
-			Value = ValueInput<float>(nameof(Value), 0f);
+			Id = ValueInput(nameof(Id), string.Empty);
+			IsEnabled = ValueInput(nameof(IsEnabled), false);
 
 			Requirement(Id, InputTrigger);
 			Succession(InputTrigger, OutputTrigger);
-
 		}
 
 		private ControlOutput Process(Flow flow)
 		{
-
 			if (!AssertGle(flow)) {
 				Debug.LogError("Cannot find GLE.");
 				return OutputTrigger;
 			}
 
 			var id = flow.GetValue<string>(Id);
-			var value = flow.GetValue<float>(Value);
+			var isEnabled = flow.GetValue<bool>(IsEnabled);
 
-			Gle.SetLamp(id, value * 255f);
+			Gle.SetLamp(id, isEnabled ? 255f : 0f);
 
 			return OutputTrigger;
 		}
