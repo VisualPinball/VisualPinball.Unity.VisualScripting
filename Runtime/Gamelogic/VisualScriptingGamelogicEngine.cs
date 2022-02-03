@@ -118,6 +118,10 @@ namespace VisualPinball.Unity.VisualScripting
 			_player = player;
 			BallManager = ballManager;
 
+			// create table variables
+			foreach (var propertyDefinition in TableVariableDefinitions) {
+				TableState.AddProperty(propertyDefinition.Instantiate());
+			}
 			OnStarted?.Invoke(this, EventArgs.Empty);
 			EventBus.Trigger(VisualScriptingEventNames.GleStartedEvent, EventArgs.Empty);
 		}

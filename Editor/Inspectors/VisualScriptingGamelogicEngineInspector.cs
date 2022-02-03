@@ -66,7 +66,7 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 			}
 
 			EditorGUILayout.TextField("Table Variables", new GUIStyle(EditorStyles.boldLabel));
-			PrintState(_gle.TableState);
+			PrintState(_gle.TableState, _gle.TableVariableDefinitions);
 
 			if (_gle.PlayerStates.Count == 0) {
 				EditorGUILayout.HelpBox("No player states created.", MessageType.Info);
@@ -80,21 +80,21 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 				}
 				if (_playerVarFoldout[playerId] = EditorGUILayout.BeginFoldoutHeaderGroup(_playerVarFoldout[playerId], $"Player {playerId}")) {
 					EditorGUI.indentLevel++;
-					PrintState(_gle.PlayerStates[playerId]);
+
+					if (_gle.CurrentPlayerState == _gle.PlayerStates[playerId]) {
+						EditorGUILayout.HelpBox("Current Player", MessageType.Info);
+					}
+
+					PrintState(_gle.PlayerStates[playerId], _gle.PlayerVariableDefinitions);
 					EditorGUI.indentLevel--;
 				}
 				EditorGUILayout.EndFoldoutHeaderGroup();
 			}
 		}
 
-		private void PrintState(State state)
+		private static void PrintState(State state, IEnumerable<VariableDefinition> definitions)
 		{
-
-			if (_gle.CurrentPlayerState == state) {
-				EditorGUILayout.HelpBox("Current Player", MessageType.Info);
-			}
-
-			foreach (var varDef in _gle.PlayerVariableDefinitions) {
+			foreach (var varDef in definitions) {
 				EditorGUILayout.LabelField(varDef.Name, state.Get(varDef.Id).ToString());
 			}
 		}
