@@ -31,11 +31,19 @@ namespace VisualPinball.Unity.VisualScripting
 	{
 		public string Name => "Visual Scripting Gamelogic Engine";
 
+		[Tooltip("Define here the global variables of the Visual Scripting engine.")]
+		public List<TableVariableDefinition> TableVariableDefinitions;
+
+		[Tooltip("Define here the player-specific variables of the Visual Scripting engine.")]
 		public List<PlayerVariableDefinition> PlayerVariableDefinitions;
 
 		[Tooltip("The switches that are exposed in the Visual Scripting nodes.")]
 		public VisualScriptingSwitch[] Switches;
+
+		[Tooltip("The coils that are exposed in the Visual Scripting nodes.")]
 		public VisualScriptingCoil[] Coils;
+
+		[Tooltip("The lamps that are exposed in the Visual Scripting nodes.")]
 		public VisualScriptingLamp[] Lamps;
 		public GamelogicEngineWire[] Wires;
 
@@ -60,6 +68,7 @@ namespace VisualPinball.Unity.VisualScripting
 		[NonSerialized] private Player _player;
 
 		[NonSerialized] private int _currentPlayer;
+		[NonSerialized] public readonly TableState TableState = new ();
 		[NonSerialized] public readonly Dictionary<int, PlayerState> PlayerStates = new ();
 
 		public PlayerState CurrentPlayerState {
@@ -159,6 +168,13 @@ namespace VisualPinball.Unity.VisualScripting
 
 			var ids = new HashSet<string>();
 			foreach (var def in PlayerVariableDefinitions) {
+				if (!def.HasId || ids.Contains(def.Id)) {
+					def.GenerateId();
+				}
+				ids.Add(def.Id);
+			}
+			ids.Clear();
+			foreach (var def in TableVariableDefinitions) {
 				if (!def.HasId || ids.Contains(def.Id)) {
 					def.GenerateId();
 				}

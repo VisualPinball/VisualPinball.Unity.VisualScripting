@@ -30,6 +30,7 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 		private SerializedProperty _switchesProperty;
 		private SerializedProperty _soilsProperty;
 		private SerializedProperty _lampsProperty;
+		private SerializedProperty _tableVariableDefinitionsProperty;
 		private SerializedProperty _playerVariableDefinitionsProperty;
 
 		private readonly Dictionary<int, bool> _playerVarFoldout = new();
@@ -42,6 +43,7 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 			_soilsProperty = serializedObject.FindProperty(nameof(VisualScriptingGamelogicEngine.Coils));
 			_lampsProperty = serializedObject.FindProperty(nameof(VisualScriptingGamelogicEngine.Lamps));
 
+			_tableVariableDefinitionsProperty = serializedObject.FindProperty(nameof(VisualScriptingGamelogicEngine.TableVariableDefinitions));
 			_playerVariableDefinitionsProperty = serializedObject.FindProperty(nameof(VisualScriptingGamelogicEngine.PlayerVariableDefinitions));
 		}
 
@@ -53,6 +55,7 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 			EditorGUILayout.PropertyField(_soilsProperty);
 			EditorGUILayout.PropertyField(_lampsProperty);
 
+			EditorGUILayout.PropertyField(_tableVariableDefinitionsProperty);
 			EditorGUILayout.PropertyField(_playerVariableDefinitionsProperty);
 
 			serializedObject.ApplyModifiedProperties();
@@ -61,6 +64,10 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 			if (!Application.isPlaying) {
 				return;
 			}
+
+			EditorGUILayout.TextField("Table Variables", new GUIStyle(EditorStyles.boldLabel));
+			PrintState(_gle.TableState);
+
 			if (_gle.PlayerStates.Count == 0) {
 				EditorGUILayout.HelpBox("No player states created.", MessageType.Info);
 				return;
@@ -73,19 +80,22 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 				}
 				if (_playerVarFoldout[playerId] = EditorGUILayout.BeginFoldoutHeaderGroup(_playerVarFoldout[playerId], $"Player {playerId}")) {
 					EditorGUI.indentLevel++;
-
-					var playerState = _gle.PlayerStates[playerId];
-					if (_gle.CurrentPlayerState == playerState) {
-						EditorGUILayout.HelpBox("Current Player", MessageType.Info);
-					}
-
-					foreach (var varDef in _gle.PlayerVariableDefinitions) {
-						EditorGUILayout.LabelField(varDef.Name, playerState.Get(varDef.Id).ToString());
-					}
-
+					PrintState(_gle.PlayerStates[playerId]);
 					EditorGUI.indentLevel--;
 				}
 				EditorGUILayout.EndFoldoutHeaderGroup();
+			}
+		}
+
+		private void PrintState(State state)
+		{
+
+			if (_gle.CurrentPlayerState == state) {
+				EditorGUILayout.HelpBox("Current Player", MessageType.Info);
+			}
+
+			foreach (var varDef in _gle.PlayerVariableDefinitions) {
+				EditorGUILayout.LabelField(varDef.Name, state.Get(varDef.Id).ToString());
 			}
 		}
 	}
