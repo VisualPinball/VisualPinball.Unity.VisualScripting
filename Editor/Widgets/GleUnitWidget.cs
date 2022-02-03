@@ -15,6 +15,7 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 using Unity.VisualScripting;
+using UnityEngine;
 
 namespace VisualPinball.Unity.VisualScripting.Editor
 {
@@ -30,19 +31,20 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 	public abstract class GleUnitWidget<TUnit> : UnitWidget<TUnit> where TUnit : Unit, IGleUnit
 	{
 		protected override NodeColorMix baseColor => GleAvailable ? GleUnitWidget.Color : NodeColor.Red;
-		protected bool GameObjectAvailable => reference != null && reference.gameObject != null;
-		protected IGamelogicEngine Gle => reference.gameObject.GetComponentInParent<IGamelogicEngine>();
-		protected VisualScriptingGamelogicEngine VsGle => reference.gameObject.GetComponentInParent<VisualScriptingGamelogicEngine>();
-		private bool GleAvailable => GameObjectAvailable && Gle != null;
-		private bool VsGleAvailable => GameObjectAvailable && VsGle != null;
+		protected IGamelogicEngine Gle;
+		protected VisualScriptingGamelogicEngine VsGle;
+		protected bool GleAvailable => Gle != null;
+		protected bool VsGleAvailable => VsGle != null;
 
 		protected GleUnitWidget(FlowCanvas canvas, TUnit unit) : base(canvas, unit)
 		{
-			if (!GameObjectAvailable) {
-				unit.Errors.Add("Not attached to GameObject. You need to attach this graph to a flow machine sitting on a GameObject in order to use it.");
-
-			} else if (!GleAvailable) {
-				unit.Errors.Add("No gamelogic engine found. One of the GameObject's parents must have a gamelogic engine component.");
+			var table = TableSelector.Instance.SelectedOrFirstTable;
+			if (table != null) {
+				Gle = table.GetComponentInChildren<IGamelogicEngine>();
+				VsGle = table.GetComponentInChildren<VisualScriptingGamelogicEngine>();
+			}
+			if (!GleAvailable) {
+				Debug.LogError($"Cannot find GLE for {GetType()}.");
 			}
 		}
 	}

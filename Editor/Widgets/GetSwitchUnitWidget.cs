@@ -55,11 +55,9 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 
 		private IEnumerable<string> GetNameSuggestions()
 		{
-			if (!GameObjectAvailable) {
-				return new List<string>();
-			}
-			var gle = Gle;
-			return gle == null ? new List<string>() : gle.AvailableSwitches.Select(sw => sw.Id).ToList();
+			return !GleAvailable
+				? new List<string>()
+				: Gle.AvailableSwitches.Select(sw => sw.Id).ToList();
 		}
 	}
 }
