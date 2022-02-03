@@ -21,7 +21,7 @@ namespace VisualPinball.Unity.VisualScripting
 {
 	[UnitTitle("Increase Player Variable")]
 	[UnitSurtitle("Player State")]
-	[UnitCategory("Visual Pinball/State")]
+	[UnitCategory("Visual Pinball/Variables")]
 	public class PlayerVariableIncreaseUnit : GleUnit
 	{
 		[DoNotSerialize, PortLabelHidden]

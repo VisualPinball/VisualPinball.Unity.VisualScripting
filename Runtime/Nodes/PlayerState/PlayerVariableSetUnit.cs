@@ -22,7 +22,7 @@ namespace VisualPinball.Unity.VisualScripting
 {
 	[UnitTitle("Set Player Variable")]
 	[UnitSurtitle("Player State")]
-	[UnitCategory("Visual Pinball/State")]
+	[UnitCategory("Visual Pinball/Variables")]
 	public class PlayerVariableSetUnit : GleUnit
 	{
 		[DoNotSerialize, PortLabelHidden]

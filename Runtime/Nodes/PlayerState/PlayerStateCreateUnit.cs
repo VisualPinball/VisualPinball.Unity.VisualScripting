@@ -22,7 +22,7 @@ namespace VisualPinball.Unity.VisualScripting
 {
 	[UnitTitle("Create Player State")]
 	[UnitSurtitle("Player State")]
-	[UnitCategory("Visual Pinball/State")]
+	[UnitCategory("Visual Pinball/Variables")]
 	public class PlayerStateCreateUnit : GleUnit
 	{
 		[Serialize, Inspectable, UnitHeaderInspectable("Auto-increment")]

@@ -17,40 +17,30 @@
 // ReSharper disable UnusedType.Global
 
 using Unity.VisualScripting;
-using VisualPinball.Unity.Editor;
-using IconSize = VisualPinball.Unity.Editor.IconSize;
 
 namespace VisualPinball.Unity.VisualScripting.Editor
 {
-	[Descriptor(typeof(CreateBallUnit))]
-	public class CreateBallUnitDescriptor : UnitDescriptor<CreateBallUnit>
+	[Descriptor(typeof(PlayerVariableIncreaseUnit))]
+	public class PlayerVariableIncreaseUnitDescriptor : UnitDescriptor<PlayerVariableIncreaseUnit>
 	{
-		public CreateBallUnitDescriptor(CreateBallUnit target) : base(target)
+		public PlayerVariableIncreaseUnitDescriptor(PlayerVariableIncreaseUnit target) : base(target)
 		{
 		}
 
 		protected override string DefinedSummary()
 		{
-			return "This node spawns a new ball at a given position.";
+			return "This node increases the value of a given player variable.\n\nTo decrease, use a negative value.";
 		}
 
-
-
-		protected override EditorTexture DefinedIcon() => EditorTexture.Single(Unity.Editor.Icons.BallRoller(IconSize.Large, IconColor.Orange));
+		protected override EditorTexture DefinedIcon() => EditorTexture.Single(Unity.Editor.Icons.PlayerVariable);
 
 		protected override void DefinedPort(IUnitPort port, UnitPortDescription desc)
 		{
 			base.DefinedPort(port, desc);
 
 			switch (port.key) {
-				case nameof(CreateBallUnit.Position):
-					desc.summary = "The position in playfield space where the ball should be created.";
-					break;
-				case nameof(CreateBallUnit.KickAngle):
-					desc.summary = "The angle in degrees at which the ball is accelerated at the given position. 0 is straight up, then it goes clock-wise, 180 being straight down.";
-					break;
-				case nameof(CreateBallUnit.KickForce):
-					desc.summary = "The force with which the ball is accelerated at the given position.";
+				case nameof(PlayerVariableIncreaseUnit.Value):
+					desc.summary = "The value to add to the existing value.";
 					break;
 			}
 		}

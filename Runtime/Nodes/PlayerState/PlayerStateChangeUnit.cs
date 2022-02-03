@@ -22,7 +22,7 @@ namespace VisualPinball.Unity.VisualScripting
 {
 	[UnitTitle("Change Player State")]
 	[UnitSurtitle("Player State")]
-	[UnitCategory("Visual Pinball/State")]
+	[UnitCategory("Visual Pinball/Variables")]
 	public class PlayerStateChangeUnit : GleUnit
 	{
 		[DoNotSerialize]
