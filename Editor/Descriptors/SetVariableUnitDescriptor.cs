@@ -42,6 +42,9 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 				case nameof(SetPlayerVariableUnit.Value):
 					desc.summary = "The new value of the player variable.";
 					break;
+				case nameof(SetPlayerVariableUnit.OutputValue):
+					desc.summary = "The new value of the player variable.";
+					break;
 			}
 		}
 	}
@@ -66,6 +69,10 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 
 			switch (port.key) {
 				case nameof(SetTableVariableUnit.Value):
+					desc.summary = "The new value of the table variable.";
+					break;
+
+				case nameof(SetTableVariableUnit.OutputValue):
 					desc.summary = "The new value of the table variable.";
 					break;
 			}

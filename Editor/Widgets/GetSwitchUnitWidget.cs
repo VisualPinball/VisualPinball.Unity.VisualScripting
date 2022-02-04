@@ -50,6 +50,7 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 				}
 			}
 
+
 			return base.GetPortInspector(port, meta);
 		}
 

@@ -54,7 +54,7 @@ namespace VisualPinball.Unity.VisualScripting
 				throw new InvalidOperationException("Cannot retrieve GLE from unit.");
 			}
 
-			VsGle.CurrentPlayer = flow.GetValue<int>(PlayerId);
+			VsGle.SetCurrentPlayer(flow.GetValue<int>(PlayerId));
 
 			return OutputTrigger;
 		}

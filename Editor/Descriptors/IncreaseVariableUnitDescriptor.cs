@@ -42,6 +42,9 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 				case nameof(IncreasePlayerVariableUnit.Value):
 					desc.summary = "The value to add to the existing value.";
 					break;
+				case nameof(IncreasePlayerVariableUnit.OutputValue):
+					desc.summary = "The final increased value.";
+					break;
 			}
 		}
 	}
@@ -67,6 +70,9 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 			switch (port.key) {
 				case nameof(IncreaseTableVariableUnit.Value):
 					desc.summary = "The value to add to the existing value.";
+					break;
+				case nameof(IncreasePlayerVariableUnit.OutputValue):
+					desc.summary = "The final increased value.";
 					break;
 			}
 		}

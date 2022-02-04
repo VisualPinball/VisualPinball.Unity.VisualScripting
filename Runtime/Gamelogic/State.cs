@@ -61,6 +61,8 @@ namespace VisualPinball.Unity.VisualScripting
 			return _variables[variableId].Get<T>();
 		}
 
+		public StateVariable GetVariable(string variableId) => _variables[variableId];
+
 		public object Get(string variableId)
 		{
 			if (!_variables.ContainsKey(variableId)) {

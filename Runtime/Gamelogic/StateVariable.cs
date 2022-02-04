@@ -18,7 +18,7 @@ using System;
 
 namespace VisualPinball.Unity.VisualScripting
 {
-	public class StateVariable
+	public class StateVariable : IEquatable<StateVariable>
 	{
 		public string Id;
 		public string Name;
@@ -55,5 +55,50 @@ namespace VisualPinball.Unity.VisualScripting
 		{
 			_value = value;
 		}
+
+		public bool Equals(StateVariable other)
+		{
+			if (ReferenceEquals(null, other)) {
+				return false;
+			}
+			if (ReferenceEquals(this, other)) {
+				return true;
+			}
+
+			if (other.Type != Type) {
+				return false;
+			}
+
+			if (Type == typeof(string)) {
+				return string.Equals(_value as string, other._value as string);
+			}
+			if (Type == typeof(int)) {
+				return (int)_value == (int)other._value;
+			}
+			if (Type == typeof(float)) {
+				return (float)_value == (float)other._value;
+			}
+			if (Type == typeof(bool)) {
+				return (bool)_value == (bool)other._value;
+			}
+			return false;
+		}
+
+		public override bool Equals(object obj) => Equals(obj as StateVariable);
+
+		public override int GetHashCode()
+		{
+			return (Id, Name, Type, _value).GetHashCode();
+		}
+
+		public static bool operator ==(StateVariable lhs, StateVariable rhs)
+		{
+			if (lhs is null) {
+				return rhs is null;
+			}
+			return lhs.Equals(rhs);
+		}
+
+		public static bool operator !=(StateVariable lhs, StateVariable rhs) => !(lhs == rhs);
 	}
 }

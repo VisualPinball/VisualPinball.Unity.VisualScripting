@@ -55,6 +55,9 @@ namespace VisualPinball.Unity.VisualScripting
 		[DoNotSerialize, PortLabel("Value"), Inspectable]
 		public ValueInput Value { get; private set; }
 
+		[DoNotSerialize, PortLabel("Value"), Inspectable]
+		public ValueOutput OutputValue { get; private set; }
+
 		protected abstract State State { get; }
 		protected abstract VariableDefinition VariableDefinition { get; }
 
@@ -76,6 +79,14 @@ namespace VisualPinball.Unity.VisualScripting
 				VariableType.Boolean => ValueInput<bool>(nameof(Value), false),
 				_ => throw new ArgumentOutOfRangeException()
 			};
+
+			OutputValue = VariableDefinition.Type switch {
+				VariableType.String => ValueOutput<string>(nameof(Value)),
+				VariableType.Integer => ValueOutput<int>(nameof(Value)),
+				VariableType.Float => ValueOutput<float>(nameof(Value)),
+				VariableType.Boolean => ValueOutput<bool>(nameof(Value)),
+				_ => throw new ArgumentOutOfRangeException()
+			};
 			Requirement(Value, InputTrigger);
 		}
 
@@ -88,15 +99,19 @@ namespace VisualPinball.Unity.VisualScripting
 			switch (VariableDefinition.Type) {
 				case VariableType.String:
 					State.Set(VariableDefinition.Id, flow.GetValue<string>(Value));
+					flow.SetValue(OutputValue, flow.GetValue<string>(Value));
 					break;
 				case VariableType.Integer:
 					State.Set(VariableDefinition.Id, new Integer(flow.GetValue<int>(Value)));
+					flow.SetValue(OutputValue, flow.GetValue<int>(Value));
 					break;
 				case VariableType.Float:
 					State.Set(VariableDefinition.Id, new Float(flow.GetValue<float>(Value)));
+					flow.SetValue(OutputValue, flow.GetValue<float>(Value));
 					break;
 				case VariableType.Boolean:
 					State.Set(VariableDefinition.Id, new Bool(flow.GetValue<bool>(Value)));
+					flow.SetValue(OutputValue, flow.GetValue<bool>(Value));
 					break;
 				default:
 					throw new ArgumentOutOfRangeException();

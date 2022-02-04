@@ -48,6 +48,9 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 				case nameof(CreatePlayerStateUnit.SetAsActive):
 					desc.summary = "If set, the new state will be the current state. Otherwise, it will only be the current state if there is no state set.";
 					break;
+				case nameof(CreatePlayerStateUnit.DestroyPrevious):
+					desc.summary = "If set, all player states are destroyed before creating a new one. This is typically used when starting the first ball.";
+					break;
 			}
 		}
 	}

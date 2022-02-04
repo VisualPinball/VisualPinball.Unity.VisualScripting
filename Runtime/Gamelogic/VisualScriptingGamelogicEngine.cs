@@ -80,17 +80,29 @@ namespace VisualPinball.Unity.VisualScripting
 			}
 		}
 
-		public int CurrentPlayer {
-			get => _currentPlayer;
-			set {
-				if (!PlayerStates.ContainsKey(value)) {
-					Debug.LogError($"Cannot change to non-existing player {value}.");
-					return;
-				}
-				var previousPlayer = _currentPlayer;
-				_currentPlayer = value;
-				if (previousPlayer != _currentPlayer) {
-					EventBus.Trigger(VisualScriptingEventNames.CurrentPlayerChanged, EventArgs.Empty);
+		public void SetCurrentPlayer(int value, bool forceNotify = false)
+		{
+			if (!PlayerStates.ContainsKey(value)) {
+				Debug.LogError($"Cannot change to non-existing player {value}.");
+				return;
+			}
+			var previousPlayer = _currentPlayer;
+			_currentPlayer = value;
+			if (forceNotify || previousPlayer != _currentPlayer) {
+				EventBus.Trigger(VisualScriptingEventNames.CurrentPlayerChanged, EventArgs.Empty);
+			}
+
+			// also trigger updates for each variable
+			foreach (var varDef in PlayerVariableDefinitions) {
+				if (PlayerStates.ContainsKey(previousPlayer)) {
+					var before = PlayerStates[previousPlayer].GetVariable(varDef.Id);
+					var now = PlayerStates[_currentPlayer].GetVariable(varDef.Id);
+					if (forceNotify || before != now) {
+						EventBus.Trigger(VisualScriptingEventNames.PlayerVariableChanged, new VariableChangedArgs(varDef.Id));
+					}
+
+				} else {
+					EventBus.Trigger(VisualScriptingEventNames.PlayerVariableChanged, new VariableChangedArgs(varDef.Id));
 				}
 			}
 		}
@@ -109,8 +121,14 @@ namespace VisualPinball.Unity.VisualScripting
 
 			// switch to this state if current state is invalid
 			if (!PlayerStates.ContainsKey(_currentPlayer)) {
-				CurrentPlayer = playerId;
+				SetCurrentPlayer(playerId, true);
 			}
+		}
+
+		public void DestroyPlayerStates()
+		{
+			PlayerStates.Clear();
+			_currentPlayer = 0;
 		}
 
 		public void OnInit(Player player, TableApi tableApi, BallManager ballManager)
@@ -191,3 +209,4 @@ namespace VisualPinball.Unity.VisualScripting
 		}
 	}
 }
+

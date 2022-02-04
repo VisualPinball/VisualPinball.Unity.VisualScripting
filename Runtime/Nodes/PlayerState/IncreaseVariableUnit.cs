@@ -51,9 +51,11 @@ namespace VisualPinball.Unity.VisualScripting
 		[DoNotSerialize, PortLabelHidden]
 		public ControlOutput OutputTrigger;
 
-
-		[DoNotSerialize, PortLabel("Value"), Inspectable]
+		[DoNotSerialize, PortLabel("Increase By"), Inspectable]
 		public ValueInput Value { get; private set; }
+
+		[DoNotSerialize, PortLabel("Updated Value"), Inspectable]
+		public ValueOutput OutputValue { get; private set; }
 
 		protected abstract State State { get; }
 		protected abstract VariableDefinition VariableDefinition { get; }
@@ -74,6 +76,12 @@ namespace VisualPinball.Unity.VisualScripting
 				VariableType.Float => ValueInput<float>(nameof(Value), 0f),
 				_ => throw new ArgumentOutOfRangeException($"Type must be integer or float.")
 			};
+
+			OutputValue = VariableDefinition.Type switch {
+				VariableType.Integer => ValueOutput<int>(nameof(Value)),
+				VariableType.Float => ValueOutput<float>(nameof(Value)),
+				_ => throw new ArgumentOutOfRangeException($"Type must be integer or float.")
+			};
 			Requirement(Value, InputTrigger);
 		}
 
@@ -87,11 +95,13 @@ namespace VisualPinball.Unity.VisualScripting
 				case VariableType.Integer: {
 					var current = (int)State.Get<Integer>(VariableDefinition.Id);
 					State.Set(VariableDefinition.Id, new Integer(current + flow.GetValue<int>(Value)));
+					flow.SetValue(OutputValue, current + flow.GetValue<int>(Value));
 					break;
 				}
 				case VariableType.Float: {
 					var current = (float)State.Get<Float>(VariableDefinition.Id);
 					State.Set(VariableDefinition.Id, new Float(current + flow.GetValue<float>(Value)));
+					flow.SetValue(OutputValue, current + flow.GetValue<float>(Value));
 					break;
 				}
 				default:

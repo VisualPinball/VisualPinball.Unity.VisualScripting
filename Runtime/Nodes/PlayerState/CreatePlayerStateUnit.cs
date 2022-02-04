@@ -44,6 +44,10 @@ namespace VisualPinball.Unity.VisualScripting
 		[PortLabel("Set as Active")]
 		public ValueInput SetAsActive { get; set; }
 
+		[DoNotSerialize]
+		[PortLabel("Destroy Previous")]
+		public ValueInput DestroyPrevious { get; set; }
+
 		protected override void Definition()
 		{
 			InputTrigger = ControlInput(nameof(InputTrigger), Process);
@@ -55,6 +59,7 @@ namespace VisualPinball.Unity.VisualScripting
 			}
 
 			SetAsActive = ValueInput(nameof(SetAsActive), false);
+			DestroyPrevious = ValueInput(nameof(DestroyPrevious), false);
 
 			Succession(InputTrigger, OutputTrigger);
 		}
@@ -63,6 +68,11 @@ namespace VisualPinball.Unity.VisualScripting
 		{
 			if (!AssertVsGle(flow)) {
 				throw new InvalidOperationException("Cannot retrieve GLE from unit.");
+			}
+
+			// destroy previous
+			if (flow.GetValue<bool>(DestroyPrevious)) {
+				VsGle.DestroyPlayerStates();
 			}
 
 			// determine new player id
@@ -75,7 +85,7 @@ namespace VisualPinball.Unity.VisualScripting
 
 			// set as active
 			if (flow.GetValue<bool>(SetAsActive)) {
-				VsGle.CurrentPlayer = newPlayerId;
+				VsGle.SetCurrentPlayer(newPlayerId, flow.GetValue<bool>(DestroyPrevious));
 			}
 
 			return OutputTrigger;
