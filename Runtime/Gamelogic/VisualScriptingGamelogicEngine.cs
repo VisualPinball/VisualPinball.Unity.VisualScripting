@@ -37,6 +37,9 @@ namespace VisualPinball.Unity.VisualScripting
 		[Tooltip("Define here the player-specific variables of the Visual Scripting engine.")]
 		public List<PlayerVariableDefinition> PlayerVariableDefinitions;
 
+		[Tooltip("Define the displays this game is going to use.")]
+		public DisplayDefinition[] Displays;
+
 		[Tooltip("The switches that are exposed in the Visual Scripting nodes.")]
 		public VisualScriptingSwitch[] Switches;
 
@@ -47,15 +50,17 @@ namespace VisualPinball.Unity.VisualScripting
 		public VisualScriptingLamp[] Lamps;
 		public GamelogicEngineWire[] Wires;
 
-		public GamelogicEngineSwitch[] AvailableSwitches => Switches.Select(sw => sw as GamelogicEngineSwitch).ToArray();
+		public DisplayConfig[] RequiredDisplays => Displays.Select(d => d.DisplayConfig).ToArray();
 
-		public GamelogicEngineLamp[] AvailableLamps => Lamps.Select(lamp => lamp as GamelogicEngineLamp).ToArray();
+		public GamelogicEngineSwitch[] RequestedSwitches => Switches.Select(sw => sw as GamelogicEngineSwitch).ToArray();
 
-		public GamelogicEngineCoil[] AvailableCoils => Coils.Select(c => c as GamelogicEngineCoil).ToArray();
+		public GamelogicEngineLamp[] RequestedLamps => Lamps.Select(lamp => lamp as GamelogicEngineLamp).ToArray();
+
+		public GamelogicEngineCoil[] RequestedCoils => Coils.Select(c => c as GamelogicEngineCoil).ToArray();
 
 		public GamelogicEngineWire[] AvailableWires => Wires;
 
-		public event EventHandler<AvailableDisplays> OnDisplaysAvailable;
+		public event EventHandler<RequestedDisplays> OnDisplaysRequested;
 		public event EventHandler<DisplayFrameData> OnDisplayFrame;
 		public event EventHandler<LampEventArgs> OnLampChanged;
 		public event EventHandler<LampsEventArgs> OnLampsChanged;
@@ -78,6 +83,11 @@ namespace VisualPinball.Unity.VisualScripting
 				}
 				return PlayerStates[_currentPlayer];
 			}
+		}
+
+		public void DisplayFrame(DisplayFrameData data)
+		{
+			OnDisplayFrame?.Invoke(this, data);
 		}
 
 		public void SetCurrentPlayer(int value, bool forceNotify = false)
@@ -135,6 +145,9 @@ namespace VisualPinball.Unity.VisualScripting
 		{
 			_player = player;
 			BallManager = ballManager;
+
+			// request displays
+			OnDisplaysRequested?.Invoke(this, new RequestedDisplays(Displays.Select(d => d.DisplayConfig).ToArray()));
 
 			// create table variables
 			foreach (var propertyDefinition in TableVariableDefinitions) {

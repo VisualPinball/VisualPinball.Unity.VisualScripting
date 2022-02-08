@@ -48,7 +48,7 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 		{
 			return !GleAvailable
 				? new List<string>()
-				: Gle.AvailableLamps.Select(lamp => lamp.Id).ToList();
+				: Gle.RequestedLamps.Select(lamp => lamp.Id).ToList();
 		}
 	}
 }

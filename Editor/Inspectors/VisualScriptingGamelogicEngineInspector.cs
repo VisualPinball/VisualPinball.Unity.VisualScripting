@@ -27,6 +27,7 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 	public class VisualScriptingGamelogicEngineInspector : BaseEditor<VisualScriptingGamelogicEngine>
 	{
 		private VisualScriptingGamelogicEngine _gle;
+		private SerializedProperty _displaysProperty;
 		private SerializedProperty _switchesProperty;
 		private SerializedProperty _soilsProperty;
 		private SerializedProperty _lampsProperty;
@@ -39,6 +40,7 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 		{
 			_gle = target as VisualScriptingGamelogicEngine;
 
+			_displaysProperty = serializedObject.FindProperty(nameof(VisualScriptingGamelogicEngine.Displays));
 			_switchesProperty = serializedObject.FindProperty(nameof(VisualScriptingGamelogicEngine.Switches));
 			_soilsProperty = serializedObject.FindProperty(nameof(VisualScriptingGamelogicEngine.Coils));
 			_lampsProperty = serializedObject.FindProperty(nameof(VisualScriptingGamelogicEngine.Lamps));
@@ -51,6 +53,7 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 		{
 			serializedObject.Update();
 
+			EditorGUILayout.PropertyField(_displaysProperty);
 			EditorGUILayout.PropertyField(_switchesProperty);
 			EditorGUILayout.PropertyField(_soilsProperty);
 			EditorGUILayout.PropertyField(_lampsProperty);

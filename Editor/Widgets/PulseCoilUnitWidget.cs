@@ -57,7 +57,7 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 		{
 			return !GleAvailable
 				? new List<string>()
-				: Gle.AvailableCoils.Select(coil => coil.Id).ToList();
+				: Gle.RequestedCoils.Select(coil => coil.Id).ToList();
 		}
 	}
 }

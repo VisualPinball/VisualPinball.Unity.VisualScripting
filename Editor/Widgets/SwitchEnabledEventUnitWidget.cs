@@ -57,7 +57,7 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 		{
 			return !GleAvailable
 				? new List<string>()
-				: Gle.AvailableSwitches.Select(sw => sw.Id).ToList();
+				: Gle.RequestedSwitches.Select(sw => sw.Id).ToList();
 		}
 	}
 }
