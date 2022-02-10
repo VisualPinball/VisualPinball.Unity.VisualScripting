@@ -18,17 +18,26 @@ using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityObject = UnityEngine.Object;
 
 namespace VisualPinball.Unity.VisualScripting
 {
 	[Serializable]
-	public class LampIdValue : UnityObject
+	public struct LampIdValue
 	{
 		public string id;
 		public int value;
 
-		public static LampIdValue Empty = new LampIdValue { id = string.Empty, value = 0 };
+		public static LampIdValue FromJson(string json)
+		{
+			return JsonUtility.FromJson<LampIdValue>(json);
+		}
+
+		public string ToJson()
+		{
+			return JsonUtility.ToJson(this);
+		}
+
+		public static readonly LampIdValue Empty = new LampIdValue { id = string.Empty, value = 0 };
 	}
 
 	[UnitShortTitle("Switch Lamp")]
@@ -63,6 +72,9 @@ namespace VisualPinball.Unity.VisualScripting
 		[DoNotSerialize]
 		public List<ValueInput> LampIdValues { get; private set; }
 
+		private List<LampIdValue> _lampIdValueList;
+		private int _hash;
+
 		protected override void Definition()
 		{
 			InputTrigger = ControlInput(nameof(InputTrigger), Process);
@@ -72,15 +84,13 @@ namespace VisualPinball.Unity.VisualScripting
 
 			LampIdValues = new List<ValueInput>();
 
-			for (var i = 0; i < idCount; i++)
-			{
-				var lampIdValue = ValueInput<LampIdValue>("Lamp ID " + (i + 1), LampIdValue.Empty);
-				LampIdValues.Add(lampIdValue);
+			for (var i = 0; i < idCount; i++) {
+				var valueInput = ValueInput($"Lamp ID {i + 1}", LampIdValue.Empty.ToJson());
+				LampIdValues.Add(valueInput);
 
-				Requirement(lampIdValue, InputTrigger);
+				Requirement(valueInput, InputTrigger);
 			}
 
-		
 			Succession(InputTrigger, OutputTrigger);
 		}
 
@@ -90,13 +100,12 @@ namespace VisualPinball.Unity.VisualScripting
 				Debug.LogError("Cannot find GLE.");
 				return OutputTrigger;
 			}
-
+			
 			var value = flow.GetValue<int>(Value);
 
-			foreach (var lampIdValue in LampIdValues)
-			{
-				var lampIdValueStruct = flow.GetValue<LampIdValue>(lampIdValue);
-				Gle.SetLamp(lampIdValueStruct.id, lampIdValueStruct.value == value ? 255f : 0f);
+			foreach (var lampIdValue in LampIdValues) {
+				var obj = LampIdValue.FromJson(flow.GetValue<string>(lampIdValue));
+				Gle.SetLamp(obj.id, obj.value == value ? 255f : 0f);
 			}
 
 			return OutputTrigger;

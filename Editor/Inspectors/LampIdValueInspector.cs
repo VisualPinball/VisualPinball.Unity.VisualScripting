@@ -38,7 +38,7 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 
             var fieldPosition = position.VerticalSection(ref y, GetFieldHeight(position.width, GUIContent.none));
 
-            LampIdValue lampIdValue = (LampIdValue)metadata.value;
+            LampIdValue lampIdValue = LampIdValue.FromJson((string)metadata.value);
 
             var valueWidth = LudiqGUI.GetTextFieldAdaptiveWidth(lampIdValue.value);
 
@@ -105,17 +105,17 @@ namespace VisualPinball.Unity.VisualScripting.Editor
             if (EndBlock(metadata))
             {
                 metadata.RecordUndo();
-                metadata.value = new LampIdValue
-                {
-                    id = newIdValue,
-                    value = newValue
-                };
+
+                lampIdValue.id = newIdValue;
+                lampIdValue.value = newValue;
+
+                metadata.value = lampIdValue.ToJson();
             }
         }
 
         public override float GetAdaptiveWidth()
         {
-            LampIdValue lampIdValue = (LampIdValue)metadata.value;
+            LampIdValue lampIdValue = LampIdValue.FromJson((string)metadata.value);
 
             return Mathf.Max(30, EditorStyles.textField.CalcSize(new GUIContent(lampIdValue.id)).x + 1 + Styles.popup.fixedWidth) +
                 LudiqGUI.GetTextFieldAdaptiveWidth(lampIdValue.value) + 70;
