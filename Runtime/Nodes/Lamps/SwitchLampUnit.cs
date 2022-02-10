@@ -72,8 +72,7 @@ namespace VisualPinball.Unity.VisualScripting
 		[DoNotSerialize]
 		public List<ValueInput> LampIdValues { get; private set; }
 
-		private List<LampIdValue> _lampIdValueList;
-		private int _hash;
+		private Dictionary<int, LampIdValue> _lampIdValueCache = new Dictionary<int, LampIdValue>();
 
 		protected override void Definition()
 		{
@@ -91,6 +90,8 @@ namespace VisualPinball.Unity.VisualScripting
 				Requirement(valueInput, InputTrigger);
 			}
 
+			_lampIdValueCache.Clear();
+
 			Succession(InputTrigger, OutputTrigger);
 		}
 
@@ -104,7 +105,13 @@ namespace VisualPinball.Unity.VisualScripting
 			var value = flow.GetValue<int>(Value);
 
 			foreach (var lampIdValue in LampIdValues) {
-				var obj = LampIdValue.FromJson(flow.GetValue<string>(lampIdValue));
+				var json = flow.GetValue<string>(lampIdValue);
+
+				if (!_lampIdValueCache.ContainsKey(json.GetHashCode())) {
+					_lampIdValueCache[json.GetHashCode()] = LampIdValue.FromJson(json);
+				}
+
+				var obj = _lampIdValueCache[json.GetHashCode()];
 				Gle.SetLamp(obj.id, obj.value == value ? 255f : 0f);
 			}
 
