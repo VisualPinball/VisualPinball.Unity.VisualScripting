@@ -10,9 +10,9 @@
     "Visual"
   ],
   "unity": "2021.2",
-  "unityRelease": "8f1",
+  "unityRelease": "11f1",
   "dependencies": {
-    "com.unity.visualscripting": "1.7.6",
+    "com.unity.visualscripting": "1.7.7",
     "org.visualpinball.engine.unity": "0.0.1-preview.90"
   },
   "author": "freezy <freezy@vpdb.io>",
