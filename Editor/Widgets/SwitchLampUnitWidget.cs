@@ -42,7 +42,7 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 			}
 
 			for (var index = 0; index < unit.idCount; index++) {
-				if (unit.LampIdValues[index] == port) {
+				if (unit.Items[index] == port) {
 					LampIdValueInspector lampIdInspector = new LampIdValueInspector(meta, GetNameSuggestions);
 					InspectorProvider.instance.Renew(ref lampIdInspector, meta, _lampIdInspectorConstructorList[index]);
 
@@ -57,7 +57,7 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 		{
 			return !GleAvailable
 				? new List<string>()
-				: Gle.RequestedLamps.Select(lamp => lamp.Id).ToList();
+				: Gle.AvailableLamps.Select(lamp => lamp.Id).ToList();
 		}
 	}
 }

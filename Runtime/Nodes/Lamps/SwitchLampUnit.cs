@@ -66,11 +66,11 @@ namespace VisualPinball.Unity.VisualScripting
 		public ControlOutput OutputTrigger;
 
 		[DoNotSerialize]
-		[PortLabel("Value")]
-		public ValueInput Value { get; private set; }
+		[PortLabel("Source Value")]
+		public ValueInput SourceValue { get; private set; }
 
 		[DoNotSerialize]
-		public List<ValueInput> LampIdValues { get; private set; }
+		public List<ValueInput> Items { get; private set; }
 
 		private Dictionary<int, LampIdValue> _lampIdValueCache = new Dictionary<int, LampIdValue>();
 
@@ -79,15 +79,15 @@ namespace VisualPinball.Unity.VisualScripting
 			InputTrigger = ControlInput(nameof(InputTrigger), Process);
 			OutputTrigger = ControlOutput(nameof(OutputTrigger));
 
-			Value = ValueInput<int>(nameof(Value));
+			SourceValue = ValueInput<int>(nameof(SourceValue));
 
-			LampIdValues = new List<ValueInput>();
+			Items = new List<ValueInput>();
 
 			for (var i = 0; i < idCount; i++) {
-				var valueInput = ValueInput($"Lamp ID {i + 1}", LampIdValue.Empty.ToJson());
-				LampIdValues.Add(valueInput);
+				var item = ValueInput($"item{i + 1}", LampIdValue.Empty.ToJson());
+				Items.Add(item);
 
-				Requirement(valueInput, InputTrigger);
+				Requirement(item, InputTrigger);
 			}
 
 			_lampIdValueCache.Clear();
@@ -102,10 +102,10 @@ namespace VisualPinball.Unity.VisualScripting
 				return OutputTrigger;
 			}
 			
-			var value = flow.GetValue<int>(Value);
+			var value = flow.GetValue<int>(SourceValue);
 
-			foreach (var lampIdValue in LampIdValues) {
-				var json = flow.GetValue<string>(lampIdValue);
+			foreach (var item in Items) {
+				var json = flow.GetValue<string>(item);
 
 				if (!_lampIdValueCache.ContainsKey(json.GetHashCode())) {
 					_lampIdValueCache[json.GetHashCode()] = LampIdValue.FromJson(json);

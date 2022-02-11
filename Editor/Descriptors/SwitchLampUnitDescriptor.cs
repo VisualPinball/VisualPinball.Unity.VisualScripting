@@ -16,6 +16,8 @@
 
 // ReSharper disable UnusedType.Global
 
+using System;
+using System.Text.RegularExpressions;
 using Unity.VisualScripting;
 using VisualPinball.Unity.Editor;
 using IconSize = VisualPinball.Unity.Editor.IconSize;
@@ -31,7 +33,7 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 
 		protected override string DefinedSummary()
 		{
-			return "This node triggers an event when a switch in the list of given ID is enabled.";
+			return "This node enabled or disables lamps based on matching a source value with a specifed value.";
 		}
 
 		protected override EditorTexture DefinedIcon() => EditorTexture.Single(Unity.Editor.Icons.Light(IconSize.Large, IconColor.Orange));
@@ -40,10 +42,18 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 		{
 			base.DefinedPort(port, desc);
 
-			switch (port.key) {
-				case nameof(SwitchLampUnit.LampIdValues):
-					desc.summary = "The Lamp ID and value";
-					break;
+			if (port.key == nameof(SwitchLampUnit.SourceValue)) {
+				desc.summary = "Source value to use for matching";
+			}
+			else {
+				var match = new Regex("^(item)([0-9]+)$").Match(port.key);
+
+				if (match.Success) {
+					var id = int.Parse(match.Groups[2].Value);
+
+					desc.label = $"Lamp ID {id}";
+					desc.summary = "Lamp ID to enable if specified Value matches source Value, or disable if specified Value does not match source Value";
+				}
 			}
 		}
 	}

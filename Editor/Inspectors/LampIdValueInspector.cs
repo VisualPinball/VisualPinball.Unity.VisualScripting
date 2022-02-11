@@ -10,6 +10,8 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 
     public sealed class LampIdValueInspector : Inspector
     {
+        private static readonly int LabelPadding = 5;
+
         public LampIdValueInspector(Metadata metadata, Func<IEnumerable<string>> getSuggestions) : base(metadata)
         {
             Ensure.That(nameof(getSuggestions)).IsNotNull(getSuggestions);
@@ -34,19 +36,20 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 
         protected override void OnGUI(Rect position, GUIContent label)
         {
+            LampIdValue lampIdValue = LampIdValue.FromJson((string)metadata.value);
+
+            var valueLabelWidth = EditorStyles.label.CalcSize(new GUIContent("Value")).x;
+            var valueWidth = EditorStyles.textField.CalcSize(new GUIContent($"{lampIdValue.value}")).x;
+
             position = BeginLabeledBlock(metadata, position, label);
 
             var fieldPosition = position.VerticalSection(ref y, GetFieldHeight(position.width, GUIContent.none));
-
-            LampIdValue lampIdValue = LampIdValue.FromJson((string)metadata.value);
-
-            var valueWidth = LudiqGUI.GetTextFieldAdaptiveWidth(lampIdValue.value);
 
             var textFieldPosition = new Rect
                 (
                 fieldPosition.x,
                 fieldPosition.y,
-                fieldPosition.width - Styles.popup.fixedWidth - valueWidth - 60,
+                fieldPosition.width - valueWidth - LabelPadding - valueLabelWidth - LabelPadding - Styles.popup.fixedWidth,
                 fieldPosition.height
                 );
 
@@ -81,7 +84,17 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 
             EditorGUI.EndDisabledGroup();
 
-            var valueFieldPosition = new Rect
+            var valueLabelPosition = new Rect
+                 (
+                 fieldPosition.x + fieldPosition.width - valueWidth - LabelPadding - valueLabelWidth,
+                 fieldPosition.y,
+                 valueLabelWidth,
+                 fieldPosition.height
+                 );
+
+            EditorGUI.LabelField(valueLabelPosition, "Value");
+
+            var valueIntFieldPosition = new Rect
                 (
                 fieldPosition.x + fieldPosition.width - valueWidth,
                 fieldPosition.y,
@@ -89,18 +102,7 @@ namespace VisualPinball.Unity.VisualScripting.Editor
                 fieldPosition.height
                 );
 
-            var valueLabelFieldPosition = new Rect
-             (
-             fieldPosition.x + fieldPosition.width - valueWidth - 50,
-             fieldPosition.y,
-             50,
-             fieldPosition.height
-             );
-
-
-            EditorGUI.LabelField(valueLabelFieldPosition, "Value");
-
-            var newValue = LudiqGUI.DraggableIntField(valueFieldPosition, lampIdValue.value);
+            var newValue = LudiqGUI.DraggableIntField(valueIntFieldPosition, lampIdValue.value);
 
             if (EndBlock(metadata))
             {
@@ -117,8 +119,12 @@ namespace VisualPinball.Unity.VisualScripting.Editor
         {
             LampIdValue lampIdValue = LampIdValue.FromJson((string)metadata.value);
 
-            return Mathf.Max(30, EditorStyles.textField.CalcSize(new GUIContent(lampIdValue.id)).x + 1 + Styles.popup.fixedWidth) +
-                LudiqGUI.GetTextFieldAdaptiveWidth(lampIdValue.value) + 70;
+            return Mathf.Max(30,
+                EditorStyles.textField.CalcSize(new GUIContent(lampIdValue.id)).x + 1 + Styles.popup.fixedWidth) +
+                LabelPadding +
+                EditorStyles.label.CalcSize(new GUIContent("Value")).x +
+                LabelPadding +
+                EditorStyles.textField.CalcSize(new GUIContent($"{lampIdValue.value}")).x;
         }
 
         public static class Styles
