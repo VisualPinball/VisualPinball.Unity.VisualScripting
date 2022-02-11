@@ -47,7 +47,7 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 				case nameof(UpdateDisplayUnit.TextInput):
 					desc.summary = "Sets the display to a new text value.";
 					break;
-				case nameof(UpdateDisplayUnit.FrameInput):
+				case nameof(UpdateDisplayUnit.SegmentInput):
 					desc.summary = "Updates the display with new frame data.";
 					break;
 			}

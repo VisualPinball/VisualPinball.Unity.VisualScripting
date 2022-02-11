@@ -15,6 +15,7 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 using System;
+using System.Text;
 using Unity.VisualScripting;
 
 namespace VisualPinball.Unity.VisualScripting
@@ -44,8 +45,24 @@ namespace VisualPinball.Unity.VisualScripting
 		public ValueInput TextInput { get; private set; }
 
 		[DoNotSerialize]
-		[PortLabel("Data")]
-		public ValueInput FrameInput { get; private set; }
+		[PortLabel("Segment Data")]
+		public ValueInput SegmentInput { get; private set; }
+
+		[DoNotSerialize]
+		[PortLabel("DMD (2-bit)")]
+		public ValueInput Dmd2Input { get; private set; }
+
+		[DoNotSerialize]
+		[PortLabel("DMD (4-bit)")]
+		public ValueInput Dmd4Input { get; private set; }
+
+		[DoNotSerialize]
+		[PortLabel("DMD (8-bit)")]
+		public ValueInput Dmd8Input { get; private set; }
+
+		[DoNotSerialize]
+		[PortLabel("DMD (RGB24)")]
+		public ValueInput Dmd24Input { get; private set; }
 
 		protected override void Definition()
 		{
@@ -53,14 +70,26 @@ namespace VisualPinball.Unity.VisualScripting
 			OutputTrigger = ControlOutput(nameof(OutputTrigger));
 
 			if (Display != null) {
-				if (Display.SupportsNumericInput) {
+				if (Display.Supports(DisplayFrameFormat.Numeric)) {
 					NumericInput = ValueInput<float>(nameof(NumericInput));
 				}
-				if (Display.SupportsTextInput) {
+				if (Display.Supports(DisplayFrameFormat.AlphaNumeric)) {
 					TextInput = ValueInput<string>(nameof(TextInput));
 				}
-				if (Display.SupportsImageInput) {
-					TextInput = ValueInput<byte[]>(nameof(FrameInput));
+				if (Display.Supports(DisplayFrameFormat.Segment)) {
+					SegmentInput = ValueInput<byte[]>(nameof(SegmentInput));
+				}
+				if (Display.Supports(DisplayFrameFormat.Dmd2)) {
+					Dmd2Input = ValueInput<byte[]>(nameof(Dmd2Input));
+				}
+				if (Display.Supports(DisplayFrameFormat.Dmd4)) {
+					Dmd4Input = ValueInput<byte[]>(nameof(Dmd4Input));
+				}
+				if (Display.Supports(DisplayFrameFormat.Dmd8)) {
+					Dmd8Input = ValueInput<byte[]>(nameof(Dmd8Input));
+				}
+				if (Display.Supports(DisplayFrameFormat.Dmd24)) {
+					Dmd24Input = ValueInput<byte[]>(nameof(Dmd24Input));
 				}
 			}
 
@@ -74,20 +103,44 @@ namespace VisualPinball.Unity.VisualScripting
 			}
 
 			if (Display != null) {
-				if (Display.SupportsNumericInput) {
-					var numValue = (int)flow.GetValue<float>(NumericInput);
-					VsGle.DisplayFrame(new DisplayFrameData(Display.Id, DisplayFrameFormat.Segment, ScoreConverter.Convert(numValue, Display.Width)));
+				if (Display.Supports(DisplayFrameFormat.Numeric) && NumericInput.hasValidConnection) {
+					var numValue = flow.GetValue<float>(NumericInput);
+					VsGle.DisplayFrame(new DisplayFrameData(Display.Id, DisplayFrameFormat.Numeric, BitConverter.GetBytes(numValue)));
 				}
-				if (Display.SupportsTextInput) {
+				if (Display.Supports(DisplayFrameFormat.AlphaNumeric) && flow.IsLocal(TextInput)) {
 					var strValue = flow.GetValue<string>(TextInput);
 					if (!string.IsNullOrEmpty(strValue)) {
-						VsGle.DisplayFrame(new DisplayFrameData(Display.Id, DisplayFrameFormat.Segment, ScoreConverter.Text(strValue, Display.Width)));
+						VsGle.DisplayFrame(new DisplayFrameData(Display.Id, DisplayFrameFormat.AlphaNumeric, Encoding.UTF8.GetBytes(strValue)));
 					}
 				}
-				if (Display.SupportsImageInput) {
-					var byteValue = flow.GetValue<byte[]>(TextInput);
+				if (Display.Supports(DisplayFrameFormat.Segment) && SegmentInput.hasValidConnection) {
+					var byteValue = flow.GetValue<byte[]>(SegmentInput);
 					if (byteValue is { Length: > 0 }) {
 						VsGle.DisplayFrame(new DisplayFrameData(Display.Id, DisplayFrameFormat.Segment, byteValue));
+					}
+				}
+				if (Display.Supports(DisplayFrameFormat.Dmd2) && Dmd2Input.hasValidConnection) {
+					var byteValue = flow.GetValue<byte[]>(Dmd2Input);
+					if (byteValue is { Length: > 0 }) {
+						VsGle.DisplayFrame(new DisplayFrameData(Display.Id, DisplayFrameFormat.Dmd2, byteValue));
+					}
+				}
+				if (Display.Supports(DisplayFrameFormat.Dmd4) && Dmd4Input.hasValidConnection) {
+					var byteValue = flow.GetValue<byte[]>(Dmd4Input);
+					if (byteValue is { Length: > 0 }) {
+						VsGle.DisplayFrame(new DisplayFrameData(Display.Id, DisplayFrameFormat.Dmd4, byteValue));
+					}
+				}
+				if (Display.Supports(DisplayFrameFormat.Dmd8) && Dmd8Input.hasValidConnection) {
+					var byteValue = flow.GetValue<byte[]>(Dmd8Input);
+					if (byteValue is { Length: > 0 }) {
+						VsGle.DisplayFrame(new DisplayFrameData(Display.Id, DisplayFrameFormat.Dmd8, byteValue));
+					}
+				}
+				if (Display.Supports(DisplayFrameFormat.Dmd24) && Dmd24Input.hasValidConnection) {
+					var byteValue = flow.GetValue<byte[]>(Dmd24Input);
+					if (byteValue is { Length: > 0 }) {
+						VsGle.DisplayFrame(new DisplayFrameData(Display.Id, DisplayFrameFormat.Dmd24, byteValue));
 					}
 				}
 			}

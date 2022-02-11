@@ -17,6 +17,7 @@
 // ReSharper disable InconsistentNaming
 
 using System;
+using System.Collections.Generic;
 
 namespace VisualPinball.Unity.VisualScripting
 {
@@ -27,9 +28,14 @@ namespace VisualPinball.Unity.VisualScripting
 		public int Width = 128;
 		public int Height = 32;
 
-		public bool SupportsNumericInput;
-		public bool SupportsTextInput;
-		public bool SupportsImageInput = true;
+		public DisplayFrameFormat[] SupportedFormats = {
+			DisplayFrameFormat.AlphaNumeric
+		};
+
+		public bool Supports(DisplayFrameFormat format)
+		{
+			return SupportedFormats != null && Array.IndexOf(SupportedFormats, format) >= 0;
+		}
 
 		public DisplayConfig DisplayConfig => new(Id, Width, Height);
 	}
