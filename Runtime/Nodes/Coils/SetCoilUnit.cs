@@ -33,19 +33,19 @@ namespace VisualPinball.Unity.VisualScripting
 		[PortLabelHidden]
 		public ControlOutput OutputTrigger;
 
-		[SerializeAs(nameof(idCount))]
-		private int _idCount = 1;
+		[SerializeAs(nameof(itemCount))]
+		private int _itemCount = 1;
 
 		[DoNotSerialize]
 		[Inspectable, UnitHeaderInspectable("Coil IDs")]
-		public int idCount
+		public int itemCount
 		{
-			get => _idCount;
-			set => _idCount = Mathf.Clamp(value, 1, 10);
+			get => _itemCount;
+			set => _itemCount = Mathf.Clamp(value, 1, 10);
 		}
 
 		[DoNotSerialize]
-		public List<ValueInput> Ids { get; private set; }
+		public List<ValueInput> Items { get; private set; }
 
 		[DoNotSerialize]
 		[PortLabel("Value")]
@@ -56,16 +56,16 @@ namespace VisualPinball.Unity.VisualScripting
 			InputTrigger = ControlInput(nameof(InputTrigger), Process);
 			OutputTrigger = ControlOutput(nameof(OutputTrigger));
 
-			Ids = new List<ValueInput>();
+			Items = new List<ValueInput>();
 
-			for (var i = 0; i < idCount; i++) {
-				var id = ValueInput<string>("Coil ID " + (i + 1), string.Empty);
-				Ids.Add(id);
+			for (var i = 0; i < itemCount; i++) {
+				var item = ValueInput($"item{i}", string.Empty);
+				Items.Add(item);
 
-				Requirement(id, InputTrigger);
+				Requirement(item, InputTrigger);
 			}
 
-			IsEnabled = ValueInput<bool>(nameof(IsEnabled), false);
+			IsEnabled = ValueInput(nameof(IsEnabled), false);
 
 			Succession(InputTrigger, OutputTrigger);
 		}
@@ -79,10 +79,10 @@ namespace VisualPinball.Unity.VisualScripting
 
 			var isEnabled = flow.GetValue<bool>(IsEnabled);
 
-			foreach (var id in Ids) {
-				var idValue = flow.GetValue<string>(id);
+			foreach (var item in Items) {
+				var id = flow.GetValue<string>(item);
 
-				Gle.SetCoil(idValue, isEnabled);
+				Gle.SetCoil(id, isEnabled);
 			}
 
 			return OutputTrigger;

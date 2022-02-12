@@ -14,47 +14,27 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
 namespace VisualPinball.Unity.VisualScripting
 {
-	[Serializable]
-	public struct LampIdValue
-	{
-		public string id;
-		public int value;
-
-		public static LampIdValue FromJson(string json)
-		{
-			return JsonUtility.FromJson<LampIdValue>(json);
-		}
-
-		public string ToJson()
-		{
-			return JsonUtility.ToJson(this);
-		}
-
-		public static readonly LampIdValue Empty = new LampIdValue { id = string.Empty, value = 0 };
-	}
-
 	[UnitShortTitle("Switch Lamp")]
 	[UnitTitle("Switch Lamp (ID, match value)")]
 	[UnitSurtitle("Gamelogic Engine")]
 	[UnitCategory("Visual Pinball")]
 	public class SwitchLampUnit : GleUnit
 	{
-		[SerializeAs(nameof(idCount))]
-		private int _idCount = 1;
+		[SerializeAs(nameof(itemCount))]
+		private int _itemCount = 1;
 
 		[DoNotSerialize]
 		[Inspectable, UnitHeaderInspectable("Lamp IDs")]
-		public int idCount
+		public int itemCount
 		{
-			get => _idCount;
-			set => _idCount = Mathf.Clamp(value, 1, 10);
+			get => _itemCount;
+			set => _itemCount = Mathf.Clamp(value, 1, 10);
 		}
 
 		[DoNotSerialize]
@@ -83,8 +63,8 @@ namespace VisualPinball.Unity.VisualScripting
 
 			Items = new List<ValueInput>();
 
-			for (var i = 0; i < idCount; i++) {
-				var item = ValueInput($"item{i + 1}", LampIdValue.Empty.ToJson());
+			for (var i = 0; i < itemCount; i++) {
+				var item = ValueInput($"item{i}", LampIdValue.Empty.ToJson());
 				Items.Add(item);
 
 				Requirement(item, InputTrigger);
@@ -111,8 +91,8 @@ namespace VisualPinball.Unity.VisualScripting
 					_lampIdValueCache[json.GetHashCode()] = LampIdValue.FromJson(json);
 				}
 
-				var obj = _lampIdValueCache[json.GetHashCode()];
-				Gle.SetLamp(obj.id, obj.value == value ? 255f : 0f);
+				var lampIdValue = _lampIdValueCache[json.GetHashCode()];
+				Gle.SetLamp(lampIdValue.id, lampIdValue.value == value ? 255f : 0f);
 			}
 
 			return OutputTrigger;

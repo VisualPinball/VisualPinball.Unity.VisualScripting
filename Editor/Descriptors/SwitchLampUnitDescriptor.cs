@@ -49,10 +49,10 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 				var match = new Regex("^(item)([0-9]+)$").Match(port.key);
 
 				if (match.Success) {
-					var id = int.Parse(match.Groups[2].Value);
+					var id = int.Parse(match.Groups[2].Value) + 1;
 
 					desc.label = $"Lamp ID {id}";
-					desc.summary = "Lamp ID to enable if specified Value matches source Value, or disable if specified Value does not match source Value";
+					desc.summary = $"Lamp ID {id} to enable if specified Value matches source Value, or disable if specified Value does not match source Value";
 				}
 			}
 		}

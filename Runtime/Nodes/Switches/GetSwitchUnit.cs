@@ -25,19 +25,19 @@ namespace VisualPinball.Unity.VisualScripting
 	[UnitCategory("Visual Pinball")]
 	public class GetSwitchUnit : GleUnit
 	{
-		[SerializeAs(nameof(idCount))]
-		private int _idCount = 1;
+		[SerializeAs(nameof(itemCount))]
+		private int _itemCount = 1;
 
 		[DoNotSerialize]
 		[Inspectable, UnitHeaderInspectable("Switch IDs")]
-		public int idCount
+		public int itemCount
 		{
-			get => _idCount;
-			set => _idCount = Mathf.Clamp(value, 1, 10);
+			get => _itemCount;
+			set => _itemCount = Mathf.Clamp(value, 1, 10);
 		}
 
 		[DoNotSerialize]
-		public List<ValueInput> Ids { get; private set; }
+		public List<ValueInput> Items { get; private set; }
 
 		[DoNotSerialize]
 		[PortLabel("Is Enabled")]
@@ -45,11 +45,11 @@ namespace VisualPinball.Unity.VisualScripting
 
 		protected override void Definition()
 		{
-			Ids = new List<ValueInput>();
+			Items = new List<ValueInput>();
 
-			for (var i = 0; i < idCount; i++) {
-				var id = ValueInput<string>("Switch ID " + (i + 1), string.Empty);
-				Ids.Add(id);
+			for (var i = 0; i < itemCount; i++) {
+				var item = ValueInput($"item{i}", string.Empty);
+				Items.Add(item);
 			}
 
 			IsEnabled = ValueOutput(nameof(IsEnabled), GetEnabled);
@@ -62,8 +62,8 @@ namespace VisualPinball.Unity.VisualScripting
 				return false;
 			}
 
-			foreach (var id in Ids) {
-				if (!Gle.GetSwitch(flow.GetValue<string>(id))) {
+			foreach (var item in Items) {
+				if (!Gle.GetSwitch(flow.GetValue<string>(item))) {
 					return false;
 				} 
 			}

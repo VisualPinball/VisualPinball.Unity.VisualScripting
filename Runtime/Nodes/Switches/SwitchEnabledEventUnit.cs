@@ -25,19 +25,19 @@ namespace VisualPinball.Unity.VisualScripting
 	[UnitCategory("Events\\Visual Pinball")]
 	public class SwitchEnabledEventUnit : GleEventUnit<SwitchEventArgs2>
 	{
-		[SerializeAs(nameof(idCount))]
-		private int _idCount = 1;
+		[SerializeAs(nameof(itemCount))]
+		private int _itemCount = 1;
 
 		[DoNotSerialize]
 		[Inspectable, UnitHeaderInspectable("Switch IDs")]
-		public int idCount
+		public int itemCount
 		{
-			get => _idCount;
-			set => _idCount = Mathf.Clamp(value, 1, 10);
+			get => _itemCount;
+			set => _itemCount = Mathf.Clamp(value, 1, 10);
 		}
 
 		[DoNotSerialize]
-		public List<ValueInput> Ids { get; private set; }
+		public List<ValueInput> Items { get; private set; }
 
 		[DoNotSerialize]
 		protected override bool register => true;
@@ -49,18 +49,18 @@ namespace VisualPinball.Unity.VisualScripting
 		{
 			base.Definition();
 
-			Ids = new List<ValueInput>();
+			Items = new List<ValueInput>();
 
-			for (var i = 0; i < idCount; i++) {
-				var id = ValueInput<string>("Switch ID " + (i + 1), string.Empty);
-				Ids.Add(id);
+			for (var i = 0; i < itemCount; i++) {
+				var item = ValueInput($"item{i}", string.Empty);
+				Items.Add(item);
 			}
 		}
 
 		protected override bool ShouldTrigger(Flow flow, SwitchEventArgs2 args)
 		{
-			foreach(var id in Ids) {
-				if (flow.GetValue<string>(id) == args.Id && args.IsEnabled) {
+			foreach(var item in Items) {
+				if (flow.GetValue<string>(item) == args.Id && args.IsEnabled) {
 					return true;
 				}
 			}

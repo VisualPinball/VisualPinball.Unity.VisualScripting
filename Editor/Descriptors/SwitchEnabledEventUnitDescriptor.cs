@@ -16,6 +16,7 @@
 
 // ReSharper disable UnusedType.Global
 
+using System.Text.RegularExpressions;
 using Unity.VisualScripting;
 
 namespace VisualPinball.Unity.VisualScripting.Editor
@@ -38,10 +39,13 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 		{
 			base.DefinedPort(port, desc);
 
-			switch (port.key) {
-				case nameof(SwitchEnabledEventUnit.Ids):
-					desc.summary = "The IDs of the switches for which to look for enabled status.";
-					break;
+			var match = new Regex("^(item)([0-9]+)$").Match(port.key);
+
+			if (match.Success) {
+				var id = int.Parse(match.Groups[2].Value) + 1;
+
+				desc.label = $"Switch ID {id}";
+				desc.summary = $"Switch ID {id} to look for enabled status.";
 			}
 		}
 	}

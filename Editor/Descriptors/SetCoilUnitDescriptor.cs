@@ -16,6 +16,7 @@
 
 // ReSharper disable UnusedType.Global
 
+using System.Text.RegularExpressions;
 using Unity.VisualScripting;
 using VisualPinball.Unity.Editor;
 
@@ -43,13 +44,18 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 		{
 			base.DefinedPort(port, desc);
 
-			switch (port.key) {
-				case nameof(SetCoilUnit.Ids):
-					desc.summary = "The IDs of the coils to be set.";
-					break;
-				case nameof(SetCoilUnit.IsEnabled):
-					desc.summary = "The value to assign to the coils.";
-					break;
+			if (port.key == nameof(SetCoilUnit.IsEnabled)) {
+				desc.summary = "The value to assign to the coils.";
+			}
+			else {
+				var match = new Regex("^(item)([0-9]+)$").Match(port.key);
+
+				if (match.Success) {
+					var id = int.Parse(match.Groups[2].Value) + 1;
+
+					desc.label = $"Coil ID {id}";
+					desc.summary = $"Coil ID {id} of the coil to be set.";
+				}
 			}
 		}
 	}
