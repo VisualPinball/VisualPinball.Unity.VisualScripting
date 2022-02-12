@@ -15,8 +15,9 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 using System;
+using System.Linq;
+using NLog;
 using Unity.VisualScripting;
-using UnityEngine;
 
 namespace VisualPinball.Unity.VisualScripting
 {
@@ -25,6 +26,9 @@ namespace VisualPinball.Unity.VisualScripting
 	[UnitCategory("Visual Pinball/Variables")]
 	public class ChangePlayerStateUnit : GleUnit
 	{
+		[Serialize, Inspectable, UnitHeaderInspectable("Next Player")]
+		public bool NextPlayer { get; set; }
+
 		[DoNotSerialize]
 		[PortLabelHidden]
 		public ControlInput InputTrigger;
@@ -37,14 +41,18 @@ namespace VisualPinball.Unity.VisualScripting
 		[PortLabel("Player ID")]
 		public ValueInput PlayerId { get; private set; }
 
+		private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
 		protected override void Definition()
 		{
-			PlayerId = ValueInput(nameof(PlayerId), 0);
-
 			InputTrigger = ControlInput(nameof(InputTrigger), Process);
 			OutputTrigger = ControlOutput(nameof(OutputTrigger));
 
-			Requirement(PlayerId, InputTrigger);
+			if (!NextPlayer) {
+				PlayerId = ValueInput(nameof(PlayerId), 0);
+				Requirement(PlayerId, InputTrigger);
+			}
+
 			Succession(InputTrigger, OutputTrigger);
 		}
 
@@ -54,7 +62,24 @@ namespace VisualPinball.Unity.VisualScripting
 				throw new InvalidOperationException("Cannot retrieve GLE from unit.");
 			}
 
-			VsGle.SetCurrentPlayer(flow.GetValue<int>(PlayerId));
+			int playerId;
+			if (NextPlayer) {
+				var lastPlayer = VsGle.PlayerStates.Keys.Max();
+				if (VsGle.CurrentPlayerState.Id == lastPlayer) {
+					playerId = VsGle.PlayerStates.Keys.Min();
+
+				} else if (VsGle.PlayerStates.ContainsKey(VsGle.CurrentPlayerState.Id + 1)) {
+					playerId = VsGle.CurrentPlayerState.Id + 1;
+
+				} else {
+					Logger.Warn($"Non-existent next player {VsGle.CurrentPlayerState.Id + 1}.");
+					playerId = VsGle.CurrentPlayerState.Id;
+				}
+			} else {
+				playerId = flow.GetValue<int>(PlayerId);
+			}
+
+			VsGle.SetCurrentPlayer(playerId);
 
 			return OutputTrigger;
 		}
