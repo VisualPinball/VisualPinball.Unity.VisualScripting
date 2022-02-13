@@ -25,7 +25,19 @@ namespace VisualPinball.Unity.VisualScripting
 		public List<string> Errors { get; } = new();
 
 		[DoNotSerialize]
+		protected IGamelogicEngine Gle;
+
+		[DoNotSerialize]
 		protected VisualScriptingGamelogicEngine VsGle;
+
+		protected bool AssertGle(Flow flow)
+		{
+			if (!Gle.IsUnityNull()) {
+				return true;
+			}
+			Gle = flow.stack.gameObject.GetComponentInParent<IGamelogicEngine>();
+			return Gle != null;
+		}
 
 		protected bool AssertVsGle(Flow flow)
 		{
