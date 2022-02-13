@@ -39,7 +39,10 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 			base.DefinedPort(port, desc);
 
 			switch (port.key) {
-				case nameof(PlayerVariableChangedEventUnit.Value):
+				case nameof(PlayerVariableChangedEventUnit.OldValue):
+					desc.summary = "The previous value of the player variable.";
+					break;
+				case nameof(PlayerVariableChangedEventUnit.NewValue):
 					desc.summary = "The new value of the player variable.";
 					break;
 			}
@@ -66,7 +69,10 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 			base.DefinedPort(port, desc);
 
 			switch (port.key) {
-				case nameof(TableVariableChangedEventUnit.Value):
+				case nameof(TableVariableChangedEventUnit.OldValue):
+					desc.summary = "The previous value of the table variable.";
+					break;
+				case nameof(TableVariableChangedEventUnit.NewValue):
 					desc.summary = "The new value of the table variable.";
 					break;
 			}

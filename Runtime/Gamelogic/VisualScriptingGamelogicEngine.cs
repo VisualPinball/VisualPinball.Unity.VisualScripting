@@ -104,15 +104,15 @@ namespace VisualPinball.Unity.VisualScripting
 
 			// also trigger updates for each variable
 			foreach (var varDef in PlayerVariableDefinitions) {
+				var before = PlayerStates[previousPlayer].GetVariable(varDef.Id);
+				var now = PlayerStates[_currentPlayer].GetVariable(varDef.Id);
 				if (PlayerStates.ContainsKey(previousPlayer)) {
-					var before = PlayerStates[previousPlayer].GetVariable(varDef.Id);
-					var now = PlayerStates[_currentPlayer].GetVariable(varDef.Id);
 					if (forceNotify || before != now) {
-						EventBus.Trigger(VisualScriptingEventNames.PlayerVariableChanged, new VariableChangedArgs(varDef.Id));
+						EventBus.Trigger(VisualScriptingEventNames.PlayerVariableChanged, new VariableChangedArgs(varDef.Id, before.Get<object>(), now.Get<object>()));
 					}
 
 				} else {
-					EventBus.Trigger(VisualScriptingEventNames.PlayerVariableChanged, new VariableChangedArgs(varDef.Id));
+					EventBus.Trigger(VisualScriptingEventNames.PlayerVariableChanged, new VariableChangedArgs(varDef.Id, before.Get<object>(), now.Get<object>()));
 				}
 			}
 		}

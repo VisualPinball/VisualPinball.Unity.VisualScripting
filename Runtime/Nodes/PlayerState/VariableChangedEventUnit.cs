@@ -47,8 +47,11 @@ namespace VisualPinball.Unity.VisualScripting
 
 	public abstract class VariableChangedEventUnit : GleEventUnit<VariableChangedArgs>
 	{
-		[DoNotSerialize, PortLabel("Value"), Inspectable]
-		public ValueOutput Value { get; private set; }
+		[DoNotSerialize, PortLabel("Old Value"), Inspectable]
+		public ValueOutput OldValue { get; private set; }
+
+		[DoNotSerialize, PortLabel("New Value"), Inspectable]
+		public ValueOutput NewValue { get; private set; }
 
 		public override EventHook GetHook(GraphReference reference) => new(EventHookName);
 		protected override bool register => true;
@@ -65,11 +68,19 @@ namespace VisualPinball.Unity.VisualScripting
 				return;
 			}
 
-			Value = VariableDefinition.Type switch {
-				VariableType.String => ValueOutput<string>(nameof(Value)),
-				VariableType.Integer => ValueOutput<int>(nameof(Value)),
-				VariableType.Float => ValueOutput<float>(nameof(Value)),
-				VariableType.Boolean => ValueOutput<bool>(nameof(Value)),
+			OldValue = VariableDefinition.Type switch {
+				VariableType.String => ValueOutput<string>(nameof(OldValue)),
+				VariableType.Integer => ValueOutput<int>(nameof(OldValue)),
+				VariableType.Float => ValueOutput<float>(nameof(OldValue)),
+				VariableType.Boolean => ValueOutput<bool>(nameof(OldValue)),
+				_ => throw new ArgumentOutOfRangeException()
+			};
+
+			NewValue = VariableDefinition.Type switch {
+				VariableType.String => ValueOutput<string>(nameof(NewValue)),
+				VariableType.Integer => ValueOutput<int>(nameof(NewValue)),
+				VariableType.Float => ValueOutput<float>(nameof(NewValue)),
+				VariableType.Boolean => ValueOutput<bool>(nameof(NewValue)),
 				_ => throw new ArgumentOutOfRangeException()
 			};
 		}
@@ -87,16 +98,20 @@ namespace VisualPinball.Unity.VisualScripting
 
 			switch (VariableDefinition.Type) {
 				case VariableType.String:
-					flow.SetValue(Value,  State.Get<string>(VariableDefinition.Id));
+					flow.SetValue(OldValue,  (string)args.OldValue);
+					flow.SetValue(NewValue,  (string)args.NewValue);
 					break;
 				case VariableType.Integer:
-					flow.SetValue(Value,  (int)State.Get<Integer>(VariableDefinition.Id));
+					flow.SetValue(OldValue,  (int)(Integer)args.OldValue);
+					flow.SetValue(NewValue, (int)(Integer)args.NewValue);
 					break;
 				case VariableType.Float:
-					flow.SetValue(Value,  (float)State.Get<Float>(VariableDefinition.Id));
+					flow.SetValue(OldValue,  (float)(Float)args.OldValue);
+					flow.SetValue(NewValue,  (float)(Float)args.NewValue);
 					break;
 				case VariableType.Boolean:
-					flow.SetValue(Value,  (bool)State.Get<Bool>(VariableDefinition.Id));
+					flow.SetValue(OldValue,  (bool)(Bool)args.OldValue);
+					flow.SetValue(NewValue,  (bool)(Bool)args.NewValue);
 					break;
 				default:
 					throw new ArgumentOutOfRangeException();

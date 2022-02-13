@@ -100,7 +100,7 @@ namespace VisualPinball.Unity.VisualScripting
 			if (currentValue != value) {
 				EventBus.Trigger(
 					VariableChangedEventName,
-					new VariableChangedArgs(variableId)
+					new VariableChangedArgs(variableId, currentValue, value)
 				);
 			}
 		}
@@ -157,9 +157,14 @@ namespace VisualPinball.Unity.VisualScripting
 	{
 		public readonly string VariableId;
 
-		public VariableChangedArgs(string variableId)
+		public readonly object OldValue;
+		public readonly object NewValue;
+
+		public VariableChangedArgs(string variableId, object oldValue, object newValue)
 		{
 			VariableId = variableId;
+			OldValue = oldValue;
+			NewValue = newValue;
 		}
 	}
 }
