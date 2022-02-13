@@ -74,13 +74,17 @@ namespace VisualPinball.Unity.VisualScripting
 			Value = VariableDefinition.Type switch {
 				VariableType.Integer => ValueInput<int>(nameof(Value), 0),
 				VariableType.Float => ValueInput<float>(nameof(Value), 0f),
-				_ => throw new ArgumentOutOfRangeException($"Type must be integer or float.")
+				VariableType.Boolean => ValueInput<bool>(nameof(Value), false),
+				VariableType.String => ValueInput<string>(nameof(Value), string.Empty),
+				_ => throw new ArgumentOutOfRangeException()
 			};
 
 			OutputValue = VariableDefinition.Type switch {
 				VariableType.Integer => ValueOutput<int>(nameof(Value)),
 				VariableType.Float => ValueOutput<float>(nameof(Value)),
-				_ => throw new ArgumentOutOfRangeException($"Type must be integer or float.")
+				VariableType.Boolean => ValueOutput<bool>(nameof(Value)),
+				VariableType.String => ValueOutput<string>(nameof(Value)),
+				_ => throw new ArgumentOutOfRangeException()
 			};
 			Requirement(Value, InputTrigger);
 		}
@@ -104,8 +108,23 @@ namespace VisualPinball.Unity.VisualScripting
 					flow.SetValue(OutputValue, current + flow.GetValue<float>(Value));
 					break;
 				}
+				case VariableType.Boolean: {
+					if (flow.GetValue<bool>(Value)) {
+						var current = (bool)State.Get<Bool>(VariableDefinition.Id);
+						State.Set(VariableDefinition.Id, new Bool(!current));
+						flow.SetValue(OutputValue, !current);
+					}
+					break;
+				}
+				case VariableType.String: {
+					var current = State.Get<string>(VariableDefinition.Id);
+					var next = current + flow.GetValue<string>(Value);
+					State.Set(VariableDefinition.Id, next);
+					flow.SetValue(OutputValue, next);
+					break;
+				}
 				default:
-					throw new ArgumentOutOfRangeException($"Type must be integer or float.");
+					throw new ArgumentOutOfRangeException();
 			}
 
 			return OutputTrigger;
