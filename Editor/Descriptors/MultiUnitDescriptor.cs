@@ -16,21 +16,10 @@
 
 // ReSharper disable UnusedType.Global
 
-using System.Text.RegularExpressions;
 using Unity.VisualScripting;
 
 namespace VisualPinball.Unity.VisualScripting.Editor
 {
-	[Descriptor(typeof(AllSwitchesEnabledEventUnit))]
-	public class AllSwitchesEnabledEventUnitDescriptor : MultiUnitDescriptor<AllSwitchesEnabledEventUnit>
-	{
-		public AllSwitchesEnabledEventUnitDescriptor(AllSwitchesEnabledEventUnit target) : base(target) { }
-		protected override string ItemLabel(int id) => $"Switch ID {id}";
-		protected override string ItemDescription(int id) => $"Switch ID {id} to look for enabled status.";
-		protected override string DefinedSummary() => "This node triggers an event when the last switch in the list gets enabled.";
-		protected override EditorTexture DefinedIcon() => EditorTexture.Single(Unity.Editor.Icons.SwitchEvent);
-	}
-
 	public abstract class MultiUnitDescriptor<TUnit> : UnitDescriptor<TUnit> where TUnit : class, IUnit
 	{
 		protected abstract string ItemLabel(int id);
@@ -43,9 +32,10 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 		protected override void DefinedPort(IUnitPort port, UnitPortDescription desc)
 		{
 			base.DefinedPort(port, desc);
-			var match = new Regex("^(item)([0-9]+)$").Match(port.key);
-			if (match.Success) {
-				var id = int.Parse(match.Groups[2].Value) + 1;
+
+			if (int.TryParse(port.key, out int id)) {
+				id += 1;
+
 				desc.label = ItemLabel(id);
 				desc.summary = ItemDescription(id);
 			}

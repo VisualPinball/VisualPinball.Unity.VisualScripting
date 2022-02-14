@@ -25,15 +25,15 @@ namespace VisualPinball.Unity.VisualScripting
 	[UnitCategory("Events\\Visual Pinball")]
 	public class SwitchEnabledEventUnit : GleEventUnit<SwitchEventArgs2>
 	{
-		[SerializeAs(nameof(itemCount))]
-		private int _itemCount = 1;
+		[SerializeAs(nameof(inputCount))]
+		private int _inputCount = 1;
 
 		[DoNotSerialize]
 		[Inspectable, UnitHeaderInspectable("Switch IDs")]
-		public int itemCount
+		public int inputCount
 		{
-			get => _itemCount;
-			set => _itemCount = Mathf.Clamp(value, 1, 10);
+			get => _inputCount;
+			set => _inputCount = Mathf.Clamp(value, 1, 10);
 		}
 
 		[DoNotSerialize]
@@ -51,8 +51,8 @@ namespace VisualPinball.Unity.VisualScripting
 
 			Items = new List<ValueInput>();
 
-			for (var i = 0; i < itemCount; i++) {
-				var item = ValueInput($"item{i}", string.Empty);
+			for (var i = 0; i < inputCount; i++) {
+				var item = ValueInput(i.ToString(), string.Empty);
 				Items.Add(item);
 			}
 		}

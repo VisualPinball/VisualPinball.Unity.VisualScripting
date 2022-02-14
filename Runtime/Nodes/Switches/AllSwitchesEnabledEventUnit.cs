@@ -27,14 +27,14 @@ namespace VisualPinball.Unity.VisualScripting
 	public class AllSwitchesEnabledEventUnit : GleEventUnit<SwitchEventArgs2>, IMultiInputUnit
 	{
 		[SerializeAs(nameof(inputCount))]
-		private int _itemCount = 1;
+		private int _inputCount = 1;
 
 		[DoNotSerialize]
 		[Inspectable, UnitHeaderInspectable("Switch IDs")]
 		public int inputCount
 		{
-			get => _itemCount;
-			set => _itemCount = Mathf.Clamp(value, 1, 10);
+			get => _inputCount;
+			set => _inputCount = Mathf.Clamp(value, 1, 10);
 		}
 
 		[DoNotSerialize]
@@ -49,13 +49,13 @@ namespace VisualPinball.Unity.VisualScripting
 		{
 			base.Definition();
 
-			var list = new List<ValueInput>();
-			for (var i = 0; i < inputCount; i++) {
-				var item = ValueInput($"item{i}", string.Empty);
-				list.Add(item);
-			}
+			var _multiInputs = new List<ValueInput>();
 
-			multiInputs = new ReadOnlyCollection<ValueInput>(list);
+			multiInputs = _multiInputs.AsReadOnly();
+
+			for (var i = 0; i < inputCount; i++) {
+				_multiInputs.Add(ValueInput(i.ToString(), string.Empty));
+			}
 		}
 
 		protected override bool ShouldTrigger(Flow flow, SwitchEventArgs2 args)

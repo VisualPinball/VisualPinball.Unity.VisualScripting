@@ -35,13 +35,13 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 
 		public override Inspector GetPortInspector(IUnitPort port, Metadata meta)
 		{
-			if (_lampIdInspectorConstructorList.Count() < unit.itemCount) {
-				for (var index = 0; index < unit.itemCount - _lampIdInspectorConstructorList.Count(); index++) {
+			if (_lampIdInspectorConstructorList.Count() < unit.inputCount) {
+				for (var index = 0; index < unit.inputCount - _lampIdInspectorConstructorList.Count(); index++) {
 					_lampIdInspectorConstructorList.Add(meta => new LampIdValueInspector(meta, GetNameSuggestions));
 				}
 			}
 
-			for (var index = 0; index < unit.itemCount; index++) {
+			for (var index = 0; index < unit.inputCount; index++) {
 				if (unit.Items[index] == port) {
 					LampIdValueInspector lampIdInspector = new LampIdValueInspector(meta, GetNameSuggestions);
 					InspectorProvider.instance.Renew(ref lampIdInspector, meta, _lampIdInspectorConstructorList[index]);

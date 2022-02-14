@@ -16,7 +16,6 @@
 
 // ReSharper disable UnusedType.Global
 
-using System.Text.RegularExpressions;
 using Unity.VisualScripting;
 using VisualPinball.Unity.Editor;
 
@@ -47,15 +46,11 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 			if (port.key == nameof(PulseCoilUnit.PulseDuration)) {
 				desc.summary = "The time in milliseconds until the coils are disabled again.";
 			}
-			else {
-				var match = new Regex("^(item)([0-9]+)$").Match(port.key);
+			else if (int.TryParse(port.key, out int id)) {
+				id += 1;
 
-				if (match.Success) {
-					var id = int.Parse(match.Groups[2].Value) + 1;
-
-					desc.label = $"Coil ID {id}";
-					desc.summary = $"Coil ID {id} of the coil to be pulsed.";
-				}
+				desc.label = $"Coil ID {id}";
+				desc.summary = $"Coil ID {id} of the coil to be pulsed.";
 			}
 		}
 	}

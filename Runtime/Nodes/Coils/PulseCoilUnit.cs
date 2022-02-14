@@ -33,15 +33,15 @@ namespace VisualPinball.Unity.VisualScripting
 		[PortLabelHidden]
 		public ControlOutput OutputTrigger;
 
-		[SerializeAs(nameof(itemCount))]
-		private int _itemCount = 1;
+		[SerializeAs(nameof(inputCount))]
+		private int _inputCount = 1;
 
 		[DoNotSerialize]
 		[Inspectable, UnitHeaderInspectable("Coil IDs")]
-		public int itemCount
+		public int inputCount
 		{
-			get => _itemCount;
-			set => _itemCount = Mathf.Clamp(value, 1, 10);
+			get => _inputCount;
+			set => _inputCount = Mathf.Clamp(value, 1, 10);
 		}
 
 		[DoNotSerialize]
@@ -58,8 +58,8 @@ namespace VisualPinball.Unity.VisualScripting
 
 			Items = new List<ValueInput>();
 
-			for (var i = 0; i < itemCount; i++) {
-				var item = ValueInput($"item{i}", string.Empty);
+			for (var i = 0; i < inputCount; i++) {
+				var item = ValueInput(i.ToString(), string.Empty);
 				Items.Add(item);
 
 				Requirement(item, InputTrigger);

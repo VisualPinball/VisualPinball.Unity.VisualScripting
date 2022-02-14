@@ -26,15 +26,15 @@ namespace VisualPinball.Unity.VisualScripting
 	[UnitCategory("Visual Pinball")]
 	public class SwitchLampUnit : GleUnit
 	{
-		[SerializeAs(nameof(itemCount))]
-		private int _itemCount = 1;
+		[SerializeAs(nameof(inputCount))]
+		private int _inputCount = 1;
 
 		[DoNotSerialize]
 		[Inspectable, UnitHeaderInspectable("Lamp IDs")]
-		public int itemCount
+		public int inputCount
 		{
-			get => _itemCount;
-			set => _itemCount = Mathf.Clamp(value, 1, 10);
+			get => _inputCount;
+			set => _inputCount = Mathf.Clamp(value, 1, 10);
 		}
 
 		[DoNotSerialize]
@@ -63,8 +63,8 @@ namespace VisualPinball.Unity.VisualScripting
 
 			Items = new List<ValueInput>();
 
-			for (var i = 0; i < itemCount; i++) {
-				var item = ValueInput($"item{i}", LampIdValue.Empty.ToJson());
+			for (var i = 0; i < inputCount; i++) {
+				var item = ValueInput(i.ToString(), LampIdValue.Empty.ToJson());
 				Items.Add(item);
 
 				Requirement(item, InputTrigger);

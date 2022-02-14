@@ -20,30 +20,13 @@ using Unity.VisualScripting;
 
 namespace VisualPinball.Unity.VisualScripting.Editor
 {
-	[Descriptor(typeof(SwitchEnabledEventUnit))]
-	public class SwitchEnabledEventUnitDescriptor : UnitDescriptor<SwitchEnabledEventUnit>
+	[Descriptor(typeof(AllSwitchesEnabledEventUnit))]
+	public class AllSwitchesEnabledEventUnitDescriptor : MultiUnitDescriptor<AllSwitchesEnabledEventUnit>
 	{
-		public SwitchEnabledEventUnitDescriptor(SwitchEnabledEventUnit target) : base(target)
-		{
-		}
-
-		protected override string DefinedSummary()
-		{
-			return "This node triggers an event when a switch in the list of given ID is enabled.";
-		}
-
+		public AllSwitchesEnabledEventUnitDescriptor(AllSwitchesEnabledEventUnit target) : base(target) { }
+		protected override string ItemLabel(int id) => $"Switch ID {id}";
+		protected override string ItemDescription(int id) => $"Switch ID {id} to look for enabled status.";
+		protected override string DefinedSummary() => "This node triggers an event when the last switch in the list gets enabled.";
 		protected override EditorTexture DefinedIcon() => EditorTexture.Single(Unity.Editor.Icons.SwitchEvent);
-
-		protected override void DefinedPort(IUnitPort port, UnitPortDescription desc)
-		{
-			base.DefinedPort(port, desc);
-
-			if (int.TryParse(port.key, out int id)) {
-				id += 1;
-
-				desc.label = $"Switch ID {id}";
-				desc.summary = $"Switch ID {id} to look for enabled status.";
-			}
-		}
 	}
 }

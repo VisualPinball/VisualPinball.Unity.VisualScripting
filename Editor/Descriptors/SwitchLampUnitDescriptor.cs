@@ -16,8 +16,6 @@
 
 // ReSharper disable UnusedType.Global
 
-using System;
-using System.Text.RegularExpressions;
 using Unity.VisualScripting;
 using VisualPinball.Unity.Editor;
 using IconSize = VisualPinball.Unity.Editor.IconSize;
@@ -45,15 +43,11 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 			if (port.key == nameof(SwitchLampUnit.SourceValue)) {
 				desc.summary = "Source value to use for matching";
 			}
-			else {
-				var match = new Regex("^(item)([0-9]+)$").Match(port.key);
+			else if (int.TryParse(port.key, out int id)) {
+				id += 1;
 
-				if (match.Success) {
-					var id = int.Parse(match.Groups[2].Value) + 1;
-
-					desc.label = $"Lamp ID {id}";
-					desc.summary = $"Lamp ID {id} to enable if specified Value matches source Value, or disable if specified Value does not match source Value";
-				}
+				desc.label = $"Lamp ID {id}";
+				desc.summary = $"Lamp ID {id} to enable if specified Value matches source Value, or disable if specified Value does not match source Value";
 			}
 		}
 	}
