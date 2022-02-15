@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -25,19 +24,9 @@ namespace VisualPinball.Unity.VisualScripting
 	[UnitCategory("Visual Pinball")]
 	public class GetSwitchUnit : GleUnit
 	{
-		[SerializeAs(nameof(inputCount))]
-		private int _inputCount = 1;
-
 		[DoNotSerialize]
-		[Inspectable, UnitHeaderInspectable("Switch IDs")]
-		public int inputCount
-		{
-			get => _inputCount;
-			set => _inputCount = Mathf.Clamp(value, 1, 10);
-		}
-
-		[DoNotSerialize]
-		public List<ValueInput> Items { get; private set; }
+		[PortLabel("Switch ID")]
+		public ValueInput Id { get; private set; }
 
 		[DoNotSerialize]
 		[PortLabel("Is Enabled")]
@@ -45,13 +34,7 @@ namespace VisualPinball.Unity.VisualScripting
 
 		protected override void Definition()
 		{
-			Items = new List<ValueInput>();
-
-			for (var i = 0; i < inputCount; i++) {
-				var item = ValueInput(i.ToString(), string.Empty);
-				Items.Add(item);
-			}
-
+			Id = ValueInput(nameof(Id), string.Empty);
 			IsEnabled = ValueOutput(nameof(IsEnabled), GetEnabled);
 		}
 
@@ -62,13 +45,7 @@ namespace VisualPinball.Unity.VisualScripting
 				return false;
 			}
 
-			foreach (var item in Items) {
-				if (!Gle.GetSwitch(flow.GetValue<string>(item))) {
-					return false;
-				} 
-			}
-
-			return true;
+			return Gle.GetSwitch(flow.GetValue<string>(Id));
 		}
 	}
 }

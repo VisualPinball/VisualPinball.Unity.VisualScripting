@@ -14,18 +14,31 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Unity.VisualScripting;
+using UnityEngine;
 
 namespace VisualPinball.Unity.VisualScripting
 {
 	[UnitTitle("On Lamp Changed")]
 	[UnitSurtitle("Gamelogic Engine")]
 	[UnitCategory("Events\\Visual Pinball")]
-	public sealed class LampEventUnit : GleEventUnit<LampEventArgs>
+	public sealed class LampEventUnit : GleEventUnit<LampEventArgs>, IMultiInputUnit
 	{
+		[SerializeAs(nameof(inputCount))]
+		private int _inputCount = 1;
+
 		[DoNotSerialize]
-		[PortLabel("Lamp ID")]
-		public ValueInput Id { get; private set; }
+		[Inspectable, UnitHeaderInspectable("Lamp IDs")]
+		public int inputCount
+		{
+			get => _inputCount;
+			set => _inputCount = Mathf.Clamp(value, 1, 10);
+		}
+
+		[DoNotSerialize]
+		public ReadOnlyCollection<ValueInput> multiInputs { get; private set; }
 
 		[DoNotSerialize]
 		[PortLabel("Intensity")]
@@ -46,21 +59,33 @@ namespace VisualPinball.Unity.VisualScripting
 		{
 			base.Definition();
 
-			Id = ValueInput(nameof(Id), string.Empty);
+			var _multiInputs = new List<ValueInput>();
+
+			multiInputs = _multiInputs.AsReadOnly();
+
+			for (var i = 0; i < inputCount; i++) {
+				_multiInputs.Add(ValueInput(i.ToString(), string.Empty));
+			}
 
 			Value = ValueOutput<float>(nameof(Value));
 			IsEnabled = ValueOutput<bool>(nameof(IsEnabled));
+		}
+
+		protected override bool ShouldTrigger(Flow flow, LampEventArgs args)
+		{
+			foreach (var input in multiInputs) {
+				if (flow.GetValue<string>(input) == args.Id) {
+					return true;
+				}
+			}
+
+			return false;
 		}
 
 		protected override void AssignArguments(Flow flow, LampEventArgs args)
 		{
 			flow.SetValue(Value, args.Value);
 			flow.SetValue(IsEnabled, args.Value > 0);
-		}
-
-		protected override bool ShouldTrigger(Flow flow, LampEventArgs args)
-		{
-			return args.Id == flow.GetValue<string>(Id);
 		}
 	}
 }

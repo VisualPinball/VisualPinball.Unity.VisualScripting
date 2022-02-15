@@ -26,20 +26,32 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 	[Widget(typeof(LampEventUnit))]
 	public sealed class LampEventUnitWidget : GleUnitWidget<LampEventUnit>
 	{
+		private readonly List<Func<Metadata, VariableNameInspector>> _lampIdInspectorConstructorList;
+
 		public LampEventUnitWidget(FlowCanvas canvas, LampEventUnit unit) : base(canvas, unit)
 		{
-			_lampIdInspectorConstructor = meta => new VariableNameInspector(meta, GetNameSuggestions);
+			_lampIdInspectorConstructorList = new List<Func<Metadata, VariableNameInspector>>();
 		}
-
-		private VariableNameInspector _lampIdInspector;
-		private readonly Func<Metadata, VariableNameInspector> _lampIdInspectorConstructor;
 
 		public override Inspector GetPortInspector(IUnitPort port, Metadata meta)
 		{
-			if (port == unit.Id) {
-				InspectorProvider.instance.Renew(ref _lampIdInspector, meta, _lampIdInspectorConstructor);
+			if (_lampIdInspectorConstructorList.Count() < unit.inputCount)
+			{
+				for (var index = 0; index < unit.inputCount - _lampIdInspectorConstructorList.Count(); index++)
+				{
+					_lampIdInspectorConstructorList.Add(meta => new VariableNameInspector(meta, GetNameSuggestions));
+				}
+			}
 
-				return _lampIdInspector;
+			for (var index = 0; index < unit.inputCount; index++)
+			{
+				if (unit.multiInputs[index] == port)
+				{
+					VariableNameInspector lampIdInspector = new VariableNameInspector(meta, GetNameSuggestions);
+					InspectorProvider.instance.Renew(ref lampIdInspector, meta, _lampIdInspectorConstructorList[index]);
+
+					return lampIdInspector;
+				}
 			}
 
 			return base.GetPortInspector(port, meta);
@@ -50,7 +62,6 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 			return !GleAvailable
 				? new List<string>()
 				: Gle.RequestedLamps.Select(lamp => lamp.Id).ToList();
-
 		}
 	}
 }

@@ -40,14 +40,13 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 		{
 			base.DefinedPort(port, desc);
 
-			if (port.key == nameof(GetSwitchUnit.IsEnabled)) {
-				desc.summary = "Whether the switch is enabled.";
-			}
-			else if (int.TryParse(port.key, out int id)) {
-				id += 1;
-
-				desc.label = $"Switch ID {id}";
-				desc.summary = $"Switch ID {id} to check if enabled.";
+			switch (port.key) {
+				case nameof(GetSwitchUnit.Id):
+					desc.summary = "Switch ID to check if enabled.";
+					break;
+				case nameof(GetSwitchUnit.IsEnabled):
+					desc.summary = "Whether the switch is enabled.";
+					break;
 			}
 		}
 	}
