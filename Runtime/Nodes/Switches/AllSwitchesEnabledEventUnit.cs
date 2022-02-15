@@ -66,8 +66,8 @@ namespace VisualPinball.Unity.VisualScripting
 			}
 
 			var validSwitch = false;
-			foreach(var item in multiInputs) {
-				var swId = flow.GetValue<string>(item);
+			foreach(var input in multiInputs) {
+				var swId = flow.GetValue<string>(input);
 				if (swId == args.Id) {
 					validSwitch = true;
 				}

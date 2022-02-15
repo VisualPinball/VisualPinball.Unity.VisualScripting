@@ -40,13 +40,14 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 		{
 			base.DefinedPort(port, desc);
 
-			switch (port.key) {
-				case nameof(SetLampEnabledUnit.Id):
-					desc.summary = "The ID of the lamp to toggle.";
-					break;
-				case nameof(SetLampEnabledUnit.IsEnabled):
-					desc.summary = "Whether to turn on or off.";
-					break;
+			if (port.key == nameof(SetLampEnabledUnit.IsEnabled)) {
+				desc.summary = "Whether to turn on or off.";
+			}
+			else if (int.TryParse(port.key, out int id)) {
+				id += 1;
+
+				desc.label = $"Lamp ID {id}";
+				desc.summary = $"Lamp ID {id} of the lamp to toggle.";
 			}
 		}
 	}

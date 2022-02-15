@@ -62,8 +62,7 @@ namespace VisualPinball.Unity.VisualScripting
 
 			multiInputs = _multiInputs.AsReadOnly();
 
-			for (var i = 0; i < inputCount; i++)
-			{
+			for (var i = 0; i < inputCount; i++) {
 				var input = ValueInput(i.ToString(), string.Empty);
 				_multiInputs.Add(input);
 
