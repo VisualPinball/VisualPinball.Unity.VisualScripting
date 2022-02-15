@@ -22,16 +22,16 @@ using IconSize = VisualPinball.Unity.Editor.IconSize;
 
 namespace VisualPinball.Unity.VisualScripting.Editor
 {
-	[Descriptor(typeof(SetLampComponentUnit))]
-	public class SetLampComponentUnitDescriptor : UnitDescriptor<SetLampComponentUnit>
+	[Descriptor(typeof(SetLampColorUnit))]
+	public class SetLampColorUnitDescriptor : UnitDescriptor<SetLampColorUnit>
 	{
-		public SetLampComponentUnitDescriptor(SetLampComponentUnit target) : base(target)
+		public SetLampColorUnitDescriptor(SetLampColorUnit target) : base(target)
 		{
 		}
 
 		protected override string DefinedSummary()
 		{
-			return "This node assigns a given value to a light or light group in the scene. \n\nNote that this doesn't pass through the gamelogic engine, thus no event will be triggered. However, it allows you to drive non-mapped lights as well.";
+			return "This node assigns a given value to a lamp defined by its mapped ID. This will also trigger the lamp changed event and update the internal status.";
 		}
 
 		protected override EditorTexture DefinedIcon() => EditorTexture.Single(Unity.Editor.Icons.Light(IconSize.Large, IconColor.Orange));
@@ -40,18 +40,16 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 		{
 			base.DefinedPort(port, desc);
 
-			switch (port.key) {
-				case nameof(SetLampComponentUnit.LampComponent):
-					desc.summary = "The light component whose value you want to change. Assigning a light group will change all lights in the group.";
-					break;
+			if (port.key == nameof(SetLampColorUnit.Value))
+			{
+				desc.summary = "The color to set the lamp";
+			}
+			else if (int.TryParse(port.key, out int id))
+			{
+				id += 1;
 
-				case nameof(SetLampComponentUnit.Value):
-					desc.summary = "The intensity to apply (0-1).";
-					break;
-
-				case nameof(SetLampComponentUnit.ColorChannel):
-					desc.summary = "Which color channel to use. For non-RGB lights, use alpha.";
-					break;
+				desc.label = $"Lamp ID {id}";
+				desc.summary = $"Lamp ID {id} of the lamp to set the intensity";
 			}
 		}
 	}

@@ -14,17 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Unity.VisualScripting;
 using UnityEngine;
-using VisualPinball.Engine.Math;
 
 namespace VisualPinball.Unity.VisualScripting
 {
-	[UnitTitle("Set Lamp (Component, Value, Channel)")]
 	[UnitShortTitle("Set Lamp")]
-	[UnitSurtitle("Scene")]
+	[UnitTitle("Set Lamp (ID, Color)")]
+	[UnitSurtitle("Gamelogic Engine")]
 	[UnitCategory("Visual Pinball")]
-	public class SetLampComponentUnit : GleUnit
+	public class SetLampColorUnit : GleUnit, IMultiInputUnit
 	{
 		[DoNotSerialize]
 		[PortLabelHidden]
@@ -34,49 +35,63 @@ namespace VisualPinball.Unity.VisualScripting
 		[PortLabelHidden]
 		public ControlOutput OutputTrigger;
 
-		[DoNotSerialize]
-		[PortLabel("Component")]
-		public ValueInput LampComponent;
+		[SerializeAs(nameof(inputCount))]
+		private int _inputCount = 1;
 
 		[DoNotSerialize]
-		[PortLabel("Intensity")]
-		public ValueInput Value;
+		[Inspectable, UnitHeaderInspectable("Lamp IDs")]
+		public int inputCount
+		{
+			get => _inputCount;
+			set => _inputCount = Mathf.Clamp(value, 1, 10);
+		}
 
 		[DoNotSerialize]
-		[PortLabel("Color Channel")]
-		public ValueInput ColorChannel;
+		public ReadOnlyCollection<ValueInput> multiInputs { get; private set; }
+
+		[DoNotSerialize]
+		[PortLabel("Value")]
+		public ValueInput Value { get; private set; }
 
 		protected override void Definition()
 		{
 			InputTrigger = ControlInput(nameof(InputTrigger), Process);
 			OutputTrigger = ControlOutput(nameof(OutputTrigger));
 
-			LampComponent = ValueInput<MonoBehaviour>(nameof(LampComponent), null);
+			var _multiInputs = new List<ValueInput>();
 
-			Value = ValueInput(nameof(Value), 0f);
-			ColorChannel = ValueInput(nameof(ColorChannel), Engine.Math.ColorChannel.Alpha);
+			multiInputs = _multiInputs.AsReadOnly();
 
-			Requirement(LampComponent, InputTrigger);
+			for (var i = 0; i < inputCount; i++)
+			{
+				var input = ValueInput(i.ToString(), string.Empty);
+				_multiInputs.Add(input);
+
+				Requirement(input, InputTrigger);
+			}
+
+			Value = ValueInput(nameof(Value), Color.black);
+
 			Succession(InputTrigger, OutputTrigger);
 		}
 
 		private ControlOutput Process(Flow flow)
 		{
-			if (!AssertPlayer(flow)) {
-				Debug.LogError("Cannot find player.");
+			if (!AssertGle(flow))
+			{
+				Debug.LogError("Cannot find GLE.");
 				return OutputTrigger;
 			}
 
-			if (flow.GetValue<MonoBehaviour>(LampComponent) is ILampDeviceComponent lamp) {
-				var valueRaw = flow.GetValue<float>(Value);
-				var colorChannelRaw = flow.GetValue<ColorChannel>(ColorChannel);
+			var value = flow.GetValue<Color>(Value);
 
-				Player.Lamp(lamp)?.OnLamp(valueRaw, colorChannelRaw);
+			foreach (var input in multiInputs)
+			{
+				var lampId = flow.GetValue<string>(input);
+				Gle.SetLamp(lampId, value);
 			}
 
 			return OutputTrigger;
 		}
-
-
 	}
 }
