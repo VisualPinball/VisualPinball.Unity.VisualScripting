@@ -42,7 +42,7 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 			}
 
 			for (var index = 0; index < unit.inputCount; index++) {
-				if (unit.Items[index] == port) {
+				if (unit.multiInputs[index] == port) {
 					VariableNameInspector switchIdInspector = new VariableNameInspector(meta, GetNameSuggestions);
 					InspectorProvider.instance.Renew(ref switchIdInspector, meta, _switchIdInspectorConstructorList[index]);
 

@@ -38,13 +38,14 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 		{
 			base.DefinedPort(port, desc);
 
-			switch (port.key) {
-				case nameof(SwitchEventUnit.Id):
-					desc.summary = "The ID of the switch that changed its value.";
-					break;
-				case nameof(SwitchEventUnit.IsEnabled):
-					desc.summary = "The new value of the switch, true if enabled, false otherwise.";
-					break;
+			if (port.key == nameof(SwitchEventUnit.IsEnabled)) {
+				desc.summary = "The new value of the switch, true if enabled, false otherwise.";
+			}
+			else if (int.TryParse(port.key, out int id)) {
+				id += 1;
+
+				desc.label = $"Switch ID {id}";
+				desc.summary = $"Switch ID {id} to look for a change status.";
 			}
 		}
 	}

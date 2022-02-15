@@ -15,6 +15,7 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -23,7 +24,7 @@ namespace VisualPinball.Unity.VisualScripting
 	[UnitTitle("Pulse Coil")]
 	[UnitSurtitle("Gamelogic Engine")]
 	[UnitCategory("Visual Pinball")]
-	public class PulseCoilUnit : GleUnit
+	public class PulseCoilUnit : GleUnit, IMultiInputUnit
 	{
 		[DoNotSerialize]
 		[PortLabelHidden]
@@ -45,7 +46,7 @@ namespace VisualPinball.Unity.VisualScripting
 		}
 
 		[DoNotSerialize]
-		public List<ValueInput> Items { get; private set; }
+		public ReadOnlyCollection<ValueInput> multiInputs { get; private set; }
 
 		[DoNotSerialize]
 		[PortLabel("Duration (ms)")]
@@ -56,13 +57,15 @@ namespace VisualPinball.Unity.VisualScripting
 			InputTrigger = ControlInput(nameof(InputTrigger), Process);
 			OutputTrigger = ControlOutput(nameof(OutputTrigger));
 
-			Items = new List<ValueInput>();
+			var _multiInputs = new List<ValueInput>();
+
+			multiInputs = _multiInputs.AsReadOnly();
 
 			for (var i = 0; i < inputCount; i++) {
-				var item = ValueInput(i.ToString(), string.Empty);
-				Items.Add(item);
+				var input = ValueInput(i.ToString(), string.Empty);
+				_multiInputs.Add(input);
 
-				Requirement(item, InputTrigger);
+				Requirement(input, InputTrigger);
 			}
 
 			PulseDuration = ValueInput(nameof(PulseDuration), 80);
@@ -84,11 +87,10 @@ namespace VisualPinball.Unity.VisualScripting
 
 			var pulseDuration = flow.GetValue<int>(PulseDuration);
 
-			foreach (var item in Items) {
-				var id = flow.GetValue<string>(item);
-
-				Gle.SetCoil(id, true);
-				Player.ScheduleAction(pulseDuration, () => Gle.SetCoil(id, false));
+			foreach (var input in multiInputs) {
+				var coilId = flow.GetValue<string>(input);
+				Gle.SetCoil(coilId, true);
+				Player.ScheduleAction(pulseDuration, () => Gle.SetCoil(coilId, false));
 			}
 
 			return OutputTrigger;

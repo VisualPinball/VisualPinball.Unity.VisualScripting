@@ -15,6 +15,7 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -23,7 +24,7 @@ namespace VisualPinball.Unity.VisualScripting
 	[UnitTitle("On Switch Enabled")]
 	[UnitSurtitle("Gamelogic Engine")]
 	[UnitCategory("Events\\Visual Pinball")]
-	public class SwitchEnabledEventUnit : GleEventUnit<SwitchEventArgs2>
+	public class SwitchEnabledEventUnit : GleEventUnit<SwitchEventArgs2>, IMultiInputUnit
 	{
 		[SerializeAs(nameof(inputCount))]
 		private int _inputCount = 1;
@@ -37,7 +38,7 @@ namespace VisualPinball.Unity.VisualScripting
 		}
 
 		[DoNotSerialize]
-		public List<ValueInput> Items { get; private set; }
+		public ReadOnlyCollection<ValueInput> multiInputs { get; private set; }
 
 		[DoNotSerialize]
 		protected override bool register => true;
@@ -49,18 +50,19 @@ namespace VisualPinball.Unity.VisualScripting
 		{
 			base.Definition();
 
-			Items = new List<ValueInput>();
+			var _multiInputs = new List<ValueInput>();
+
+			multiInputs = _multiInputs.AsReadOnly();
 
 			for (var i = 0; i < inputCount; i++) {
-				var item = ValueInput(i.ToString(), string.Empty);
-				Items.Add(item);
+				_multiInputs.Add(ValueInput(i.ToString(), string.Empty));
 			}
 		}
 
 		protected override bool ShouldTrigger(Flow flow, SwitchEventArgs2 args)
 		{
-			foreach(var item in Items) {
-				if (flow.GetValue<string>(item) == args.Id && args.IsEnabled) {
+			foreach(var input in multiInputs) {
+				if (flow.GetValue<string>(input) == args.Id && args.IsEnabled) {
 					return true;
 				}
 			}
