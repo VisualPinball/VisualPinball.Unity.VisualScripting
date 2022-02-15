@@ -15,6 +15,7 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -24,7 +25,7 @@ namespace VisualPinball.Unity.VisualScripting
 	[UnitTitle("Switch Lamp (ID, match value)")]
 	[UnitSurtitle("Gamelogic Engine")]
 	[UnitCategory("Visual Pinball")]
-	public class SwitchLampUnit : GleUnit
+	public class SwitchLampUnit : GleUnit, IMultiInputUnit
 	{
 		[SerializeAs(nameof(inputCount))]
 		private int _inputCount = 1;
@@ -50,7 +51,7 @@ namespace VisualPinball.Unity.VisualScripting
 		public ValueInput SourceValue { get; private set; }
 
 		[DoNotSerialize]
-		public List<ValueInput> Items { get; private set; }
+		public ReadOnlyCollection<ValueInput> multiInputs { get; private set; }
 
 		private Dictionary<int, LampIdValue> _lampIdValueCache = new Dictionary<int, LampIdValue>();
 
@@ -61,13 +62,15 @@ namespace VisualPinball.Unity.VisualScripting
 
 			SourceValue = ValueInput<int>(nameof(SourceValue));
 
-			Items = new List<ValueInput>();
+			var _multiInputs = new List<ValueInput>();
+
+			multiInputs = _multiInputs.AsReadOnly();
 
 			for (var i = 0; i < inputCount; i++) {
-				var item = ValueInput(i.ToString(), LampIdValue.Empty.ToJson());
-				Items.Add(item);
+				var input = ValueInput(i.ToString(), LampIdValue.Empty.ToJson());
+				_multiInputs.Add(input);
 
-				Requirement(item, InputTrigger);
+				Requirement(input, InputTrigger);
 			}
 
 			_lampIdValueCache.Clear();
@@ -84,8 +87,8 @@ namespace VisualPinball.Unity.VisualScripting
 			
 			var value = flow.GetValue<int>(SourceValue);
 
-			foreach (var item in Items) {
-				var json = flow.GetValue<string>(item);
+			foreach (var input in multiInputs) {
+				var json = flow.GetValue<string>(input);
 
 				if (!_lampIdValueCache.ContainsKey(json.GetHashCode())) {
 					_lampIdValueCache[json.GetHashCode()] = LampIdValue.FromJson(json);

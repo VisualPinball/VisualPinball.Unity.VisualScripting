@@ -42,7 +42,7 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 			}
 
 			for (var index = 0; index < unit.inputCount; index++) {
-				if (unit.Items[index] == port) {
+				if (unit.multiInputs[index] == port) {
 					LampIdValueInspector lampIdInspector = new LampIdValueInspector(meta, GetNameSuggestions);
 					InspectorProvider.instance.Renew(ref lampIdInspector, meta, _lampIdInspectorConstructorList[index]);
 

@@ -40,13 +40,14 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 		{
 			base.DefinedPort(port, desc);
 
-			switch (port.key) {
-				case nameof(SetLampUnit.Id):
-					desc.summary = "The ID of the lamp for which the intensity is returned.";
-					break;
-				case nameof(SetLampUnit.Value):
-					desc.summary = "The intensity of the lamp (0-1).";
-					break;
+			if (port.key == nameof(SetLampUnit.Value)) {
+				desc.summary = "The intensity of the lamp (0-1).";
+			}
+			else if (int.TryParse(port.key, out int id)) {
+				id += 1;
+
+				desc.label = $"Lamp ID {id}";
+				desc.summary = $"Lamp ID {id} of the lamp to set the intensity";
 			}
 		}
 	}

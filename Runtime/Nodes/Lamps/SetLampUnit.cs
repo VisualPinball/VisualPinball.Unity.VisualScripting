@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -23,7 +25,7 @@ namespace VisualPinball.Unity.VisualScripting
 	[UnitTitle("Set Lamp (ID, Intensity)")]
 	[UnitSurtitle("Gamelogic Engine")]
 	[UnitCategory("Visual Pinball")]
-	public class SetLampUnit : GleUnit
+	public class SetLampUnit : GleUnit, IMultiInputUnit
 	{
 		[DoNotSerialize]
 		[PortLabelHidden]
@@ -33,9 +35,19 @@ namespace VisualPinball.Unity.VisualScripting
 		[PortLabelHidden]
 		public ControlOutput OutputTrigger;
 
+		[SerializeAs(nameof(inputCount))]
+		private int _inputCount = 1;
+
 		[DoNotSerialize]
-		[PortLabel("Lamp ID")]
-		public ValueInput Id { get; private set; }
+		[Inspectable, UnitHeaderInspectable("Lamp IDs")]
+		public int inputCount
+		{
+			get => _inputCount;
+			set => _inputCount = Mathf.Clamp(value, 1, 10);
+		}
+
+		[DoNotSerialize]
+		public ReadOnlyCollection<ValueInput> multiInputs { get; private set; }
 
 		[DoNotSerialize]
 		[PortLabel("Value")]
@@ -46,26 +58,36 @@ namespace VisualPinball.Unity.VisualScripting
 			InputTrigger = ControlInput(nameof(InputTrigger), Process);
 			OutputTrigger = ControlOutput(nameof(OutputTrigger));
 
-			Id = ValueInput<string>(nameof(Id), string.Empty);
-			Value = ValueInput<float>(nameof(Value), 0f);
+			var _multiInputs = new List<ValueInput>();
 
-			Requirement(Id, InputTrigger);
+			multiInputs = _multiInputs.AsReadOnly();
+
+			for (var i = 0; i < inputCount; i++)
+			{
+				var input = ValueInput(i.ToString(), string.Empty);
+				_multiInputs.Add(input);
+
+				Requirement(input, InputTrigger);
+			}
+
+			Value = ValueInput(nameof(Value), 0f);
+
 			Succession(InputTrigger, OutputTrigger);
-
 		}
 
 		private ControlOutput Process(Flow flow)
 		{
-
 			if (!AssertGle(flow)) {
 				Debug.LogError("Cannot find GLE.");
 				return OutputTrigger;
 			}
 
-			var id = flow.GetValue<string>(Id);
-			var value = flow.GetValue<float>(Value);
+			var value = flow.GetValue<float>(Value) * 255f;
 
-			Gle.SetLamp(id, value * 255f);
+			foreach (var input in multiInputs) {
+				var lampId = flow.GetValue<string>(input);
+				Gle.SetLamp(lampId, value);
+			}
 
 			return OutputTrigger;
 		}
