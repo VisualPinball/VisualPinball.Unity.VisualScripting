@@ -16,7 +16,6 @@
 
 // ReSharper disable UnusedType.Global
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
@@ -24,44 +23,12 @@ using Unity.VisualScripting;
 namespace VisualPinball.Unity.VisualScripting.Editor
 {
 	[Widget(typeof(LampEventUnit))]
-	public sealed class LampEventUnitWidget : GleUnitWidget<LampEventUnit>
+	public sealed class LampEventUnitWidget : GleMultiUnitWidget<LampEventUnit>
 	{
-		private readonly List<Func<Metadata, VariableNameInspector>> _lampIdInspectorConstructorList;
-
 		public LampEventUnitWidget(FlowCanvas canvas, LampEventUnit unit) : base(canvas, unit)
 		{
-			_lampIdInspectorConstructorList = new List<Func<Metadata, VariableNameInspector>>();
 		}
 
-		public override Inspector GetPortInspector(IUnitPort port, Metadata meta)
-		{
-			if (_lampIdInspectorConstructorList.Count() < unit.inputCount)
-			{
-				for (var index = 0; index < unit.inputCount - _lampIdInspectorConstructorList.Count(); index++)
-				{
-					_lampIdInspectorConstructorList.Add(meta => new VariableNameInspector(meta, GetNameSuggestions));
-				}
-			}
-
-			for (var index = 0; index < unit.inputCount; index++)
-			{
-				if (unit.multiInputs[index] == port)
-				{
-					VariableNameInspector lampIdInspector = new VariableNameInspector(meta, GetNameSuggestions);
-					InspectorProvider.instance.Renew(ref lampIdInspector, meta, _lampIdInspectorConstructorList[index]);
-
-					return lampIdInspector;
-				}
-			}
-
-			return base.GetPortInspector(port, meta);
-		}
-
-		private IEnumerable<string> GetNameSuggestions()
-		{
-			return !GleAvailable
-				? new List<string>()
-				: Gle.RequestedLamps.Select(lamp => lamp.Id).ToList();
-		}
+		protected override IEnumerable<string> IdSuggestions(IGamelogicEngine gle) => gle.RequestedLamps.Select(lamp => lamp.Id);
 	}
 }

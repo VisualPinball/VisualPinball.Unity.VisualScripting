@@ -16,7 +16,6 @@
 
 // ReSharper disable UnusedType.Global
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
@@ -24,40 +23,12 @@ using Unity.VisualScripting;
 namespace VisualPinball.Unity.VisualScripting.Editor
 {
 	[Widget(typeof(SetCoilUnit))]
-	public sealed class SetCoilUnitWidget : GleUnitWidget<SetCoilUnit>
+	public sealed class SetCoilUnitWidget : GleMultiUnitWidget<SetCoilUnit>
 	{
-		private readonly List<Func<Metadata, VariableNameInspector>> _coilIdInspectorConstructorList;
-
 		public SetCoilUnitWidget(FlowCanvas canvas, SetCoilUnit unit) : base(canvas, unit)
 		{
-			_coilIdInspectorConstructorList = new List<Func<Metadata, VariableNameInspector>>();
 		}
 
-		public override Inspector GetPortInspector(IUnitPort port, Metadata meta)
-		{
-			if (_coilIdInspectorConstructorList.Count() < unit.inputCount) {
-				for (var index = 0; index < unit.inputCount - _coilIdInspectorConstructorList.Count(); index++) {
-					_coilIdInspectorConstructorList.Add(meta => new VariableNameInspector(meta, GetNameSuggestions));
-				}
-			}
-
-			for (var index = 0; index < unit.inputCount; index++) {
-				if (unit.multiInputs[index] == port) {
-					VariableNameInspector coilIdInspector = new VariableNameInspector(meta, GetNameSuggestions);
-					InspectorProvider.instance.Renew(ref coilIdInspector, meta, _coilIdInspectorConstructorList[index]);
-
-					return coilIdInspector;
-				}
-			}
-
-			return base.GetPortInspector(port, meta);
-		}
-
-		private IEnumerable<string> GetNameSuggestions()
-		{
-			return !GleAvailable
-				? new List<string>()
-				: Gle.RequestedCoils.Select(coil => coil.Id).ToList();
-		}
+		protected override IEnumerable<string> IdSuggestions(IGamelogicEngine gle) => gle.RequestedCoils.Select(coil => coil.Id);
 	}
 }

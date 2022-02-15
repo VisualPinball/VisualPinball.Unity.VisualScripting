@@ -21,15 +21,6 @@ using Unity.VisualScripting;
 
 namespace VisualPinball.Unity.VisualScripting.Editor
 {
-	[Widget(typeof(AllSwitchesEnabledEventUnit))]
-	public sealed class AllSwitchesEnabledEventUnitWidget : GleMultiUnitWidget<AllSwitchesEnabledEventUnit>
-	{
-		public AllSwitchesEnabledEventUnitWidget(FlowCanvas canvas, AllSwitchesEnabledEventUnit unit) : base(canvas, unit)
-		{
-		}
-		protected override IEnumerable<string> IdSuggestions(IGamelogicEngine gle) => gle.RequestedSwitches.Select(sw => sw.Id);
-	}
-
 	public abstract class GleMultiUnitWidget<TUnit> : GleUnitWidget<TUnit> where TUnit : Unit, IGleUnit, IMultiInputUnit
 	{
 		protected abstract IEnumerable<string> IdSuggestions(IGamelogicEngine gle);

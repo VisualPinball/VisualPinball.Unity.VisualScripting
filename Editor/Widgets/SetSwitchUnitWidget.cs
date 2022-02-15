@@ -16,7 +16,6 @@
 
 // ReSharper disable UnusedType.Global
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
@@ -24,40 +23,12 @@ using Unity.VisualScripting;
 namespace VisualPinball.Unity.VisualScripting.Editor
 {
 	[Widget(typeof(SetSwitchUnit))]
-	public sealed class SetSwitchUnitWidget : GleUnitWidget<SetSwitchUnit>
+	public sealed class SetSwitchUnitWidget : GleMultiUnitWidget<SetSwitchUnit>
 	{
-		private readonly List<Func<Metadata, VariableNameInspector>> _switchIdInspectorConstructorList;
-
 		public SetSwitchUnitWidget(FlowCanvas canvas, SetSwitchUnit unit) : base(canvas, unit)
 		{
-			_switchIdInspectorConstructorList = new List<Func<Metadata, VariableNameInspector>>();
 		}
 
-		public override Inspector GetPortInspector(IUnitPort port, Metadata meta)
-		{
-			if (_switchIdInspectorConstructorList.Count() < unit.inputCount) {
-				for (var index = 0; index < unit.inputCount - _switchIdInspectorConstructorList.Count(); index++) {
-					_switchIdInspectorConstructorList.Add(meta => new VariableNameInspector(meta, GetNameSuggestions));
-				}
-			}
-
-			for (var index = 0; index < unit.inputCount; index++) {
-				if (unit.multiInputs[index] == port) {
-					VariableNameInspector switchIdInspector = new VariableNameInspector(meta, GetNameSuggestions);
-					InspectorProvider.instance.Renew(ref switchIdInspector, meta, _switchIdInspectorConstructorList[index]);
-
-					return switchIdInspector;
-				}
-			}
-
-			return base.GetPortInspector(port, meta);
-		}
-
-		private IEnumerable<string> GetNameSuggestions()
-		{
-			return !GleAvailable
-				? new List<string>()
-				: Gle.RequestedSwitches.Select(sw => sw.Id).ToList();
-		}
+		protected override IEnumerable<string> IdSuggestions(IGamelogicEngine gle) => gle.RequestedSwitches.Select(sw => sw.Id);
 	}
 }
