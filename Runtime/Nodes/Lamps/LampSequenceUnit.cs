@@ -23,7 +23,7 @@ using VisualPinball.Engine.Math;
 namespace VisualPinball.Unity.VisualScripting
 {
 	[UnitTitle("Lamp Sequence")]
-	[UnitSurtitle("Scene")]
+	[UnitSurtitle("Gamelogic Engine")]
 	[UnitCategory("Visual Pinball")]
 	public class LampSequenceUnit : GleUnit, IMultiInputUnit
 	{

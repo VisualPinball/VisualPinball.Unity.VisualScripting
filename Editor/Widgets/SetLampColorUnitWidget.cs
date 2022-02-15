@@ -30,6 +30,5 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 		}
 
 		protected override IEnumerable<string> IdSuggestions(IGamelogicEngine gle) => gle.RequestedLamps.Select(lamp => lamp.Id);
-
 	}
 }
