@@ -34,8 +34,6 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 			return "This node spawns a new ball at a given position.";
 		}
 
-
-
 		protected override EditorTexture DefinedIcon() => EditorTexture.Single(Unity.Editor.Icons.BallRoller(IconSize.Large, IconColor.Orange));
 
 		protected override void DefinedPort(IUnitPort port, UnitPortDescription desc)

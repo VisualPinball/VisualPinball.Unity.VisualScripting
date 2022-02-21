@@ -37,6 +37,9 @@ namespace VisualPinball.Unity.VisualScripting
 		[Tooltip("Define here the player-specific variables of the Visual Scripting engine.")]
 		public List<PlayerVariableDefinition> PlayerVariableDefinitions;
 
+		[Tooltip("Declare your custom events here for easy access with our event nodes.")]
+		public List<EventDefinition> EventDefinitions;
+
 		[Tooltip("Define the displays this game is going to use.")]
 		public DisplayDefinition[] Displays;
 
@@ -202,8 +205,17 @@ namespace VisualPinball.Unity.VisualScripting
 				}
 				ids.Add(def.Id);
 			}
+
 			ids.Clear();
 			foreach (var def in TableVariableDefinitions) {
+				if (!def.HasId || ids.Contains(def.Id)) {
+					def.GenerateId();
+				}
+				ids.Add(def.Id);
+			}
+
+			ids.Clear();
+			foreach (var def in EventDefinitions) {
 				if (!def.HasId || ids.Contains(def.Id)) {
 					def.GenerateId();
 				}

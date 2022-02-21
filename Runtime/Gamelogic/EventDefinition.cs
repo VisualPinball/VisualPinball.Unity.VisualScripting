@@ -14,17 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-namespace VisualPinball.Unity
+// ReSharper disable InconsistentNaming
+
+using System;
+
+namespace VisualPinball.Unity.VisualScripting
 {
-	public static class VisualScriptingEventNames
+	[Serializable]
+	public class EventDefinition
 	{
-		public const string GleStartedEvent = "GleStartedEvent";
-		public const string LampEvent = "LampEvent";
-		public const string SwitchEvent = "SwitchEvent";
-		public const string CoilEvent = "CoilEvent";
-		public const string CurrentPlayerChanged = "CurrentPlayerChanged";
-		public const string PlayerVariableChanged = "PlayerVariableChanged";
-		public const string TableVariableChanged = "TableVariableChanged";
-		public const string PinballEvent = "PinballEvent";
+		public string Name;
+		public string Id;
+
+		public bool HasId => !string.IsNullOrEmpty(Id);
+		public void GenerateId() => Id = Guid.NewGuid().ToString()[..13];
 	}
 }

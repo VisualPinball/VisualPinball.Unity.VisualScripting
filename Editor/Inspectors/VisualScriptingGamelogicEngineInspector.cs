@@ -33,6 +33,7 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 		private SerializedProperty _lampsProperty;
 		private SerializedProperty _tableVariableDefinitionsProperty;
 		private SerializedProperty _playerVariableDefinitionsProperty;
+		private SerializedProperty _eventDefinitionsProperty;
 
 		private readonly Dictionary<int, bool> _playerVarFoldout = new();
 
@@ -47,6 +48,8 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 
 			_tableVariableDefinitionsProperty = serializedObject.FindProperty(nameof(VisualScriptingGamelogicEngine.TableVariableDefinitions));
 			_playerVariableDefinitionsProperty = serializedObject.FindProperty(nameof(VisualScriptingGamelogicEngine.PlayerVariableDefinitions));
+
+			_eventDefinitionsProperty = serializedObject.FindProperty(nameof(VisualScriptingGamelogicEngine.EventDefinitions));
 		}
 
 		public override void OnInspectorGUI()
@@ -60,6 +63,7 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 
 			EditorGUILayout.PropertyField(_tableVariableDefinitionsProperty);
 			EditorGUILayout.PropertyField(_playerVariableDefinitionsProperty);
+			EditorGUILayout.PropertyField(_eventDefinitionsProperty);
 
 			serializedObject.ApplyModifiedProperties();
 

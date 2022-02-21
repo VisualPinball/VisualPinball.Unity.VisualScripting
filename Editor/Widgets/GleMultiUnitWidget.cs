@@ -34,7 +34,7 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 
 		public override Inspector GetPortInspector(IUnitPort port, Metadata meta)
 		{
-			if (_idInspectorConstructorList.Count() < unit.inputCount) {
+			if (_idInspectorConstructorList.Count < unit.inputCount) {
 				for (var index = 0; index < unit.inputCount - _idInspectorConstructorList.Count(); index++) {
 					_idInspectorConstructorList.Add(m => new VariableNameInspector(m, GetNameSuggestions));
 				}
