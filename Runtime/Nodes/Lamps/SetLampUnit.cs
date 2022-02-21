@@ -25,11 +25,13 @@ using Color = VisualPinball.Engine.Math.Color;
 namespace VisualPinball.Unity.VisualScripting
 {
 	[UnitShortTitle("Set Lamp")]
-	[UnitTitle("Set Lamp (ID, Intensity)")]
+	[UnitTitle("Set Lamp")]
 	[UnitSurtitle("Gamelogic Engine")]
 	[UnitCategory("Visual Pinball")]
 	public class SetLampUnit : GleUnit, IMultiInputUnit
 	{
+		[Serialize, Inspectable, UnitHeaderInspectable]
+		public LampDataType DataType { get; set; }
 
 		[DoNotSerialize]
 		[Inspectable, UnitHeaderInspectable("Lamp IDs")]
@@ -38,9 +40,6 @@ namespace VisualPinball.Unity.VisualScripting
 			get => _inputCount;
 			set => _inputCount = Mathf.Clamp(value, 1, 10);
 		}
-
-		[Serialize, Inspectable, UnitHeaderInspectable]
-		public LampDataType DataType { get; set; }
 
 		[DoNotSerialize]
 		[PortLabelHidden]
