@@ -16,6 +16,7 @@
 
 // ReSharper disable UnusedType.Global
 
+using System;
 using Unity.VisualScripting;
 using VisualPinball.Unity.Editor;
 using IconSize = VisualPinball.Unity.Editor.IconSize;
@@ -41,7 +42,28 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 			base.DefinedPort(port, desc);
 
 			if (port.key == nameof(SetLampUnit.Value)) {
-				desc.summary = "The intensity of the lamp (0-1).";
+				var setLampUnit = port.unit as SetLampUnit;
+				switch (setLampUnit!.DataType) {
+					case LampDataType.OnOff:
+						desc.label = "Lit?";
+						desc.summary = "On or off.";
+						break;
+					case LampDataType.Status:
+						desc.label = "Status";
+						desc.summary = "On, off or blinking.";
+						break;
+					case LampDataType.Intensity:
+						desc.label = "Intensity";
+						desc.summary = "The intensity of the lamp (0-1).";
+						break;
+					case LampDataType.Color:
+						desc.label = "Color";
+						desc.summary = "The color of the lamp.";
+						break;
+
+					default:
+						throw new ArgumentOutOfRangeException();
+				}
 			}
 			else if (int.TryParse(port.key, out int id)) {
 				id += 1;

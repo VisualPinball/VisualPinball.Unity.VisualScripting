@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+using System;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -24,34 +25,45 @@ namespace VisualPinball.Unity.VisualScripting
 	[UnitCategory("Visual Pinball")]
 	public class GetLampUnit : GleUnit
 	{
+		[Serialize, Inspectable, UnitHeaderInspectable]
+		public LampDataType DataType { get; set; }
+
 		[DoNotSerialize]
 		[PortLabel("Lamp ID")]
 		public ValueInput Id { get; private set; }
 
 		[DoNotSerialize]
-		[PortLabel("Value")]
 		public ValueOutput Value { get; private set; }
-
-		[DoNotSerialize]
-		[PortLabel("Is Enabled")]
-		public ValueOutput IsEnabled { get; private set; }
 
 		protected override void Definition()
 		{
 			Id = ValueInput(nameof(Id), string.Empty);
 
-			Value = ValueOutput(nameof(Value), GetValue);
-			IsEnabled = ValueOutput(nameof(IsEnabled), GetEnabled);
+			switch (DataType) {
+				case LampDataType.OnOff:
+					Value = ValueOutput(nameof(Value), GetEnabled);
+					break;
+				case LampDataType.Status:
+					Value = ValueOutput(nameof(Value), GetEnabled);
+					break;
+				case LampDataType.Intensity:
+					Value = ValueOutput(nameof(Value), GetIntensity);
+					break;
+				case LampDataType.Color:
+					Value = ValueOutput(nameof(Value), GetColor);
+					break;
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
 		}
 
-		private float GetValue(Flow flow)
+		private float GetIntensity(Flow flow)
 		{
 			if (!AssertGle(flow)) {
 				Debug.LogError("Cannot find GLE.");
 				return 0;
 			}
-
-			return Gle.GetLamp(flow.GetValue<string>(Id));
+			return Gle.GetLamp(flow.GetValue<string>(Id)).Intensity;
 		}
 
 		private bool GetEnabled(Flow flow)
@@ -61,7 +73,17 @@ namespace VisualPinball.Unity.VisualScripting
 				return false;
 			}
 
-			return Gle.GetLamp(flow.GetValue<string>(Id)) > 0;
+			return Gle.GetLamp(flow.GetValue<string>(Id)).IsOn;
+		}
+
+		private Color GetColor(Flow flow)
+		{
+			if (!AssertGle(flow)) {
+				Debug.LogError("Cannot find GLE.");
+				return Color.black;
+			}
+
+			return Gle.GetLamp(flow.GetValue<string>(Id)).Color.ToUnityColor();
 		}
 	}
 }

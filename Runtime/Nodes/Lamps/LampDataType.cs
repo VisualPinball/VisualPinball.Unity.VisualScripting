@@ -18,6 +18,6 @@ namespace VisualPinball.Unity.VisualScripting
 {
 	public enum LampDataType
 	{
-		Status, Intensity, Color,
+		OnOff, Status, Intensity, Color,
 	}
 }

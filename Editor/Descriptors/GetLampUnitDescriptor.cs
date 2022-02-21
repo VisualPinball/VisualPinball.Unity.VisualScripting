@@ -16,6 +16,7 @@
 
 // ReSharper disable UnusedType.Global
 
+using System;
 using Unity.VisualScripting;
 using VisualPinball.Unity.Editor;
 using IconSize = VisualPinball.Unity.Editor.IconSize;
@@ -45,10 +46,27 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 					desc.summary = "The ID of the lamp for which the intensity is returned.";
 					break;
 				case nameof(GetLampUnit.Value):
-					desc.summary = "The intensity of the lamp (0-1).";
-					break;
-				case nameof(GetLampUnit.IsEnabled):
-					desc.summary = "Whether the intensity is larger than 0.";
+					var getLampUnit = port.unit as GetLampUnit;
+					switch (getLampUnit!.DataType) {
+						case LampDataType.OnOff:
+							desc.label = "Lit";
+							desc.summary = "On or off.";
+							break;
+						case LampDataType.Status:
+							desc.label = "Status";
+							desc.summary = "On, off or blinking.";
+							break;
+						case LampDataType.Intensity:
+							desc.label = "Intensity";
+							desc.summary = "The intensity of the lamp (value depends on the maximal intensity of the mapping).";
+							break;
+						case LampDataType.Color:
+							desc.label = "Color";
+							desc.summary = "The color of the lamp.";
+							break;
+						default:
+							throw new ArgumentOutOfRangeException();
+					}
 					break;
 			}
 		}

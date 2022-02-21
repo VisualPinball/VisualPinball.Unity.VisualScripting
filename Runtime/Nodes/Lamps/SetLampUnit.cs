@@ -14,10 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Unity.VisualScripting;
 using UnityEngine;
+using VisualPinball.Engine.Game.Engines;
+using Color = VisualPinball.Engine.Math.Color;
 
 namespace VisualPinball.Unity.VisualScripting
 {
@@ -27,6 +30,18 @@ namespace VisualPinball.Unity.VisualScripting
 	[UnitCategory("Visual Pinball")]
 	public class SetLampUnit : GleUnit, IMultiInputUnit
 	{
+
+		[DoNotSerialize]
+		[Inspectable, UnitHeaderInspectable("Lamp IDs")]
+		public int inputCount
+		{
+			get => _inputCount;
+			set => _inputCount = Mathf.Clamp(value, 1, 10);
+		}
+
+		[Serialize, Inspectable, UnitHeaderInspectable]
+		public LampDataType DataType { get; set; }
+
 		[DoNotSerialize]
 		[PortLabelHidden]
 		public ControlInput InputTrigger;
@@ -39,18 +54,9 @@ namespace VisualPinball.Unity.VisualScripting
 		private int _inputCount = 1;
 
 		[DoNotSerialize]
-		[Inspectable, UnitHeaderInspectable("Lamp IDs")]
-		public int inputCount
-		{
-			get => _inputCount;
-			set => _inputCount = Mathf.Clamp(value, 1, 10);
-		}
-
-		[DoNotSerialize]
 		public ReadOnlyCollection<ValueInput> multiInputs { get; private set; }
 
 		[DoNotSerialize]
-		[PortLabel("Value")]
 		public ValueInput Value { get; private set; }
 
 		protected override void Definition()
@@ -58,18 +64,22 @@ namespace VisualPinball.Unity.VisualScripting
 			InputTrigger = ControlInput(nameof(InputTrigger), Process);
 			OutputTrigger = ControlOutput(nameof(OutputTrigger));
 
-			var _multiInputs = new List<ValueInput>();
-
-			multiInputs = _multiInputs.AsReadOnly();
+			var mi = new List<ValueInput>();
+			multiInputs = mi.AsReadOnly();
 
 			for (var i = 0; i < inputCount; i++) {
 				var input = ValueInput(i.ToString(), string.Empty);
-				_multiInputs.Add(input);
-
+				mi.Add(input);
 				Requirement(input, InputTrigger);
 			}
 
-			Value = ValueInput(nameof(Value), 0f);
+			Value = DataType switch {
+				LampDataType.OnOff => ValueInput(nameof(Value), false),
+				LampDataType.Status => ValueInput(nameof(Value), LampStatus.Off),
+				LampDataType.Intensity => ValueInput(nameof(Value), 0f),
+				LampDataType.Color => ValueInput(nameof(Value), UnityEngine.Color.white),
+				_ => throw new ArgumentOutOfRangeException()
+			};
 
 			Succession(InputTrigger, OutputTrigger);
 		}
@@ -81,11 +91,29 @@ namespace VisualPinball.Unity.VisualScripting
 				return OutputTrigger;
 			}
 
-			var value = flow.GetValue<float>(Value) * 255f;
+			if (!AssertPlayer(flow)) {
+				Debug.LogError("Cannot find player.");
+				return OutputTrigger;
+			}
 
 			foreach (var input in multiInputs) {
 				var lampId = flow.GetValue<string>(input);
-				Gle.SetLamp(lampId, value);
+				switch (DataType) {
+					case LampDataType.OnOff:
+						Player.SetLamp(lampId, flow.GetValue<bool>(Value) ? LampStatus.On : LampStatus.Off);
+						break;
+					case LampDataType.Status:
+						Player.SetLamp(lampId, flow.GetValue<LampStatus>(Value));
+						break;
+					case LampDataType.Intensity:
+						Player.SetLamp(lampId, flow.GetValue<float>(Value));
+						break;
+					case LampDataType.Color:
+						Player.SetLamp(lampId, flow.GetValue<UnityEngine.Color>(Value).ToEngineColor());
+						break;
+					default:
+						throw new ArgumentOutOfRangeException();
+				}
 			}
 
 			return OutputTrigger;

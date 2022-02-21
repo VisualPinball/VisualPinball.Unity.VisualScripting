@@ -18,7 +18,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Unity.VisualScripting;
 using UnityEngine;
-using VisualPinball.Engine.Math;
 
 namespace VisualPinball.Unity.VisualScripting
 {
@@ -119,8 +118,7 @@ namespace VisualPinball.Unity.VisualScripting
 			}
 
 			for (var index = 0; index < _lightComponentCache.Count; index++) {
-				Player.Lamp(_lightComponentCache[index]).OnLamp(
-					index >= _currentIndex * stepRaw && index < (_currentIndex + 1) * stepRaw ? value : 0, ColorChannel.Alpha); ;
+				;
 			}
 
 			if (++_currentIndex >= _lightComponentCache.Count / stepRaw) {
