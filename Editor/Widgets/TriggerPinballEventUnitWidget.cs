@@ -16,18 +16,14 @@
 
 // ReSharper disable UnusedType.Global
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Unity.VisualScripting;
-using UnityEngine;
 
 namespace VisualPinball.Unity.VisualScripting.Editor
 {
-	[Widget(typeof(PinballEventUnit))]
-	public sealed class CustomEventUnitWidget : UnitWidget<PinballEventUnit>
+	[Widget(typeof(TriggerPinballEventUnit))]
+	public sealed class TriggerPinballEventUnitWidget : GleUnitWidget<TriggerPinballEventUnit>
 	{
-		public CustomEventUnitWidget(FlowCanvas canvas, PinballEventUnit unit) : base(canvas, unit)
+		public TriggerPinballEventUnitWidget(FlowCanvas canvas, TriggerPinballEventUnit unit) : base(canvas, unit)
 		{
 		}
 	}

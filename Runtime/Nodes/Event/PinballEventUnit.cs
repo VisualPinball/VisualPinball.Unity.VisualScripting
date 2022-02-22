@@ -28,13 +28,10 @@ namespace VisualPinball.Unity.VisualScripting
 	/// </summary>
 	[UnitTitle("On Pinball Event")]
 	[UnitCategory("Events/Visual Pinball")]
-	public class PinballEventUnit : GameObjectEventUnit<PinballEventArgs>
+	public class PinballEventUnit : GleEventUnit<PinballEventArgs>
 	{
 		[Serialize, Inspectable, UnitHeaderInspectable]
 		public EventDefinition Event { get; set; }
-
-		public override Type MessageListenerType => null;
-		protected override string hookName => VisualScriptingEventNames.PinballEvent;
 
 		[SerializeAs(nameof(argumentCount))]
 		private int _argumentCount;
@@ -49,6 +46,9 @@ namespace VisualPinball.Unity.VisualScripting
 
 		[DoNotSerialize]
 		public List<ValueOutput> argumentPorts { get; } = new List<ValueOutput>();
+
+		protected override bool register => true;
+		public override EventHook GetHook(GraphReference reference) => new(VisualScriptingEventNames.PinballEvent);
 
 		protected override void Definition()
 		{
@@ -71,9 +71,9 @@ namespace VisualPinball.Unity.VisualScripting
 			}
 		}
 
-		public static void Trigger(GameObject target, string name, params object[] args)
+		public static void Trigger(GameObject target, string id, params object[] args)
 		{
-			EventBus.Trigger(VisualScriptingEventNames.PinballEvent, target, new PinballEventArgs(name, args));
+			EventBus.Trigger(VisualScriptingEventNames.PinballEvent, target, new PinballEventArgs(id, args));
 		}
 	}
 

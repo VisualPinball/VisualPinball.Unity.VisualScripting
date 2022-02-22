@@ -31,7 +31,7 @@ namespace VisualPinball.Unity.VisualScripting
 	[UnitShortTitle("Trigger")]
 	[TypeIcon(typeof(CustomEvent))]
 	[UnitCategory("Events/Visual Pinball")]
-	public sealed class TriggerPinballEventUnit : Unit
+	public sealed class TriggerPinballEventUnit : GleUnit
 	{
 		[Serialize, Inspectable, UnitHeaderInspectable]
 		public EventDefinition Event { get; set; }
@@ -57,39 +57,30 @@ namespace VisualPinball.Unity.VisualScripting
 		[PortLabelHidden]
 		public ControlOutput OutputTrigger { get; private set; }
 
-		/// <summary>
-		/// The target of the event.
-		/// </summary>
-		[DoNotSerialize]
-		[PortLabelHidden]
-		[NullMeansSelf]
-		public ValueInput target { get; private set; }
-
 		protected override void Definition()
 		{
 			InputTrigger = ControlInput(nameof(InputTrigger), Trigger);
 			OutputTrigger = ControlOutput(nameof(OutputTrigger));
 
-
-			target = ValueInput<GameObject>(nameof(target), null).NullMeansSelf();
 			Arguments = new List<ValueInput>();
-
 			for (var i = 0; i < argumentCount; i++) {
 				var argument = ValueInput<object>("argument_" + i);
 				Arguments.Add(argument);
 				Requirement(argument, InputTrigger);
 			}
 
-			Requirement(target, InputTrigger);
 			Succession(InputTrigger, OutputTrigger);
 		}
 
 		private ControlOutput Trigger(Flow flow)
 		{
-			var t = flow.GetValue<GameObject>(this.target);
-			var args = Arguments.Select(flow.GetConvertedValue).ToArray();
+			if (!AssertVsGle(flow)) {
+				Debug.LogError("Cannot find GLE.");
+				return OutputTrigger;
+			}
 
-			PinballEventUnit.Trigger(t, Event.Id, args);
+			var args = Arguments.Select(flow.GetConvertedValue).ToArray();
+			PinballEventUnit.Trigger(VsGle.gameObject, Event.Id, args);
 
 			return OutputTrigger;
 		}
