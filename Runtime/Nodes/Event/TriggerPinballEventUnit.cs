@@ -74,13 +74,8 @@ namespace VisualPinball.Unity.VisualScripting
 
 		private ControlOutput Trigger(Flow flow)
 		{
-			if (!AssertVsGle(flow)) {
-				Debug.LogError("Cannot find GLE.");
-				return OutputTrigger;
-			}
-
 			var args = Arguments.Select(flow.GetConvertedValue).ToArray();
-			PinballEventUnit.Trigger(VsGle.gameObject, Event.Id, args);
+			PinballEventUnit.Trigger(Event.Id, args);
 
 			return OutputTrigger;
 		}

@@ -71,9 +71,9 @@ namespace VisualPinball.Unity.VisualScripting
 			}
 		}
 
-		public static void Trigger(GameObject target, string id, params object[] args)
+		public static void Trigger(string id, params object[] args)
 		{
-			EventBus.Trigger(VisualScriptingEventNames.PinballEvent, target, new PinballEventArgs(id, args));
+			EventBus.Trigger(VisualScriptingEventNames.PinballEvent, new PinballEventArgs(id, args));
 		}
 	}
 
