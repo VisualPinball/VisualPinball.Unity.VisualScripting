@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using VisualPinball.Engine.Game.Engines;
@@ -57,6 +58,9 @@ namespace VisualPinball.Unity.VisualScripting
 
 		[DoNotSerialize]
 		public ValueInput Value { get; private set; }
+
+		[DoNotSerialize]
+		private readonly Dictionary<string, float> _intensityMultipliers = new();
 
 		protected override void Definition()
 		{
@@ -105,7 +109,7 @@ namespace VisualPinball.Unity.VisualScripting
 						Player.SetLamp(lampId, flow.GetValue<LampStatus>(Value));
 						break;
 					case LampDataType.Intensity:
-						Player.SetLamp(lampId, flow.GetValue<float>(Value));
+						Player.SetLamp(lampId, flow.GetValue<float>(Value) * GetIntensityMultiplier(lampId));
 						break;
 					case LampDataType.Color:
 						Player.SetLamp(lampId, flow.GetValue<UnityEngine.Color>(Value).ToEngineColor());
@@ -116,6 +120,23 @@ namespace VisualPinball.Unity.VisualScripting
 			}
 
 			return OutputTrigger;
+		}
+
+		private float GetIntensityMultiplier(string id)
+		{
+			if (_intensityMultipliers.ContainsKey(id)) {
+				return _intensityMultipliers[id];
+			}
+
+			var mapping = Player.LampMapping.FirstOrDefault(l => l.Id == id);
+			if (mapping == null) {
+				Debug.LogError($"Unknown lamp ID {id}.");
+				_intensityMultipliers[id] = 1;
+				return 1;
+			}
+
+			_intensityMultipliers[id] = mapping.Type == LampType.Rgb ? 255 : 1;
+			return _intensityMultipliers[id];
 		}
 	}
 }
