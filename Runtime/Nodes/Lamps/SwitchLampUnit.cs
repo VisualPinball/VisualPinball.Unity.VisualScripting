@@ -14,10 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Unity.VisualScripting;
 using UnityEngine;
+using VisualPinball.Engine.Game.Engines;
 
 namespace VisualPinball.Unity.VisualScripting
 {
@@ -27,8 +29,11 @@ namespace VisualPinball.Unity.VisualScripting
 	[UnitCategory("Visual Pinball")]
 	public class SwitchLampUnit : GleUnit, IMultiInputUnit
 	{
-		[SerializeAs(nameof(inputCount))]
-		private int _inputCount = 1;
+		[Serialize, Inspectable, UnitHeaderInspectable("Match")]
+		public LampDataType MatchDataType { get; set; }
+
+		[Serialize, Inspectable, UnitHeaderInspectable("Non Match")]
+		public LampDataType NonMatchDataType { get; set; }
 
 		[DoNotSerialize]
 		[Inspectable, UnitHeaderInspectable("Lamp IDs")]
@@ -46,9 +51,18 @@ namespace VisualPinball.Unity.VisualScripting
 		[PortLabelHidden]
 		public ControlOutput OutputTrigger;
 
+		[SerializeAs(nameof(inputCount))]
+		private int _inputCount = 1;
+
 		[DoNotSerialize]
 		[PortLabel("Source Value")]
 		public ValueInput SourceValue { get; private set; }
+
+		[DoNotSerialize]
+		public ValueInput Match { get; private set; }
+
+		[DoNotSerialize]
+		public ValueInput NonMatch { get; private set; }
 
 		[DoNotSerialize]
 		public ReadOnlyCollection<ValueInput> multiInputs { get; private set; }
@@ -62,18 +76,32 @@ namespace VisualPinball.Unity.VisualScripting
 
 			SourceValue = ValueInput<int>(nameof(SourceValue));
 
-			var _multiInputs = new List<ValueInput>();
-
-			multiInputs = _multiInputs.AsReadOnly();
+			var mi = new List<ValueInput>();
+			multiInputs = mi.AsReadOnly();
 
 			for (var i = 0; i < inputCount; i++) {
 				var input = ValueInput(i.ToString(), LampIdValue.Empty.ToJson());
-				_multiInputs.Add(input);
-
+				mi.Add(input);
 				Requirement(input, InputTrigger);
 			}
 
 			_lampIdValueCache.Clear();
+
+			Match = MatchDataType switch {
+				LampDataType.OnOff => ValueInput(nameof(Match), false),
+				LampDataType.Status => ValueInput(nameof(Match), LampStatus.Off),
+				LampDataType.Intensity => ValueInput(nameof(Match), 0f),
+				LampDataType.Color => ValueInput(nameof(Match), UnityEngine.Color.white),
+				_ => throw new ArgumentOutOfRangeException()
+			};
+
+			NonMatch = NonMatchDataType switch {
+				LampDataType.OnOff => ValueInput(nameof(NonMatch), false),
+				LampDataType.Status => ValueInput(nameof(NonMatch), LampStatus.Off),
+				LampDataType.Intensity => ValueInput(nameof(NonMatch), 0f),
+				LampDataType.Color => ValueInput(nameof(NonMatch), UnityEngine.Color.white),
+				_ => throw new ArgumentOutOfRangeException()
+			};
 
 			Succession(InputTrigger, OutputTrigger);
 		}
@@ -84,8 +112,13 @@ namespace VisualPinball.Unity.VisualScripting
 				Debug.LogError("Cannot find GLE.");
 				return OutputTrigger;
 			}
-			
-			var value = flow.GetValue<int>(SourceValue);
+
+			if (!AssertPlayer(flow)) {
+				Debug.LogError("Cannot find player.");
+				return OutputTrigger;
+			}
+
+			var sourceValue = flow.GetValue<int>(SourceValue);
 
 			foreach (var input in multiInputs) {
 				var json = flow.GetValue<string>(input);
@@ -95,7 +128,26 @@ namespace VisualPinball.Unity.VisualScripting
 				}
 
 				var lampIdValue = _lampIdValueCache[json.GetHashCode()];
-				Gle.SetLamp(lampIdValue.id, lampIdValue.value == value ? 255f : 0f);
+
+				var dataType = lampIdValue.value == sourceValue ? MatchDataType : NonMatchDataType;
+				var value = lampIdValue.value == sourceValue ? Match : NonMatch;
+
+				switch (dataType) {
+					case LampDataType.OnOff:
+						Player.SetLamp(lampIdValue.id, flow.GetValue<bool>(value) ? LampStatus.On : LampStatus.Off);
+						break;
+					case LampDataType.Status:
+						Player.SetLamp(lampIdValue.id, flow.GetValue<LampStatus>(value));
+						break;
+					case LampDataType.Intensity:
+						Player.SetLamp(lampIdValue.id, flow.GetValue<float>(value));
+						break;
+					case LampDataType.Color:
+						Player.SetLamp(lampIdValue.id, flow.GetValue<UnityEngine.Color>(value).ToEngineColor());
+						break;
+					default:
+						throw new ArgumentOutOfRangeException();
+				}
 			}
 
 			return OutputTrigger;
