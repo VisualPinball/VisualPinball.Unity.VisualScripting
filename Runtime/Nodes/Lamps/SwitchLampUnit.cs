@@ -17,9 +17,11 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using VisualPinball.Engine.Game.Engines;
+using Color = VisualPinball.Engine.Math.Color;
 
 namespace VisualPinball.Unity.VisualScripting
 {
@@ -55,6 +57,9 @@ namespace VisualPinball.Unity.VisualScripting
 		private int _inputCount = 1;
 
 		[DoNotSerialize]
+		public ReadOnlyCollection<ValueInput> multiInputs { get; private set; }
+
+		[DoNotSerialize]
 		[PortLabel("Source Value")]
 		public ValueInput SourceValue { get; private set; }
 
@@ -65,7 +70,7 @@ namespace VisualPinball.Unity.VisualScripting
 		public ValueInput NonMatch { get; private set; }
 
 		[DoNotSerialize]
-		public ReadOnlyCollection<ValueInput> multiInputs { get; private set; }
+		private readonly Dictionary<string, float> _intensityMultipliers = new();
 
 		private Dictionary<int, LampIdValue> _lampIdValueCache = new Dictionary<int, LampIdValue>();
 
@@ -140,7 +145,7 @@ namespace VisualPinball.Unity.VisualScripting
 						Player.SetLamp(lampIdValue.id, flow.GetValue<LampStatus>(value));
 						break;
 					case LampDataType.Intensity:
-						Player.SetLamp(lampIdValue.id, flow.GetValue<float>(value));
+						Player.SetLamp(lampIdValue.id, flow.GetValue<float>(value) * GetIntensityMultiplier(lampIdValue.id));
 						break;
 					case LampDataType.Color:
 						Player.SetLamp(lampIdValue.id, flow.GetValue<UnityEngine.Color>(value).ToEngineColor());
@@ -151,6 +156,23 @@ namespace VisualPinball.Unity.VisualScripting
 			}
 
 			return OutputTrigger;
+		}
+
+		private float GetIntensityMultiplier(string id)
+		{
+			if (_intensityMultipliers.ContainsKey(id)) {
+				return _intensityMultipliers[id];
+			}
+
+			var mapping = Player.LampMapping.FirstOrDefault(l => l.Id == id);
+			if (mapping == null) {
+				Debug.LogError($"Unknown lamp ID {id}.");
+				_intensityMultipliers[id] = 1;
+				return 1;
+			}
+
+			_intensityMultipliers[id] = mapping.Type == LampType.Rgb ? 255 : 1;
+			return _intensityMultipliers[id];
 		}
 	}
 }
