@@ -144,9 +144,11 @@ namespace VisualPinball.Unity.VisualScripting
 				foreach (var input in multiInputs) {
 					var lampId = flow.GetValue<string>(input);
 
-					var mapping = Player.LampMapping.FirstOrDefault(l => l.Id == lampId);
-					if (mapping != null) {
-						UpdateLightComponentCache(mapping.Device, lampId);
+					var mappingList = Player.LampMapping.Where(l => l.Id == lampId);
+					if (mappingList.Any()) {
+						foreach (var mapping in mappingList) {
+							UpdateLightComponentCache(mapping.Device, lampId);
+						}
 					}
 					else {
 						Debug.LogError($"Unknown lamp ID {lampId}.");
