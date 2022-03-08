@@ -16,19 +16,40 @@
 
 // ReSharper disable UnusedType.Global
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
 
 namespace VisualPinball.Unity.VisualScripting.Editor
 {
-	[Widget(typeof(SwitchEventUnit))]
-	public sealed class SwitchEventUnitWidget : GleMultiUnitWidget<SwitchEventUnit>
+	[Widget(typeof(GetCoilUnit))]
+	public sealed class GetCoilUnitWidget : GleUnitWidget<GetCoilUnit>
 	{
-		public SwitchEventUnitWidget(FlowCanvas canvas, SwitchEventUnit unit) : base(canvas, unit)
+		public GetCoilUnitWidget(FlowCanvas canvas, GetCoilUnit unit) : base(canvas, unit)
 		{
+			_coilIdInspectorConstructor = meta => new VariableNameInspector(meta, GetNameSuggestions);
 		}
 
-		protected override IEnumerable<string> IdSuggestions(IGamelogicEngine gle) => gle.RequestedSwitches.Select(sw => sw.Id);
+		private VariableNameInspector _coilIdInspector;
+		private readonly Func<Metadata, VariableNameInspector> _coilIdInspectorConstructor;
+
+		public override Inspector GetPortInspector(IUnitPort port, Metadata meta)
+		{
+			if (port == unit.Id) {
+				InspectorProvider.instance.Renew(ref _coilIdInspector, meta, _coilIdInspectorConstructor);
+
+				return _coilIdInspector;
+			}
+
+			return base.GetPortInspector(port, meta);
+		}
+
+		private IEnumerable<string> GetNameSuggestions()
+		{
+			return !GleAvailable
+				? new List<string>()
+				: Gle.RequestedCoils.Select(coil => coil.Id).ToList();
+		}
 	}
 }

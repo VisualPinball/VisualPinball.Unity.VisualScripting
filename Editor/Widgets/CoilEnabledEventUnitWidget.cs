@@ -22,13 +22,13 @@ using Unity.VisualScripting;
 
 namespace VisualPinball.Unity.VisualScripting.Editor
 {
-	[Widget(typeof(SwitchEventUnit))]
-	public sealed class SwitchEventUnitWidget : GleMultiUnitWidget<SwitchEventUnit>
+	[Widget(typeof(CoilEnabledEventUnit))]
+	public sealed class CoilEnabledEventUnitWidget : GleMultiUnitWidget<CoilEnabledEventUnit>
 	{
-		public SwitchEventUnitWidget(FlowCanvas canvas, SwitchEventUnit unit) : base(canvas, unit)
+		public CoilEnabledEventUnitWidget(FlowCanvas canvas, CoilEnabledEventUnit unit) : base(canvas, unit)
 		{
 		}
 
-		protected override IEnumerable<string> IdSuggestions(IGamelogicEngine gle) => gle.RequestedSwitches.Select(sw => sw.Id);
+		protected override IEnumerable<string> IdSuggestions(IGamelogicEngine gle) => gle.RequestedCoils.Select(coil => coil.Id);
 	}
 }

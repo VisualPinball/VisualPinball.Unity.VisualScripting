@@ -36,8 +36,7 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 
 		public override Inspector GetPortInspector(IUnitPort port, Metadata meta)
 		{
-			if (port == unit.Id)
-			{
+			if (port == unit.Id) {
 				InspectorProvider.instance.Renew(ref _switchIdInspector, meta, _switchIdInspectorConstructor);
 
 				return _switchIdInspector;

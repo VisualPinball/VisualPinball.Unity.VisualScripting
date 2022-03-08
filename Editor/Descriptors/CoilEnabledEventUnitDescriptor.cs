@@ -16,19 +16,34 @@
 
 // ReSharper disable UnusedType.Global
 
-using System.Collections.Generic;
-using System.Linq;
 using Unity.VisualScripting;
 
 namespace VisualPinball.Unity.VisualScripting.Editor
 {
-	[Widget(typeof(SwitchEventUnit))]
-	public sealed class SwitchEventUnitWidget : GleMultiUnitWidget<SwitchEventUnit>
+	[Descriptor(typeof(CoilEnabledEventUnit))]
+	public class CoilEnabledEventUnitDescriptor : UnitDescriptor<CoilEnabledEventUnit>
 	{
-		public SwitchEventUnitWidget(FlowCanvas canvas, SwitchEventUnit unit) : base(canvas, unit)
+		public CoilEnabledEventUnitDescriptor(CoilEnabledEventUnit target) : base(target)
 		{
 		}
 
-		protected override IEnumerable<string> IdSuggestions(IGamelogicEngine gle) => gle.RequestedSwitches.Select(sw => sw.Id);
+		protected override string DefinedSummary()
+		{
+			return "This node triggers an event when a coil in the list of given ID is enabled.";
+		}
+
+		protected override EditorTexture DefinedIcon() => EditorTexture.Single(Unity.Editor.Icons.CoilEvent);
+
+		protected override void DefinedPort(IUnitPort port, UnitPortDescription desc)
+		{
+			base.DefinedPort(port, desc);
+
+			if (int.TryParse(port.key, out int id)) {
+				id += 1;
+
+				desc.label = $"Coil ID {id}";
+				desc.summary = $"Coil ID {id} to look for enabled status.";
+			}
+		}
 	}
 }

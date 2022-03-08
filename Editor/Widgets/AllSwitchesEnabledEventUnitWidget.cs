@@ -10,6 +10,7 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 		public AllSwitchesEnabledEventUnitWidget(FlowCanvas canvas, AllSwitchesEnabledEventUnit unit) : base(canvas, unit)
 		{
 		}
+
 		protected override IEnumerable<string> IdSuggestions(IGamelogicEngine gle) => gle.RequestedSwitches.Select(sw => sw.Id);
 	}
 }

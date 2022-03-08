@@ -16,19 +16,38 @@
 
 // ReSharper disable UnusedType.Global
 
-using System.Collections.Generic;
-using System.Linq;
 using Unity.VisualScripting;
+using VisualPinball.Unity.Editor;
+using IconSize = VisualPinball.Unity.Editor.IconSize;
 
 namespace VisualPinball.Unity.VisualScripting.Editor
 {
-	[Widget(typeof(SwitchEventUnit))]
-	public sealed class SwitchEventUnitWidget : GleMultiUnitWidget<SwitchEventUnit>
+	[Descriptor(typeof(GetCoilUnit))]
+	public class GetCoilUnitDescriptor : UnitDescriptor<GetCoilUnit>
 	{
-		public SwitchEventUnitWidget(FlowCanvas canvas, SwitchEventUnit unit) : base(canvas, unit)
+		public GetCoilUnitDescriptor(GetCoilUnit target) : base(target)
 		{
 		}
 
-		protected override IEnumerable<string> IdSuggestions(IGamelogicEngine gle) => gle.RequestedSwitches.Select(sw => sw.Id);
+		protected override string DefinedSummary()
+		{
+			return "This node retrieves the current status of the coil.";
+		}
+
+		protected override EditorTexture DefinedIcon() => EditorTexture.Single(Unity.Editor.Icons.Coil(IconSize.Large, IconColor.Orange));
+
+		protected override void DefinedPort(IUnitPort port, UnitPortDescription desc)
+		{
+			base.DefinedPort(port, desc);
+
+			switch (port.key) {
+				case nameof(GetCoilUnit.Id):
+					desc.summary = "Coil ID to check if enabled.";
+					break;
+				case nameof(GetCoilUnit.IsEnabled):
+					desc.summary = "Whether the coil is enabled.";
+					break;
+			}
+		}
 	}
 }

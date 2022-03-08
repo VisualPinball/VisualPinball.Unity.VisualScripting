@@ -14,21 +14,38 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-// ReSharper disable UnusedType.Global
-
-using System.Collections.Generic;
-using System.Linq;
 using Unity.VisualScripting;
+using UnityEngine;
 
-namespace VisualPinball.Unity.VisualScripting.Editor
+namespace VisualPinball.Unity.VisualScripting
 {
-	[Widget(typeof(SwitchEventUnit))]
-	public sealed class SwitchEventUnitWidget : GleMultiUnitWidget<SwitchEventUnit>
+	[UnitTitle("Get Coil Value")]
+	[UnitSurtitle("Gamelogic Engine")]
+	[UnitCategory("Visual Pinball")]
+	public class GetCoilUnit : GleUnit
 	{
-		public SwitchEventUnitWidget(FlowCanvas canvas, SwitchEventUnit unit) : base(canvas, unit)
+		[DoNotSerialize]
+		[PortLabel("Coil ID")]
+		public ValueInput Id { get; private set; }
+
+		[DoNotSerialize]
+		[PortLabel("Is Enabled")]
+		public ValueOutput IsEnabled { get; private set; }
+
+		protected override void Definition()
 		{
+			Id = ValueInput(nameof(Id), string.Empty);
+			IsEnabled = ValueOutput(nameof(IsEnabled), GetEnabled);
 		}
 
-		protected override IEnumerable<string> IdSuggestions(IGamelogicEngine gle) => gle.RequestedSwitches.Select(sw => sw.Id);
+		private bool GetEnabled(Flow flow)
+		{
+			if (!AssertGle(flow)) {
+				Debug.LogError("Cannot find GLE.");
+				return false;
+			}
+
+			return Gle.GetCoil(flow.GetValue<string>(Id));
+		}
 	}
 }
