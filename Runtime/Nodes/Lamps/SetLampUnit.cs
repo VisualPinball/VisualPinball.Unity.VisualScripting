@@ -103,16 +103,16 @@ namespace VisualPinball.Unity.VisualScripting
 				var lampId = flow.GetValue<string>(input);
 				switch (DataType) {
 					case LampDataType.OnOff:
-						Player.SetLamp(lampId, 0, flow.GetValue<bool>(Value) ? LampStatus.On : LampStatus.Off);
+						Player.SetLamp(lampId, flow.GetValue<bool>(Value) ? LampStatus.On : LampStatus.Off);
 						break;
 					case LampDataType.Status:
-						Player.SetLamp(lampId, 0, flow.GetValue<LampStatus>(Value));
+						Player.SetLamp(lampId, flow.GetValue<LampStatus>(Value));
 						break;
 					case LampDataType.Intensity:
-						Player.SetLamp(lampId, 0, flow.GetValue<float>(Value) * GetIntensityMultiplier(lampId));
+						Player.SetLamp(lampId, flow.GetValue<float>(Value) * GetIntensityMultiplier(lampId));
 						break;
 					case LampDataType.Color:
-						Player.SetLamp(lampId, 0, flow.GetValue<UnityEngine.Color>(Value).ToEngineColor());
+						Player.SetLamp(lampId, flow.GetValue<UnityEngine.Color>(Value).ToEngineColor());
 						break;
 					default:
 						throw new ArgumentOutOfRangeException();
