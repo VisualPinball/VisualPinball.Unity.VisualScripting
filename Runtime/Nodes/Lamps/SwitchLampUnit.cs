@@ -37,6 +37,9 @@ namespace VisualPinball.Unity.VisualScripting
 		[Serialize, Inspectable, UnitHeaderInspectable("Non Match")]
 		public LampDataType NonMatchDataType { get; set; }
 
+		[Serialize, Inspectable, UnitHeaderInspectable("Value Compare")]
+		public CompareType ValueCompareType { get; set; }
+
 		[DoNotSerialize]
 		[Inspectable, UnitHeaderInspectable("Lamp IDs")]
 		public int inputCount
@@ -134,8 +137,37 @@ namespace VisualPinball.Unity.VisualScripting
 
 				var lampIdValue = _lampIdValueCache[json.GetHashCode()];
 
-				var dataType = lampIdValue.value == sourceValue ? MatchDataType : NonMatchDataType;
-				var value = lampIdValue.value == sourceValue ? Match : NonMatch;
+				var match = false;
+
+				switch(ValueCompareType)
+				{
+					case CompareType.NotEqual:
+						match = lampIdValue.value != sourceValue;
+						break;
+
+					case CompareType.GreaterThan:
+						match = lampIdValue.value > sourceValue;
+						break;
+
+					case CompareType.GreaterThanEqual:
+						match = lampIdValue.value >= sourceValue;
+						break;
+
+					case CompareType.LessThan:
+						match = lampIdValue.value < sourceValue;
+						break;
+
+					case CompareType.LessThanEqual:
+						match = lampIdValue.value < sourceValue;
+						break;
+
+					default:
+						match = lampIdValue.value == sourceValue;
+						break;
+				}
+
+				var dataType = match ? MatchDataType : NonMatchDataType;
+				var value = match ? Match : NonMatch;
 
 				switch (dataType) {
 					case LampDataType.OnOff:
