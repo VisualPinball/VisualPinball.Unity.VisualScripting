@@ -14,17 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-using System.ComponentModel;
+using Unity.VisualScripting;
 
-namespace VisualPinball.Unity.VisualScripting
+namespace VisualPinball.Unity.VisualScripting.Editor
 {
-	public enum LampDataType
-	{
-		[Description("On/Off")]
-		OnOff,
-
-		Status,
-		Intensity,
-		Color,
-	}
+    [Inspector(typeof(LampDataType))]
+    public class LampDataTypeInspector : AttributedEnumInspector<LampDataType>
+    {
+        public LampDataTypeInspector(Metadata metadata) : base(metadata)
+        {
+        }
+    }
 }
