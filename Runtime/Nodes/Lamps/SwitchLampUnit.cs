@@ -158,7 +158,7 @@ namespace VisualPinball.Unity.VisualScripting
 						break;
 
 					case CompareType.LessThanEqual:
-						match = lampIdValue.value < sourceValue;
+						match = lampIdValue.value <= sourceValue;
 						break;
 
 					default:
