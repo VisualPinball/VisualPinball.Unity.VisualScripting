@@ -38,67 +38,117 @@ namespace VisualPinball.Unity.VisualScripting
 	[UnitCategory("Visual Pinball")]
 	public class EMAddPointsUnit : GleUnit
 	{
-		[Serialize, Inspectable, UnitHeaderInspectable("ID")]
-		public DisplayDefinition Display { get; private set; }
-
-		[DoNotSerialize]
-		public ControlInput InputTrigger;
+		private Bool running = false;
 
 		[DoNotSerialize]
 		[PortLabelHidden]
-		public ControlOutput OutputTrigger;
-
-		[DoNotSerialize]
-		public ControlOutput tick { get; private set; }
-
-		[DoNotSerialize]
-		public ValueInput scoreMotor { get; private set; }
-
-		[DoNotSerialize]
-		public ValueInput pointValue { get; private set; }
+		public ControlInput InputTrigger;
 
 		[DoNotSerialize]
 		public ValueInput duration { get; private set; }
 
+		[DoNotSerialize]
+		[PortLabel("Unscaled")]
+		public ValueInput unscaledTime { get; private set; }
+
+		[DoNotSerialize]
+		public ControlOutput started;
+
+		[DoNotSerialize]
+		public ControlOutput stopped;
+
+		[DoNotSerialize]
+		public ControlOutput pulse { get; private set; }
+
+		[DoNotSerialize]
+		public ValueInput pointValue { get; private set; }
+
+		[DoNotSerialize, PortLabel("Point Value"), Inspectable]
+		public ValueOutput OutputPointValue { get; private set; }
+
 		protected override void Definition()
 		{
 			InputTrigger = ControlInputCoroutine(nameof(InputTrigger), Process);
-			OutputTrigger = ControlOutput(nameof(OutputTrigger));
-
-			tick = ControlOutput(nameof(tick));
 
 			pointValue = ValueInput(nameof(pointValue), 0);
-			scoreMotor = ValueInput(nameof(scoreMotor), 0);
 
-			duration = ValueInput(nameof(duration), 0f);
+			duration = ValueInput(nameof(duration), .750f);
+			unscaledTime = ValueInput(nameof(unscaledTime), false);
+
+			started = ControlOutput(nameof(started));
+			stopped = ControlOutput(nameof(stopped));
+
+			pulse = ControlOutput(nameof(pulse));
+
+			OutputPointValue = ValueOutput<int>(nameof(OutputPointValue));
 		}
 
 		private IEnumerator Process(Flow flow)
 		{
-			if (!AssertGle(flow))
-			{
+			if (!AssertGle(flow)) {
 				Debug.LogError("Cannot find GLE.");
-				yield return OutputTrigger;
-			}
 
-			if (!AssertPlayer(flow))
-			{
+				yield return null;
+			}
+			else if (!AssertPlayer(flow)) {
 				Debug.LogError("Cannot find player.");
-				yield return OutputTrigger;
+
+				yield return null;
 			}
+			else if (running) {
+				var points = flow.GetValue<int>(pointValue);
 
-			var seconds = flow.GetValue<float>(this.duration);
+				Debug.Log($"Score motor is already running. Ignoring {points} point(s).");
 
-			for (int loop = 0; loop < 5; loop++)
-			{
-				yield return new WaitForSeconds(seconds);
-
-				yield return tick;
-
-				Debug.Log($"ITERATION LOOP {loop}");
+				yield return null;
 			}
+			else {
+				Debug.Log("Starting score motor");
 
-			yield return OutputTrigger;
+				yield return started;
+
+				running = true;
+
+				var points = flow.GetValue<int>(pointValue);
+
+				var pulses =
+					(points % 100000 == 0) ? points / 100000 :
+					(points % 10000 == 0) ? points / 10000 :
+					(points % 1000 == 0) ? points / 1000 :
+					(points % 100 == 0) ? points / 100 :
+					(points % 10 == 0) ? points / 10 :
+					points;
+
+				var pointsPerPulse = points / pulses;
+
+				flow.SetValue(OutputPointValue, pointsPerPulse);
+
+				var seconds = flow.GetValue<float>(duration) / 6;
+				var realtime = flow.GetValue<bool>(unscaledTime);
+
+				for (int loop = 0; loop < 6; loop++) {
+					Debug.Log($"Waiting {seconds}s. ({loop + 1} of 6)");
+
+					if (realtime) {
+						yield return new WaitForSecondsRealtime(seconds);
+					}
+					else {
+						yield return new WaitForSeconds(seconds);
+					}
+
+					if (loop < pulses) {
+						Debug.Log($"Performing {pointsPerPulse} point(s) pulse. ({loop + 1} of {pulses})");
+
+						yield return pulse;
+					}
+				}
+
+				Debug.Log("Stopping score motor");
+
+				running = false;
+
+				yield return stopped;
+			}
 		}
 	}
 }
