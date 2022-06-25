@@ -64,7 +64,8 @@ namespace VisualPinball.Unity.VisualScripting
 		public GamelogicEngineWire[] AvailableWires => Wires;
 
 		public event EventHandler<RequestedDisplays> OnDisplaysRequested;
-		public event EventHandler<DisplayFrameData> OnDisplayFrame;
+		public event EventHandler<DisplayFrameData> OnUpdateFrame;
+		public event EventHandler<ClearDisplayData> OnClearFrame;
 		public event EventHandler<LampEventArgs> OnLampChanged;
 		public event EventHandler<LampsEventArgs> OnLampsChanged;
 		public event EventHandler<CoilEventArgs> OnCoilChanged;
@@ -77,7 +78,7 @@ namespace VisualPinball.Unity.VisualScripting
 		[NonSerialized] private int _currentPlayer;
 		[NonSerialized] public readonly TableState TableState = new ();
 		[NonSerialized] public readonly Dictionary<int, PlayerState> PlayerStates = new ();
-
+		
 		public PlayerState CurrentPlayerState {
 			get {
 				if (!PlayerStates.ContainsKey(_currentPlayer)) {
@@ -87,9 +88,14 @@ namespace VisualPinball.Unity.VisualScripting
 			}
 		}
 
-		public void DisplayFrame(DisplayFrameData data)
+		public void UpdateFrame(DisplayFrameData data)
 		{
-			OnDisplayFrame?.Invoke(this, data);
+			OnUpdateFrame?.Invoke(this, data);
+		}
+
+		public void ClearFrame(ClearDisplayData data)
+		{
+			OnClearFrame?.Invoke(this, data);
 		}
 
 		public void SetCurrentPlayer(int value, bool forceNotify = false)
