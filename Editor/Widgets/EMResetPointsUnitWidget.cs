@@ -20,10 +20,10 @@ using Unity.VisualScripting;
 
 namespace VisualPinball.Unity.VisualScripting.Editor
 {
-	[Widget(typeof(EMAddPointsUnit))]
-	public sealed class EMAddPointsUnitWidget : GleUnitWidget<EMAddPointsUnit>
+	[Widget(typeof(EMResetPointsUnit))]
+	public sealed class EMResetPointsUnitWidget : GleUnitWidget<EMResetPointsUnit>
 	{
-		public EMAddPointsUnitWidget(FlowCanvas canvas, EMAddPointsUnit unit) : base(canvas, unit)
+		public EMResetPointsUnitWidget(FlowCanvas canvas, EMResetPointsUnit unit) : base(canvas, unit)
 		{
 		}
 	}

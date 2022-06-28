@@ -20,11 +20,27 @@ using Unity.VisualScripting;
 
 namespace VisualPinball.Unity.VisualScripting.Editor
 {
-	[Widget(typeof(EMAddPointsUnit))]
-	public sealed class EMAddPointsUnitWidget : GleUnitWidget<EMAddPointsUnit>
+	[Descriptor(typeof(EMResetPointsUnit))]
+	public class EMResetPointsUnitDescriptor : UnitDescriptor<EMResetPointsUnit>
 	{
-		public EMAddPointsUnitWidget(FlowCanvas canvas, EMAddPointsUnit unit) : base(canvas, unit)
+		public EMResetPointsUnitDescriptor(EMResetPointsUnit target) : base(target)
 		{
+		}
+
+		protected override string DefinedSummary()
+		{
+			return "This node takes an incoming point value and pulses values to that can be used to simulate the resetting of a score reel. "
+			   + "For example, an incoming point value of 2041 will provide the following pulses: 3052, 4063, 5074, 6085, 7096, 8007, 9008, 0009, 0000";
+		}
+
+		protected override EditorTexture DefinedIcon() => EditorTexture.Single(Unity.Editor.Icons.Mech(Unity.Editor.IconSize.Large, Unity.Editor.IconColor.Orange));
+
+		protected override void DefinedPort(IUnitPort port, UnitPortDescription desc)
+		{
+			base.DefinedPort(port, desc);
+
+			switch (port.key) {
+			}
 		}
 	}
 }

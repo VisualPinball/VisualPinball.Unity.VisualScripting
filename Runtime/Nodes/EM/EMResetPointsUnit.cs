@@ -20,11 +20,11 @@ using UnityEngine;
 
 namespace VisualPinball.Unity.VisualScripting
 {
-	[UnitShortTitle("EM Add Points")]
-	[UnitTitle("EM Add Points")]
+	[UnitShortTitle("EM Reset Points")]
+	[UnitTitle("EM Reset Points")]
 	[UnitSurtitle("EM")]
 	[UnitCategory("Visual Pinball/EM")]
-	public class EMAddPointsUnit : GleUnit
+	public class EMResetPointsUnit : GleUnit
 	{
 		[DoNotSerialize]
 		[PortLabelHidden]
@@ -89,34 +89,26 @@ namespace VisualPinball.Unity.VisualScripting
 
 				var points = flow.GetValue<int>(pointValue);
 
-				var pulses =
-					(points % 100000 == 0) ? points / 100000 :
-					(points % 10000 == 0) ? points / 10000 :
-					(points % 1000 == 0) ? points / 1000 :
-					(points % 100 == 0) ? points / 100 :
-					(points % 10 == 0) ? points / 10 :
-					points;
-
-				var pointsPerPulse = points / pulses;
-
 				var seconds = flow.GetValue<float>(duration) / 6;
 				var realtime = flow.GetValue<bool>(unscaledTime);
 
-				for (int loop = 0; loop < 6; loop++) {
-					var outputPoints = loop < pulses ? pointsPerPulse : 0;
+				while (points > 0) {
+					for (int loop = 0; loop < 6; loop++) {
+						points = AdvancePoints(points);
 
-					Debug.Log($"Pulse {loop + 1} of 6 - waiting {seconds} and triggering with {outputPoints} points");
+						Debug.Log($"Pulse {loop + 1} of 6 - waiting {seconds} and triggering with {points} points");
 
-					if (realtime) {
-						yield return new WaitForSecondsRealtime(seconds);
+						if (realtime) {
+							yield return new WaitForSecondsRealtime(seconds);
+						}
+						else {
+							yield return new WaitForSeconds(seconds);
+						}
+
+						flow.SetValue(OutputPointValue, points);
+
+						yield return pulse;
 					}
-					else {
-						yield return new WaitForSeconds(seconds);
-					}
-
-					flow.SetValue(OutputPointValue, outputPoints);
-
-					yield return pulse;
 				}
 
 				Debug.Log("Stopping score motor");
@@ -125,6 +117,47 @@ namespace VisualPinball.Unity.VisualScripting
 
 				yield return stopped;
 			}
+		}
+
+		private static int NumDigits(int n)
+		{
+			if (n < 0)
+			{
+				n = n == int.MinValue ? int.MaxValue : -n;
+			}
+			return n switch
+			{
+				< 10 => 1,
+				< 100 => 2,
+				< 1000 => 3,
+				< 10000 => 4,
+				< 100000 => 5,
+				< 1000000 => 6,
+				< 10000000 => 7,
+				< 100000000 => 8,
+				< 1000000000 => 9,
+				_ => 10
+			};
+		}
+
+		private static int[] DigitArr(int n)
+		{
+			var result = new int[NumDigits(n)];
+			for (var i = result.Length - 1; i >= 0; i--) {
+				result[i] = n % 10;
+				n /= 10;
+			}
+			return result;
+		}
+
+		private static int AdvancePoints(int points) {
+			var value = 0;
+
+			foreach (var i in DigitArr(points)) {
+				value = (value * 10) + ((i > 0 && i < 9) ? (i + 1) : 0);
+			}
+
+			return value;
 		}
 	}
 }

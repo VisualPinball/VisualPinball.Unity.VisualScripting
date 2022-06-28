@@ -29,10 +29,11 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 
 		protected override string DefinedSummary()
 		{
-			return "This node adds points for EMs.";
+			return "This node takes an incoming point value and pulses values to that can be used to simulate adding points to a score reel. "
+				+ "For example, an incoming point value of 500 will provide 5 pulses of 100.";
 		}
 
-		protected override EditorTexture DefinedIcon() => EditorTexture.Single(Unity.Editor.Icons.PlayerVariable);
+		protected override EditorTexture DefinedIcon() => EditorTexture.Single(Unity.Editor.Icons.Mech(Unity.Editor.IconSize.Large, Unity.Editor.IconColor.Orange));
 
 		protected override void DefinedPort(IUnitPort port, UnitPortDescription desc)
 		{
