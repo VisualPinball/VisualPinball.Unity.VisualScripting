@@ -49,7 +49,8 @@ namespace VisualPinball.Unity.VisualScripting
 		[DoNotSerialize]
 		public ValueInput pointValue { get; private set; }
 
-		[DoNotSerialize, PortLabel("Point Value"), Inspectable]
+		[DoNotSerialize]
+		[PortLabel("Point Value")]
 		public ValueOutput OutputPointValue { get; private set; }
 
 		private Bool running = false;

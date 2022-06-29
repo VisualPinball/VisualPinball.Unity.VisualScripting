@@ -30,7 +30,7 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 		protected override string DefinedSummary()
 		{
 			return "This node takes an incoming point value and pulses values to that can be used to simulate adding points to a score reel. "
-				+ "For example, an incoming point value of 500 will provide 5 pulses of 100.";
+				+ "\n\nFor example, an incoming point value of 500 will provide 5 pulses of 100.";
 		}
 
 		protected override EditorTexture DefinedIcon() => EditorTexture.Single(Unity.Editor.Icons.Mech(Unity.Editor.IconSize.Large, Unity.Editor.IconColor.Orange));
@@ -40,6 +40,29 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 			base.DefinedPort(port, desc);
 
 			switch (port.key) {
+				case nameof(EMAddPointsUnit.pointValue):
+					desc.summary = "The total amount of points to add.";
+					break;
+
+				case nameof(EMAddPointsUnit.duration):
+					desc.summary = "The amount of time (in ms) the score motor runs.";
+					break;
+
+				case nameof(EMAddPointsUnit.started):
+					desc.summary = "Triggered when score motor starts.";
+					break;
+
+				case nameof(EMAddPointsUnit.stopped):
+					desc.summary = "Triggered when score motor finishes.";
+					break;
+
+				case nameof(EMAddPointsUnit.pulse):
+					desc.summary = "Triggered during each pulse of the score motor.";
+					break;
+
+				case nameof(EMAddPointsUnit.OutputPointValue):
+					desc.summary = "The current pulses calculated points value that can be used to increment a score value and update a score reel.";
+					break;
 			}
 		}
 	}

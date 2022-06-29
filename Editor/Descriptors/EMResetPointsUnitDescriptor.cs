@@ -30,7 +30,7 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 		protected override string DefinedSummary()
 		{
 			return "This node takes an incoming point value and pulses values to that can be used to simulate the resetting of a score reel. "
-			   + "For example, an incoming point value of 2041 will provide the following pulses: 3052, 4063, 5074, 6085, 7096, 8007, 9008, 0009, 0000";
+			   + "\n\nFor example, an incoming point value of 2041 will provide the following pulses: 3052, 4063, 5074, 6085, 7096, 8007, 9008, 0009, 0000";
 		}
 
 		protected override EditorTexture DefinedIcon() => EditorTexture.Single(Unity.Editor.Icons.Mech(Unity.Editor.IconSize.Large, Unity.Editor.IconColor.Orange));
@@ -40,6 +40,29 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 			base.DefinedPort(port, desc);
 
 			switch (port.key) {
+				case nameof(EMResetPointsUnit.pointValue):
+					desc.summary = "The starting points value used to seed the reset sequence.";
+					break;
+
+				case nameof(EMResetPointsUnit.duration):
+					desc.summary = "The amount of time (in ms) the score motor runs.";
+					break;
+
+				case nameof(EMResetPointsUnit.started):
+					desc.summary = "Triggered when score motor starts.";
+					break;
+
+				case nameof(EMResetPointsUnit.stopped):
+					desc.summary = "Triggered when score motor finishes.";
+					break;
+
+				case nameof(EMResetPointsUnit.pulse):
+					desc.summary = "Triggered during each pulse of the score motor.";
+					break;
+
+				case nameof(EMResetPointsUnit.OutputPointValue):
+					desc.summary = "The current pulses calculated points value that can be used to update a score reel.";
+					break;
 			}
 		}
 	}
