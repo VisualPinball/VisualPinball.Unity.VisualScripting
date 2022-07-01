@@ -30,7 +30,8 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 		protected override string DefinedSummary()
 		{
 			return "This node takes an incoming point value and pulses values to that can be used to simulate adding points to a score reel. "
-				+ "\n\nFor example, an incoming point value of 500 will provide 5 pulses of 100.";
+				+ "\n\nFor example, an incoming point value of 500 will provide 5 pulses of 100. "
+				+ "\n\nSingle pulse points (1, 10, 100, 1000, 10000) will be blocked if the score motor is running and Block Points is enabled.";
 		}
 
 		protected override EditorTexture DefinedIcon() => EditorTexture.Single(Unity.Editor.Icons.Mech(Unity.Editor.IconSize.Large, Unity.Editor.IconColor.Orange));

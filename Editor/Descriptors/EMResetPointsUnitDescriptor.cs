@@ -48,6 +48,10 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 					desc.summary = "The amount of time (in ms) the score motor runs.";
 					break;
 
+				case nameof(EMAddPointsUnit.positions):
+					desc.summary = "Score motor positions.";
+					break;
+
 				case nameof(EMResetPointsUnit.started):
 					desc.summary = "Triggered when score motor starts.";
 					break;
