@@ -31,11 +31,21 @@ namespace VisualPinball.Unity.VisualScripting
 		public ControlInput InputTrigger;
 
 		[DoNotSerialize]
+		public ValueInput blockPoints { get; private set; }
+
+		[DoNotSerialize]
+		public ValueInput positions { get; private set; }
+
+		[DoNotSerialize]
 		public ValueInput duration { get; private set; }
 
 		[DoNotSerialize]
 		[PortLabel("Unscaled")]
 		public ValueInput unscaledTime { get; private set; }
+
+		[DoNotSerialize]
+		[PortLabelHidden]
+		public ControlOutput OutputTrigger;
 
 		[DoNotSerialize]
 		public ControlOutput started;
@@ -53,7 +63,7 @@ namespace VisualPinball.Unity.VisualScripting
 		[PortLabel("Point Value")]
 		public ValueOutput OutputPointValue { get; private set; }
 
-		private Bool running = false;
+		private static string VARIABLE_EM_SCORE_MOTOR = "EM_SCORE_MOTOR";
 
 		protected override void Definition()
 		{
@@ -61,8 +71,12 @@ namespace VisualPinball.Unity.VisualScripting
 
 			pointValue = ValueInput(nameof(pointValue), 0);
 
-			duration = ValueInput(nameof(duration), .750f);
+			blockPoints = ValueInput(nameof(blockPoints), true);
+			positions = ValueInput(nameof(positions), 6);
+			duration = ValueInput(nameof(duration), 750);
 			unscaledTime = ValueInput(nameof(unscaledTime), false);
+
+			OutputTrigger = ControlOutput(nameof(OutputTrigger));
 
 			started = ControlOutput(nameof(started));
 			stopped = ControlOutput(nameof(stopped));
@@ -74,22 +88,17 @@ namespace VisualPinball.Unity.VisualScripting
 
 		private IEnumerator Process(Flow flow)
 		{
-			if (running) {
-				var points = flow.GetValue<int>(pointValue);
+			var running = false;
 
-				Debug.Log($"Score motor is already running. Ignoring {points} point(s).");
-
-				yield return null;
+			if (Variables.Application.IsDefined(VARIABLE_EM_SCORE_MOTOR)) {
+				running = Variables.Application.Get<bool>(VARIABLE_EM_SCORE_MOTOR);
 			}
-			else {
-				Debug.Log("Starting score motor");
 
-				yield return started;
+			yield return OutputTrigger;
 
-				running = true;
+			var points = flow.GetValue<int>(pointValue);
 
-				var points = flow.GetValue<int>(pointValue);
-
+			if (points > 0) {
 				var pulses =
 					(points % 100000 == 0) ? points / 100000 :
 					(points % 10000 == 0) ? points / 10000 :
@@ -98,33 +107,56 @@ namespace VisualPinball.Unity.VisualScripting
 					(points % 10 == 0) ? points / 10 :
 					points;
 
-				var pointsPerPulse = points / pulses;
+				if (pulses == 1) {
+					if (!running || (running && !flow.GetValue<bool>(blockPoints))) {
+						Debug.Log($"Single pulse triggering with {points} points");
 
-				var seconds = flow.GetValue<float>(duration) / 6;
-				var realtime = flow.GetValue<bool>(unscaledTime);
+						flow.SetValue(OutputPointValue, points);
 
-				for (int loop = 0; loop < 6; loop++) {
-					var outputPoints = loop < pulses ? pointsPerPulse : 0;
-
-					Debug.Log($"Pulse {loop + 1} of 6 - waiting {seconds} and triggering with {outputPoints} points");
-
-					if (realtime) {
-						yield return new WaitForSecondsRealtime(seconds);
+						yield return pulse;
 					}
-					else {
-						yield return new WaitForSeconds(seconds);
-					}
-
-					flow.SetValue(OutputPointValue, outputPoints);
-
-					yield return pulse;
 				}
+				else if (running)
+				{
+					Debug.Log($"Score motor is already running.");
+				}
+				else {
+					Debug.Log("Starting score motor");
 
-				Debug.Log("Stopping score motor");
+					Variables.Application.Set(VARIABLE_EM_SCORE_MOTOR, true);
+		
+					yield return started;
 
-				running = false;
+					var motorPositions = flow.GetValue<int>(positions);
 
-				yield return stopped;
+					var delay = (flow.GetValue<float>(duration) / 1000f) / motorPositions;
+					var realtime = flow.GetValue<bool>(unscaledTime);
+
+					var pointsPerPulse = points / pulses;
+
+					for (int loop = 0; loop < motorPositions; loop++) {
+						var outputPoints = loop < pulses ? pointsPerPulse : 0;
+
+						Debug.Log($"Pulse {loop + 1} of {motorPositions} - waiting {delay}ms and triggering with {outputPoints} points");
+
+						if (realtime) {
+							yield return new WaitForSecondsRealtime(delay);
+						}
+						else {
+							yield return new WaitForSeconds(delay);
+						}
+
+						flow.SetValue(OutputPointValue, outputPoints);
+
+						yield return pulse;
+					}
+
+					Debug.Log("Stopping score motor");
+
+					Variables.Application.Set(VARIABLE_EM_SCORE_MOTOR, false);
+
+					yield return stopped;
+				}
 			}
 		}
 	}

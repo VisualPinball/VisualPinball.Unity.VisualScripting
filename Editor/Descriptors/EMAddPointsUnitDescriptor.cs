@@ -44,6 +44,14 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 					desc.summary = "The total amount of points to add.";
 					break;
 
+				case nameof(EMAddPointsUnit.blockPoints):
+					desc.summary = "Block single pulse points when score motor running.";
+					break;
+
+				case nameof(EMAddPointsUnit.positions):
+					desc.summary = "Score motor positions.";
+					break;
+
 				case nameof(EMAddPointsUnit.duration):
 					desc.summary = "The amount of time (in ms) the score motor runs.";
 					break;
