@@ -20,22 +20,22 @@ namespace VisualPinball.Unity.VisualScripting
 {
 	public enum CompareType
 	{
-        [Description("=")]
-        Equal,
+		[Description("=")]
+		Equal,
 
-        [Description("\u2260")]
-        NotEqual,
+		[Description("\u2260")]
+		NotEqual,
 
-        [Description("<")]
-        LessThan,
+		[Description("<")]
+		LessThan,
 
-        [Description("\u2264")]
-        LessThanEqual,
+		[Description("\u2264")]
+		LessThanEqual,
 
-        [Description(">")]
-        GreaterThan,
+		[Description(">")]
+		GreaterThan,
 
-        [Description("\u2265")]
-        GreaterThanEqual
-    }
+		[Description("\u2265")]
+		GreaterThanEqual
+	}
 }

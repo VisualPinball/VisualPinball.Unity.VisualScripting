@@ -139,8 +139,7 @@ namespace VisualPinball.Unity.VisualScripting
 
 				var match = false;
 
-				switch(ValueCompareType)
-				{
+				switch(ValueCompareType) {
 					case CompareType.NotEqual:
 						match = lampIdValue.value != sourceValue;
 						break;

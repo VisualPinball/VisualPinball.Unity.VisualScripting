@@ -18,11 +18,11 @@ using Unity.VisualScripting;
 
 namespace VisualPinball.Unity.VisualScripting.Editor
 {
-    [Inspector(typeof(CompareType))]
-    public class CompareTypeInspector : AttributedEnumInspector<CompareType>
-    {
-        public CompareTypeInspector(Metadata metadata) : base(metadata)
-        {
-        }
-    }
+	[Inspector(typeof(CompareType))]
+	public class CompareTypeInspector : AttributedEnumInspector<CompareType>
+	{
+		public CompareTypeInspector(Metadata metadata) : base(metadata)
+		{
+		}
+	}
 }

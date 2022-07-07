@@ -18,11 +18,11 @@ using Unity.VisualScripting;
 
 namespace VisualPinball.Unity.VisualScripting.Editor
 {
-    [Inspector(typeof(LampDataType))]
-    public class LampDataTypeInspector : AttributedEnumInspector<LampDataType>
-    {
-        public LampDataTypeInspector(Metadata metadata) : base(metadata)
-        {
-        }
-    }
+	[Inspector(typeof(LampDataType))]
+	public class LampDataTypeInspector : AttributedEnumInspector<LampDataType>
+	{
+		public LampDataTypeInspector(Metadata metadata) : base(metadata)
+		{
+		}
+	}
 }

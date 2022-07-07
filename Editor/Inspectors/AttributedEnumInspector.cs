@@ -25,65 +25,60 @@ using UnityEngine;
 
 namespace VisualPinball.Unity.VisualScripting.Editor
 {
-    public abstract class AttributedEnumInspector<TEnum> : Inspector
-    {
-        private List<TEnum> Enums;
-        private string[] EnumDescriptions;
+	public abstract class AttributedEnumInspector<TEnum> : Inspector
+	{
+		private List<TEnum> Enums;
+		private string[] EnumDescriptions;
    
-        public AttributedEnumInspector(Metadata metadata) : base(metadata) {
-        }
+		public AttributedEnumInspector(Metadata metadata) : base(metadata) {
+		}
 
-        public override void Initialize()
-        {
-            Enums = Enum.GetValues(typeof(TEnum)).Cast<TEnum>().ToList();
-            EnumDescriptions = Enum.GetValues(typeof(TEnum)).Cast<TEnum>().Select(x => GetEnumDescription(x)).ToArray();
+		public override void Initialize()
+		{
+			Enums = Enum.GetValues(typeof(TEnum)).Cast<TEnum>().ToList();
+			EnumDescriptions = Enum.GetValues(typeof(TEnum)).Cast<TEnum>().Select(x => GetEnumDescription(x)).ToArray();
 
-            metadata.instantiate = true;
+			metadata.instantiate = true;
 
-            base.Initialize();
-        }
+			base.Initialize();
+		}
 
-        protected override float GetHeight(float width, GUIContent label)
-        {
-            return HeightWithLabel(metadata, width, EditorGUIUtility.singleLineHeight, label);
-        }
+		protected override float GetHeight(float width, GUIContent label)
+		{
+			return HeightWithLabel(metadata, width, EditorGUIUtility.singleLineHeight, label);
+		}
 
-        protected override void OnGUI(Rect position, GUIContent label)
-        {
-            position = BeginLabeledBlock(metadata, position, label);
+		protected override void OnGUI(Rect position, GUIContent label)
+		{
+			position = BeginLabeledBlock(metadata, position, label);
 
-            var fieldPosition = new Rect
-                (
-                position.x,
-                position.y,
-                position.width,
-                EditorGUIUtility.singleLineHeight
-                );
+			var fieldPosition = new Rect(
+				position.x,
+				position.y,
+				position.width,
+				EditorGUIUtility.singleLineHeight);
 
-            var index = Enums.FindIndex(c => c.Equals(metadata.value));
-            var newIndex = EditorGUI.Popup(fieldPosition, index, EnumDescriptions);
+			var index = Enums.FindIndex(c => c.Equals(metadata.value));
+			var newIndex = EditorGUI.Popup(fieldPosition, index, EnumDescriptions);
 
-            if (EndBlock(metadata))
-			{
-                metadata.RecordUndo();
-                metadata.value = Enums[newIndex];
-            }
-        }
+			if (EndBlock(metadata)) {
+				metadata.RecordUndo();
+				metadata.value = Enums[newIndex];
+			}
+		}
 
-        public override float GetAdaptiveWidth()
-        {
-            return Mathf.Max(18, EditorStyles.popup.CalcSize(new GUIContent(GetEnumDescription((TEnum)metadata.value))).x);
-        }
+		public override float GetAdaptiveWidth()
+		{
+			return Mathf.Max(18, EditorStyles.popup.CalcSize(new GUIContent(GetEnumDescription((TEnum)metadata.value))).x);
+		}
 
-        private string GetEnumDescription(TEnum value)
-        {
-            FieldInfo field = value.GetType().GetField(value.ToString());
+		private string GetEnumDescription(TEnum value)
+		{
+			FieldInfo field = value.GetType().GetField(value.ToString());
 
-            DescriptionAttribute attribute
-                    = Attribute.GetCustomAttribute(field, typeof(DescriptionAttribute))
-                        as DescriptionAttribute;
+			DescriptionAttribute attribute = Attribute.GetCustomAttribute(field, typeof(DescriptionAttribute)) as DescriptionAttribute;
 
-            return (attribute == null ? value.ToString() : attribute.Description).Replace('/', '\u2215');
-        }
-    }
+			return (attribute == null ? value.ToString() : attribute.Description).Replace('/', '\u2215');
+		}
+	}
 }
