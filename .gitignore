@@ -364,3 +364,5 @@ MigrationBackup/
 
 # Vi swap files
 *.swp
+
+.DS_Store

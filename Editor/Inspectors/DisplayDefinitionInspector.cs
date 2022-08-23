@@ -37,9 +37,15 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 					ErrorMessage = "No displays defined.";
 
 				} else {
-					var varNames = new List<string> { "None" }
-						.Concat(gle.Displays.Select(d => d.Id))
-						.ToArray();
+					var varNames = new List<string> { "None" };
+
+					if (metadata.HasAttribute<DisplayTypeFilterAttribute>()) {
+						varNames.AddRange(gle.Displays.Where(i => metadata.GetAttribute<DisplayTypeFilterAttribute>().types.Contains(i.Type)).Select(d => d.Id));
+					}
+					else {
+						varNames.AddRange(gle.Displays.Select(d => d.Id));
+					}
+
 					var currentDisplayDef = metadata.value as DisplayDefinition;
 					var currentIndex = 0;
 					if (currentDisplayDef != null) {
@@ -47,7 +53,7 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 						currentIndex = displayDef != null ? Array.IndexOf(gle.Displays, displayDef) + 1 : 0;
 					}
 
-					var newIndex = EditorGUI.Popup(position, currentIndex, varNames);
+					var newIndex = EditorGUI.Popup(position, currentIndex, varNames.ToArray());
 					metadata.RecordUndo();
 					metadata.value = newIndex == 0 ? null : gle.Displays[newIndex - 1];
 					ErrorMessage = null;

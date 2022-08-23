@@ -14,18 +14,17 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-namespace VisualPinball.Unity
+// ReSharper disable UnusedType.Global
+
+using Unity.VisualScripting;
+
+namespace VisualPinball.Unity.VisualScripting.Editor
 {
-	public static class VisualScriptingEventNames
+	[Descriptor(typeof(DisplayScoreEventUnit))]
+	public class DisplayScoreEventUnitDescriptor : UnitDescriptor<DisplayScoreEventUnit>
 	{
-		public const string GleStartedEvent = "GleStartedEvent";
-		public const string LampEvent = "LampEvent";
-		public const string SwitchEvent = "SwitchEvent";
-		public const string CoilEvent = "CoilEvent";
-		public const string DisplayScoreEvent = "DisplayScoreEvent";
-		public const string CurrentPlayerChanged = "CurrentPlayerChanged";
-		public const string PlayerVariableChanged = "PlayerVariableChanged";
-		public const string TableVariableChanged = "TableVariableChanged";
-		public const string PinballEvent = "PinballEvent";
+		public DisplayScoreEventUnitDescriptor(DisplayScoreEventUnit target) : base(target) { }
+
+		protected override EditorTexture DefinedIcon() => EditorTexture.Single(Unity.Editor.Icons.UpdateDisplay);
 	}
 }

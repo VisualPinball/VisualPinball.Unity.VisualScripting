@@ -61,7 +61,7 @@ namespace VisualPinball.Unity.VisualScripting
 
 		protected override bool ShouldTrigger(Flow flow, PinballEventArgs args)
 		{
-			return Event.Id.Equals(args.Id);
+			return Event != null && Event.Id.Equals(args.Id); 
 		}
 
 		protected override void AssignArguments(Flow flow, PinballEventArgs args)

@@ -21,23 +21,14 @@ using System.Collections.Generic;
 
 namespace VisualPinball.Unity.VisualScripting
 {
-	[Serializable]
-	public class DisplayDefinition
+	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
+	public class DisplayTypeFilterAttribute : Attribute
 	{
-		public string Id = "display0";
-		public DisplayType Type = DisplayType.DotMatrix;
-		public int Width = 128;
-		public int Height = 32;
-
-		public DisplayFrameFormat[] SupportedFormats = {
-			DisplayFrameFormat.AlphaNumeric
-		};
-
-		public bool Supports(DisplayFrameFormat format)
+		public DisplayTypeFilterAttribute(params DisplayType[] types)
 		{
-			return SupportedFormats != null && Array.IndexOf(SupportedFormats, format) >= 0;
+			this.types = types;
 		}
 
-		public DisplayConfig DisplayConfig => new(Id, Type, Width, Height);
+		public DisplayType[] types { get; private set; }
 	}
 }

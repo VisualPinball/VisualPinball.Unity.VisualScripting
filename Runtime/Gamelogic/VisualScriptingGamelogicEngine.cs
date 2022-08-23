@@ -64,7 +64,9 @@ namespace VisualPinball.Unity.VisualScripting
 		public GamelogicEngineWire[] AvailableWires => Wires;
 
 		public event EventHandler<RequestedDisplays> OnDisplaysRequested;
-		public event EventHandler<DisplayFrameData> OnDisplayFrame;
+		public event EventHandler<DisplayFrameData> OnDisplayUpdateFrame;
+		public event EventHandler<DisplayAddPointsData> OnDisplayAddPoints;
+
 		public event EventHandler<LampEventArgs> OnLampChanged;
 		public event EventHandler<LampsEventArgs> OnLampsChanged;
 		public event EventHandler<CoilEventArgs> OnCoilChanged;
@@ -85,11 +87,6 @@ namespace VisualPinball.Unity.VisualScripting
 				}
 				return PlayerStates[_currentPlayer];
 			}
-		}
-
-		public void DisplayFrame(DisplayFrameData data)
-		{
-			OnDisplayFrame?.Invoke(this, data);
 		}
 
 		public void SetCurrentPlayer(int value, bool forceNotify = false)
@@ -159,6 +156,21 @@ namespace VisualPinball.Unity.VisualScripting
 			EventBus.Trigger(VisualScriptingEventNames.GleStartedEvent, EventArgs.Empty);
 		}
 
+		public void DisplayUpdateFrame(DisplayFrameData data)
+		{
+			OnDisplayUpdateFrame?.Invoke(this, data);
+		}
+
+		public void DisplayAddPoints(DisplayAddPointsData data)
+		{
+			OnDisplayAddPoints?.Invoke(this, data);
+		}
+
+		public void DisplayScoreEvent(string id, float score)
+		{
+			EventBus.Trigger(VisualScriptingEventNames.DisplayScoreEvent, new DisplayScoreEventArgs(id, score));
+		}
+
 		public void Switch(string id, bool isClosed)
 		{
 			var args = new SwitchEventArgs2(id, isClosed);
@@ -192,7 +204,6 @@ namespace VisualPinball.Unity.VisualScripting
 		{
 			return _player.CoilStatuses.ContainsKey(id) && _player.CoilStatuses[id];
 		}
-
 
 		public void OnBeforeSerialize()
 		{

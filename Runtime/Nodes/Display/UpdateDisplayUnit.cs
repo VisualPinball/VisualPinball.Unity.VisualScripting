@@ -105,42 +105,42 @@ namespace VisualPinball.Unity.VisualScripting
 			if (Display != null) {
 				if (Display.Supports(DisplayFrameFormat.Numeric) && NumericInput.hasValidConnection) {
 					var numValue = flow.GetValue<float>(NumericInput);
-					VsGle.DisplayFrame(new DisplayFrameData(Display.Id, DisplayFrameFormat.Numeric, BitConverter.GetBytes(numValue)));
+					VsGle.DisplayUpdateFrame(new DisplayFrameData(Display.Id, DisplayFrameFormat.Numeric, BitConverter.GetBytes(numValue)));
 				}
 				if (Display.Supports(DisplayFrameFormat.AlphaNumeric) && flow.IsLocal(TextInput)) {
 					var strValue = flow.GetValue<string>(TextInput);
 					if (!string.IsNullOrEmpty(strValue)) {
-						VsGle.DisplayFrame(new DisplayFrameData(Display.Id, DisplayFrameFormat.AlphaNumeric, Encoding.UTF8.GetBytes(strValue)));
+						VsGle.DisplayUpdateFrame(new DisplayFrameData(Display.Id, DisplayFrameFormat.AlphaNumeric, Encoding.UTF8.GetBytes(strValue)));
 					}
 				}
 				if (Display.Supports(DisplayFrameFormat.Segment) && SegmentInput.hasValidConnection) {
 					var byteValue = flow.GetValue<byte[]>(SegmentInput);
 					if (byteValue is { Length: > 0 }) {
-						VsGle.DisplayFrame(new DisplayFrameData(Display.Id, DisplayFrameFormat.Segment, byteValue));
+						VsGle.DisplayUpdateFrame(new DisplayFrameData(Display.Id, DisplayFrameFormat.Segment, byteValue));
 					}
 				}
 				if (Display.Supports(DisplayFrameFormat.Dmd2) && Dmd2Input.hasValidConnection) {
 					var byteValue = flow.GetValue<byte[]>(Dmd2Input);
 					if (byteValue is { Length: > 0 }) {
-						VsGle.DisplayFrame(new DisplayFrameData(Display.Id, DisplayFrameFormat.Dmd2, byteValue));
+						VsGle.DisplayUpdateFrame(new DisplayFrameData(Display.Id, DisplayFrameFormat.Dmd2, byteValue));
 					}
 				}
 				if (Display.Supports(DisplayFrameFormat.Dmd4) && Dmd4Input.hasValidConnection) {
 					var byteValue = flow.GetValue<byte[]>(Dmd4Input);
 					if (byteValue is { Length: > 0 }) {
-						VsGle.DisplayFrame(new DisplayFrameData(Display.Id, DisplayFrameFormat.Dmd4, byteValue));
+						VsGle.DisplayUpdateFrame(new DisplayFrameData(Display.Id, DisplayFrameFormat.Dmd4, byteValue));
 					}
 				}
 				if (Display.Supports(DisplayFrameFormat.Dmd8) && Dmd8Input.hasValidConnection) {
 					var byteValue = flow.GetValue<byte[]>(Dmd8Input);
 					if (byteValue is { Length: > 0 }) {
-						VsGle.DisplayFrame(new DisplayFrameData(Display.Id, DisplayFrameFormat.Dmd8, byteValue));
+						VsGle.DisplayUpdateFrame(new DisplayFrameData(Display.Id, DisplayFrameFormat.Dmd8, byteValue));
 					}
 				}
 				if (Display.Supports(DisplayFrameFormat.Dmd24) && Dmd24Input.hasValidConnection) {
 					var byteValue = flow.GetValue<byte[]>(Dmd24Input);
 					if (byteValue is { Length: > 0 }) {
-						VsGle.DisplayFrame(new DisplayFrameData(Display.Id, DisplayFrameFormat.Dmd24, byteValue));
+						VsGle.DisplayUpdateFrame(new DisplayFrameData(Display.Id, DisplayFrameFormat.Dmd24, byteValue));
 					}
 				}
 			}

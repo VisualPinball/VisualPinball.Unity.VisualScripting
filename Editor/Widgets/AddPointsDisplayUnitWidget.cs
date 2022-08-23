@@ -14,18 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-namespace VisualPinball.Unity
+// ReSharper disable UnusedType.Global
+
+using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
+
+namespace VisualPinball.Unity.VisualScripting.Editor
 {
-	public static class VisualScriptingEventNames
+	[Widget(typeof(AddPointsDisplayUnit))]
+	public sealed class AddPointsDisplayUnitWidget : GleUnitWidget<AddPointsDisplayUnit>
 	{
-		public const string GleStartedEvent = "GleStartedEvent";
-		public const string LampEvent = "LampEvent";
-		public const string SwitchEvent = "SwitchEvent";
-		public const string CoilEvent = "CoilEvent";
-		public const string DisplayScoreEvent = "DisplayScoreEvent";
-		public const string CurrentPlayerChanged = "CurrentPlayerChanged";
-		public const string PlayerVariableChanged = "PlayerVariableChanged";
-		public const string TableVariableChanged = "TableVariableChanged";
-		public const string PinballEvent = "PinballEvent";
+		public AddPointsDisplayUnitWidget(FlowCanvas canvas, AddPointsDisplayUnit unit) : base(canvas, unit)
+		{
+		}
 	}
 }
