@@ -33,6 +33,10 @@ namespace VisualPinball.Unity.VisualScripting
 		public DisplayDefinition Display { get; private set; }
 
 		[DoNotSerialize]
+		[PortLabel("Points")]
+		public ValueOutput Points { get; private set; }
+
+		[DoNotSerialize]
 		[PortLabel("Score")]
 		public ValueOutput Score { get; private set; }
 
@@ -45,6 +49,7 @@ namespace VisualPinball.Unity.VisualScripting
 		{
 			base.Definition();
 
+			Points = ValueOutput<float>(nameof(Points));
 			Score = ValueOutput<float>(nameof(Score));
 		}
 
@@ -55,6 +60,7 @@ namespace VisualPinball.Unity.VisualScripting
 
 		protected override void AssignArguments(Flow flow, DisplayScoreEventArgs args)
 		{
+			flow.SetValue(Points, args.Points);
 			flow.SetValue(Score, args.Score);
 		}
 	}

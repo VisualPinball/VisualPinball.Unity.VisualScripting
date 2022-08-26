@@ -64,6 +64,7 @@ namespace VisualPinball.Unity.VisualScripting
 		public GamelogicEngineWire[] AvailableWires => Wires;
 
 		public event EventHandler<RequestedDisplays> OnDisplaysRequested;
+		public event EventHandler<DisplayClearData> OnDisplayClear;
 		public event EventHandler<DisplayFrameData> OnDisplayUpdateFrame;
 		public event EventHandler<DisplayAddPointsData> OnDisplayAddPoints;
 
@@ -156,6 +157,11 @@ namespace VisualPinball.Unity.VisualScripting
 			EventBus.Trigger(VisualScriptingEventNames.GleStartedEvent, EventArgs.Empty);
 		}
 
+		public void DisplayClear(DisplayClearData data)
+		{
+			OnDisplayClear?.Invoke(this, data);
+		}
+
 		public void DisplayUpdateFrame(DisplayFrameData data)
 		{
 			OnDisplayUpdateFrame?.Invoke(this, data);
@@ -166,9 +172,9 @@ namespace VisualPinball.Unity.VisualScripting
 			OnDisplayAddPoints?.Invoke(this, data);
 		}
 
-		public void DisplayScoreEvent(string id, float score)
+		public void DisplayScoreEvent(string id, float points, float score)
 		{
-			EventBus.Trigger(VisualScriptingEventNames.DisplayScoreEvent, new DisplayScoreEventArgs(id, score));
+			EventBus.Trigger(VisualScriptingEventNames.DisplayScoreEvent, new DisplayScoreEventArgs(id, points, score));
 		}
 
 		public void Switch(string id, bool isClosed)
