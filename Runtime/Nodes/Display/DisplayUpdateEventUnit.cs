@@ -55,7 +55,7 @@ namespace VisualPinball.Unity.VisualScripting
 
 		protected override bool ShouldTrigger(Flow flow, DisplayUpdateEventArgs args)
 		{
-			return Display != null && Display.Id == args.DisplayFrameData.Id;
+			return Display != null && Display.Id.Equals(args.DisplayFrameData.Id);
 		}
 
 		protected override void AssignArguments(Flow flow, DisplayUpdateEventArgs args)
