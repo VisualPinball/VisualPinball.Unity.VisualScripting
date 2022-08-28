@@ -25,7 +25,6 @@ namespace VisualPinball.Unity.VisualScripting
 	public class DisplayDefinition
 	{
 		public string Id = "display0";
-		public DisplayType Type = DisplayType.DotMatrix;
 		public int Width = 128;
 		public int Height = 32;
 
@@ -38,6 +37,6 @@ namespace VisualPinball.Unity.VisualScripting
 			return SupportedFormats != null && Array.IndexOf(SupportedFormats, format) >= 0;
 		}
 
-		public DisplayConfig DisplayConfig => new(Id, Type, Width, Height);
+		public DisplayConfig DisplayConfig => new(Id, Width, Height);
 	}
 }

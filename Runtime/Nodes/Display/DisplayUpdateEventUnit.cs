@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Unity.VisualScripting;
@@ -21,47 +22,49 @@ using UnityEngine;
 
 namespace VisualPinball.Unity.VisualScripting
 {
-	[UnitTitle("On Display Score")]
+	[UnitTitle("On Display Update")]
 	[UnitSurtitle("Gamelogic Engine")]
 	[UnitCategory("Events\\Visual Pinball")]
-	public class DisplayScoreEventUnit : GleEventUnit<DisplayScoreEventArgs>
+	public class DisplayUpdateEventUnit : GleEventUnit<DisplayUpdateEventArgs>
 	{
 		[Serialize]
 		[Inspectable]
 		[UnitHeaderInspectable("ID")]
-		[DisplayTypeFilterAttribute(DisplayType.ScoreReel)]
 		public DisplayDefinition Display { get; private set; }
 
 		[DoNotSerialize]
-		[PortLabel("Points")]
-		public ValueOutput Points { get; private set; }
-
-		[DoNotSerialize]
-		[PortLabel("Score")]
-		public ValueOutput Score { get; private set; }
+		[PortLabel("Numeric")]
+		public ValueOutput NumericOutput { get; private set; }
 
 		[DoNotSerialize]
 		protected override bool register => true;
 
-		public override EventHook GetHook(GraphReference reference) => new EventHook(VisualScriptingEventNames.DisplayScoreEvent);
+		public override EventHook GetHook(GraphReference reference) => new EventHook(VisualScriptingEventNames.DisplayUpdateEvent);
 
 		protected override void Definition()
 		{
 			base.Definition();
 
-			Points = ValueOutput<float>(nameof(Points));
-			Score = ValueOutput<float>(nameof(Score));
+			if (Display != null) {
+				if (Display.Supports(DisplayFrameFormat.Numeric))
+				{
+					NumericOutput = ValueOutput<float>(nameof(NumericOutput));
+				}
+			}
 		}
 
-		protected override bool ShouldTrigger(Flow flow, DisplayScoreEventArgs args)
+		protected override bool ShouldTrigger(Flow flow, DisplayUpdateEventArgs args)
 		{
-			return args.Id == Display.Id;
+			return Display != null && Display.Id == args.DisplayFrameData.Id;
 		}
 
-		protected override void AssignArguments(Flow flow, DisplayScoreEventArgs args)
+		protected override void AssignArguments(Flow flow, DisplayUpdateEventArgs args)
 		{
-			flow.SetValue(Points, args.Points);
-			flow.SetValue(Score, args.Score);
+			if (Display.Supports(DisplayFrameFormat.Numeric)) {
+				if (args.DisplayFrameData.Format == DisplayFrameFormat.Numeric) {
+					flow.SetValue(NumericOutput, BitConverter.ToSingle(args.DisplayFrameData.Data));
+				}
+			}
 		}
 	}
 }

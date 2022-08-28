@@ -166,9 +166,9 @@ namespace VisualPinball.Unity.VisualScripting
 			OnDisplayUpdateFrame?.Invoke(this, data);
 		}
 
-		public void DisplayScoreEvent(string id, float points, float score)
+		public void DisplayUpdateEvent(DisplayFrameData data)
 		{
-			EventBus.Trigger(VisualScriptingEventNames.DisplayScoreEvent, new DisplayScoreEventArgs(id, points, score));
+			EventBus.Trigger(VisualScriptingEventNames.DisplayUpdateEvent, new DisplayUpdateEventArgs(data));
 		}
 
 		public void Switch(string id, bool isClosed)

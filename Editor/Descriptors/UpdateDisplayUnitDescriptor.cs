@@ -17,8 +17,6 @@
 // ReSharper disable UnusedType.Global
 
 using Unity.VisualScripting;
-using VisualPinball.Unity.Editor;
-using IconSize = VisualPinball.Unity.Editor.IconSize;
 
 namespace VisualPinball.Unity.VisualScripting.Editor
 {
