@@ -66,7 +66,6 @@ namespace VisualPinball.Unity.VisualScripting
 		public event EventHandler<RequestedDisplays> OnDisplaysRequested;
 		public event EventHandler<DisplayClearData> OnDisplayClear;
 		public event EventHandler<DisplayFrameData> OnDisplayUpdateFrame;
-		public event EventHandler<DisplayAddPointsData> OnDisplayAddPoints;
 
 		public event EventHandler<LampEventArgs> OnLampChanged;
 		public event EventHandler<LampsEventArgs> OnLampsChanged;
@@ -165,11 +164,6 @@ namespace VisualPinball.Unity.VisualScripting
 		public void DisplayUpdateFrame(DisplayFrameData data)
 		{
 			OnDisplayUpdateFrame?.Invoke(this, data);
-		}
-
-		public void DisplayAddPoints(DisplayAddPointsData data)
-		{
-			OnDisplayAddPoints?.Invoke(this, data);
 		}
 
 		public void DisplayScoreEvent(string id, float points, float score)
