@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Text;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -37,6 +38,10 @@ namespace VisualPinball.Unity.VisualScripting
 		public ValueOutput NumericOutput { get; private set; }
 
 		[DoNotSerialize]
+		[PortLabel("Text")]
+		public ValueOutput TextOutput { get; private set; }
+
+		[DoNotSerialize]
 		protected override bool register => true;
 
 		public override EventHook GetHook(GraphReference reference) => new EventHook(VisualScriptingEventNames.DisplayUpdateEvent);
@@ -46,9 +51,12 @@ namespace VisualPinball.Unity.VisualScripting
 			base.Definition();
 
 			if (Display != null) {
-				if (Display.Supports(DisplayFrameFormat.Numeric))
-				{
+				if (Display.Supports(DisplayFrameFormat.Numeric)) {
 					NumericOutput = ValueOutput<float>(nameof(NumericOutput));
+				}
+
+				if (Display.Supports(DisplayFrameFormat.AlphaNumeric)) {
+					TextOutput = ValueOutput<string>(nameof(TextOutput));
 				}
 			}
 		}
@@ -63,6 +71,12 @@ namespace VisualPinball.Unity.VisualScripting
 			if (Display.Supports(DisplayFrameFormat.Numeric)) {
 				if (args.DisplayFrameData.Format == DisplayFrameFormat.Numeric) {
 					flow.SetValue(NumericOutput, BitConverter.ToSingle(args.DisplayFrameData.Data));
+				}
+			}
+
+			if (Display.Supports(DisplayFrameFormat.AlphaNumeric)) {
+				if (args.DisplayFrameData.Format == DisplayFrameFormat.AlphaNumeric) {
+					flow.SetValue(TextOutput, Encoding.UTF8.GetString(args.DisplayFrameData.Data));
 				}
 			}
 		}

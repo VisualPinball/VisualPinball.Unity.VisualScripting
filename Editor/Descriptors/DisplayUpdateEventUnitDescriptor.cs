@@ -25,7 +25,7 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 	{
 		public DisplayUpdateEventUnitDescriptor(DisplayUpdateEventUnit target) : base(target) { }
 
-		protected override EditorTexture DefinedIcon() => EditorTexture.Single(Unity.Editor.Icons.UpdateDisplay);
+		protected override EditorTexture DefinedIcon() => EditorTexture.Single(Unity.Editor.Icons.DisplayUpdateEvent);
 
 		protected override void DefinedPort(IUnitPort port, UnitPortDescription desc)
 		{
@@ -35,6 +35,9 @@ namespace VisualPinball.Unity.VisualScripting.Editor
 			{
 				case nameof(DisplayUpdateEventUnit.NumericOutput):
 					desc.summary = "The numerical value of the display update.";
+					break;
+				case nameof(DisplayUpdateEventUnit.TextOutput):
+					desc.summary = "The text value of the display update.";
 					break;
 			}
 		}
