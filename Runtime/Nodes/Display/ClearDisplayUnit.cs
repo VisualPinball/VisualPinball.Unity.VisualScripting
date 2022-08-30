@@ -51,7 +51,7 @@ namespace VisualPinball.Unity.VisualScripting
 			}
 
 			if (Display != null) {
-				VsGle.DisplayClear(new DisplayClearData(Display.Id));
+				VsGle.DisplayClear(Display.Id);
 			}
 
 			return OutputTrigger;

@@ -64,7 +64,7 @@ namespace VisualPinball.Unity.VisualScripting
 		public GamelogicEngineWire[] AvailableWires => Wires;
 
 		public event EventHandler<RequestedDisplays> OnDisplaysRequested;
-		public event EventHandler<DisplayClearData> OnDisplayClear;
+		public event EventHandler<string> OnDisplayClear;
 		public event EventHandler<DisplayFrameData> OnDisplayUpdateFrame;
 
 		public event EventHandler<LampEventArgs> OnLampChanged;
@@ -156,9 +156,9 @@ namespace VisualPinball.Unity.VisualScripting
 			EventBus.Trigger(VisualScriptingEventNames.GleStartedEvent, EventArgs.Empty);
 		}
 
-		public void DisplayClear(DisplayClearData data)
+		public void DisplayClear(string id)
 		{
-			OnDisplayClear?.Invoke(this, data);
+			OnDisplayClear?.Invoke(this, id);
 		}
 
 		public void DisplayUpdateFrame(DisplayFrameData data)
