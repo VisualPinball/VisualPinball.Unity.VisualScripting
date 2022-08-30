@@ -20,11 +20,26 @@ using Unity.VisualScripting;
 
 namespace VisualPinball.Unity.VisualScripting.Editor
 {
-	[Widget(typeof(DisplayUpdateEventUnit))]
-	public sealed class DisplayUpdateEventUnitWidget : GleUnitWidget<DisplayUpdateEventUnit>
+	[Descriptor(typeof(DisplayEventUnit))]
+	public class DisplayEventUnitDescriptor : UnitDescriptor<DisplayEventUnit>
 	{
-		public DisplayUpdateEventUnitWidget(FlowCanvas canvas, DisplayUpdateEventUnit unit) : base(canvas, unit)
+		public DisplayEventUnitDescriptor(DisplayEventUnit target) : base(target) { }
+
+		protected override EditorTexture DefinedIcon() => EditorTexture.Single(Unity.Editor.Icons.DisplayEvent);
+
+		protected override void DefinedPort(IUnitPort port, UnitPortDescription desc)
 		{
+			base.DefinedPort(port, desc);
+
+			switch (port.key)
+			{
+				case nameof(DisplayEventUnit.NumericOutput):
+					desc.summary = "The numerical value of the display event.";
+					break;
+				case nameof(DisplayEventUnit.TextOutput):
+					desc.summary = "The text value of the display event.";
+					break;
+			}
 		}
 	}
 }

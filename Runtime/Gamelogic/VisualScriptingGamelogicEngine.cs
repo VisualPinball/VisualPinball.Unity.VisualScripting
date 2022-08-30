@@ -66,6 +66,7 @@ namespace VisualPinball.Unity.VisualScripting
 		public event EventHandler<RequestedDisplays> OnDisplaysRequested;
 		public event EventHandler<string> OnDisplayClear;
 		public event EventHandler<DisplayFrameData> OnDisplayUpdateFrame;
+		public event EventHandler<DisplayFrameData> OnDisplayUpdated;
 
 		public event EventHandler<LampEventArgs> OnLampChanged;
 		public event EventHandler<LampsEventArgs> OnLampsChanged;
@@ -166,11 +167,6 @@ namespace VisualPinball.Unity.VisualScripting
 			OnDisplayUpdateFrame?.Invoke(this, data);
 		}
 
-		public void DisplayUpdateEvent(DisplayFrameData data)
-		{
-			EventBus.Trigger(VisualScriptingEventNames.DisplayUpdateEvent, new DisplayUpdateEventArgs(data));
-		}
-
 		public void Switch(string id, bool isClosed)
 		{
 			var args = new SwitchEventArgs2(id, isClosed);
@@ -188,6 +184,11 @@ namespace VisualPinball.Unity.VisualScripting
 		public void SetLamp(string id, float value, bool isCoil = false, LampSource source = LampSource.Lamp)
 		{
 			OnLampChanged?.Invoke(this, new LampEventArgs(id, value, isCoil, source));
+		}
+
+		public void SetDisplay(DisplayFrameData data)
+		{
+			EventBus.Trigger(VisualScriptingEventNames.DisplayEvent, new DisplayEventArgs(data));
 		}
 
 		public LampState GetLamp(string id)
