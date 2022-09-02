@@ -186,9 +186,9 @@ namespace VisualPinball.Unity.VisualScripting
 			OnLampChanged?.Invoke(this, new LampEventArgs(id, value, isCoil, source));
 		}
 
-		public void SetDisplay(DisplayFrameData data)
+		public void DisplayChanged(DisplayFrameData data)
 		{
-			EventBus.Trigger(VisualScriptingEventNames.DisplayEvent, new DisplayEventArgs(data));
+			EventBus.Trigger(VisualScriptingEventNames.DisplayChangedEvent, new DisplayChangedEventArgs(data));
 		}
 
 		public LampState GetLamp(string id)

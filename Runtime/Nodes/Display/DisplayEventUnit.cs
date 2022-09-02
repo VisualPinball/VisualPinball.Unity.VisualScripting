@@ -26,7 +26,7 @@ namespace VisualPinball.Unity.VisualScripting
 	[UnitTitle("On Display Changed")]
 	[UnitSurtitle("Gamelogic Engine")]
 	[UnitCategory("Events\\Visual Pinball")]
-	public class DisplayEventUnit : GleEventUnit<DisplayEventArgs>
+	public class DisplayEventUnit : GleEventUnit<DisplayChangedEventArgs>
 	{
 		[Serialize]
 		[Inspectable]
@@ -44,7 +44,7 @@ namespace VisualPinball.Unity.VisualScripting
 		[DoNotSerialize]
 		protected override bool register => true;
 
-		public override EventHook GetHook(GraphReference reference) => new EventHook(VisualScriptingEventNames.DisplayEvent);
+		public override EventHook GetHook(GraphReference reference) => new(VisualScriptingEventNames.DisplayChangedEvent);
 
 		protected override void Definition()
 		{
@@ -61,12 +61,12 @@ namespace VisualPinball.Unity.VisualScripting
 			}
 		}
 
-		protected override bool ShouldTrigger(Flow flow, DisplayEventArgs args)
+		protected override bool ShouldTrigger(Flow flow, DisplayChangedEventArgs args)
 		{
 			return Display != null && Display.Id.Equals(args.DisplayFrameData.Id);
 		}
 
-		protected override void AssignArguments(Flow flow, DisplayEventArgs args)
+		protected override void AssignArguments(Flow flow, DisplayChangedEventArgs args)
 		{
 			if (Display.Supports(DisplayFrameFormat.Numeric)) {
 				if (args.DisplayFrameData.Format == DisplayFrameFormat.Numeric) {
