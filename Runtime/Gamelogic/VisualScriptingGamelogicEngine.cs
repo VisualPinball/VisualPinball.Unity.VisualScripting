@@ -22,6 +22,7 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using VisualPinball.Engine.Game.Engines;
+using System.Threading.Tasks;
 
 namespace VisualPinball.Unity.VisualScripting
 {
@@ -141,7 +142,7 @@ namespace VisualPinball.Unity.VisualScripting
 			_currentPlayer = 0;
 		}
 
-		public void OnInit(Player player, TableApi tableApi, BallManager ballManager)
+		public Task OnInit(Player player, TableApi tableApi, BallManager ballManager)
 		{
 			_player = player;
 			BallManager = ballManager;
@@ -155,6 +156,8 @@ namespace VisualPinball.Unity.VisualScripting
 			}
 			OnStarted?.Invoke(this, EventArgs.Empty);
 			EventBus.Trigger(VisualScriptingEventNames.GleStartedEvent, EventArgs.Empty);
+
+			return Task.CompletedTask();
 		}
 
 		public void DisplayClear(string id)
