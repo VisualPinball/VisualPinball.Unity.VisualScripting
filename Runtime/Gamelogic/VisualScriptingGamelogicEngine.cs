@@ -157,7 +157,7 @@ namespace VisualPinball.Unity.VisualScripting
 			OnStarted?.Invoke(this, EventArgs.Empty);
 			EventBus.Trigger(VisualScriptingEventNames.GleStartedEvent, EventArgs.Empty);
 
-			return Task.CompletedTask();
+			return Task.CompletedTask;
 		}
 
 		public void DisplayClear(string id)
