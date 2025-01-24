@@ -23,6 +23,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using VisualPinball.Engine.Game.Engines;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace VisualPinball.Unity.VisualScripting
 {
@@ -142,7 +143,7 @@ namespace VisualPinball.Unity.VisualScripting
 			_currentPlayer = 0;
 		}
 
-		public Task OnInit(Player player, TableApi tableApi, BallManager ballManager)
+		public Task OnInit(Player player, TableApi tableApi, BallManager ballManager, CancellationToken ct)
 		{
 			_player = player;
 			BallManager = ballManager;
