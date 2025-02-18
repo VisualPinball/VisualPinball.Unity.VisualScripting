@@ -2,6 +2,7 @@
     "name": "VisualPinball.Unity.VisualScripting.Runtime",
     "rootNamespace": "",
     "references": [
+        "Unity.VisualScripting.State",
         "Unity.VisualScripting.Core",
         "Unity.VisualScripting.Flow",
         "VisualPinball.Unity",
