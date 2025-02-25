@@ -23,7 +23,7 @@ namespace VisualPinball.Unity.VisualScripting
 {
 	[UnitTitle("On Switch Changed")]
 	[UnitSurtitle("Gamelogic Engine")]
-	[UnitCategory("Events\\Visual Pinball")]
+	[UnitCategory("Events\\Pinball")]
 	public class SwitchEventUnit : GleEventUnit<SwitchEventArgs2>, IMultiInputUnit
 	{
 		[SerializeAs(nameof(inputCount))]

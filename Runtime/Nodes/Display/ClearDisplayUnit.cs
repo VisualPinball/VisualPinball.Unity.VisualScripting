@@ -22,7 +22,7 @@ namespace VisualPinball.Unity.VisualScripting
 {
 	[UnitTitle("Clear Display")]
 	[UnitSurtitle("Gamelogic Engine")]
-	[UnitCategory("Visual Pinball")]
+	[UnitCategory("Pinball")]
 	public class ClearDisplayUnit : GleUnit
 	{
 		[Serialize, Inspectable, UnitHeaderInspectable("ID")]

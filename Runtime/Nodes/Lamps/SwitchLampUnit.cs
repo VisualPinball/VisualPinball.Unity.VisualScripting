@@ -28,7 +28,7 @@ namespace VisualPinball.Unity.VisualScripting
 	[UnitShortTitle("Switch Lamp")]
 	[UnitTitle("Switch Lamp (ID, match value)")]
 	[UnitSurtitle("Gamelogic Engine")]
-	[UnitCategory("Visual Pinball")]
+	[UnitCategory("Pinball")]
 	public class SwitchLampUnit : GleUnit, IMultiInputUnit
 	{
 		[Serialize, Inspectable, UnitHeaderInspectable("Match")]

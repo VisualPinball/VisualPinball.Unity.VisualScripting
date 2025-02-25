@@ -20,7 +20,7 @@ using Unity.VisualScripting;
 namespace VisualPinball.Unity.VisualScripting
 {
 	[UnitTitle("On Gamelogic Engine Started Event")]
-	[UnitCategory("Events\\Visual Pinball")]
+	[UnitCategory("Events\\Pinball")]
 	public sealed class GleStartedEventUnit : GleEventUnit<EventArgs>
 	{
 		protected override bool register => true;

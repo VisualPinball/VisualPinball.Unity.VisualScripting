@@ -23,7 +23,7 @@ namespace VisualPinball.Unity.VisualScripting
 {
 	[UnitTitle("On Coil Changed")]
 	[UnitSurtitle("Gamelogic Engine")]
-	[UnitCategory("Events\\Visual Pinball")]
+	[UnitCategory("Events\\Pinball")]
 	public class CoilEventUnit : GleEventUnit<CoilEventArgs>, IMultiInputUnit
 	{
 		[SerializeAs(nameof(inputCount))]

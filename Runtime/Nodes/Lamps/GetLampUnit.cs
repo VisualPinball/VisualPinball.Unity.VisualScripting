@@ -22,7 +22,7 @@ namespace VisualPinball.Unity.VisualScripting
 {
 	[UnitTitle("Get Lamp Value")]
 	[UnitSurtitle("Gamelogic Engine")]
-	[UnitCategory("Visual Pinball")]
+	[UnitCategory("Pinball")]
 	public class GetLampUnit : GleUnit
 	{
 		[Serialize, Inspectable, UnitHeaderInspectable]

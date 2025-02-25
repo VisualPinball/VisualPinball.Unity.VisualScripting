@@ -23,7 +23,7 @@ namespace VisualPinball.Unity.VisualScripting
 {
 	[UnitTitle("On All Coils Enabled")]
 	[UnitSurtitle("Gamelogic Engine")]
-	[UnitCategory("Events\\Visual Pinball")]
+	[UnitCategory("Events\\Pinball")]
 	public class AllCoilsEnabledEventUnit : GleEventUnit<CoilEventArgs>, IMultiInputUnit
 	{
 		[SerializeAs(nameof(inputCount))]

@@ -25,7 +25,7 @@ namespace VisualPinball.Unity.VisualScripting
 {
 	[UnitTitle("On Display Changed")]
 	[UnitSurtitle("Gamelogic Engine")]
-	[UnitCategory("Events\\Visual Pinball")]
+	[UnitCategory("Events\\Pinball")]
 	public class DisplayEventUnit : GleEventUnit<DisplayChangedEventArgs>
 	{
 		[Serialize]

@@ -22,7 +22,7 @@ namespace VisualPinball.Unity.VisualScripting
 {
 	[UnitTitle("Set Player Variable")]
 	[UnitSurtitle("Player State")]
-	[UnitCategory("Visual Pinball/Variables")]
+	[UnitCategory("Pinball/Variables")]
 	public class SetPlayerVariableUnit : SetVariableUnit
 	{
 		[Serialize, Inspectable, UnitHeaderInspectable]
@@ -34,7 +34,7 @@ namespace VisualPinball.Unity.VisualScripting
 
 	[UnitTitle("Set Table Variable")]
 	[UnitSurtitle("Table State")]
-	[UnitCategory("Visual Pinball/Variables")]
+	[UnitCategory("Pinball/Variables")]
 	public class SetTableVariableUnit : SetVariableUnit
 	{
 		[Serialize, Inspectable, UnitHeaderInspectable]

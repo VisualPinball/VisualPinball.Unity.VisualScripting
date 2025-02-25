@@ -28,7 +28,7 @@ using System.Threading;
 namespace VisualPinball.Unity.VisualScripting
 {
 	[DisallowMultipleComponent]
-	[AddComponentMenu("Visual Pinball/Gamelogic Engine/Visual Scripting Game Logic")]
+	[AddComponentMenu("Pinball/Gamelogic Engine/Visual Scripting Game Logic")]
 	public class VisualScriptingGamelogicEngine : MonoBehaviour, IGamelogicEngine, ISerializationCallbackReceiver
 	{
 		public string Name => "Visual Scripting Gamelogic Engine";
@@ -253,4 +253,3 @@ namespace VisualPinball.Unity.VisualScripting
 		}
 	}
 }
-

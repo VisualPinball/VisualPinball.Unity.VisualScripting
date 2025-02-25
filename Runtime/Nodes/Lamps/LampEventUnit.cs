@@ -23,7 +23,7 @@ namespace VisualPinball.Unity.VisualScripting
 {
 	[UnitTitle("On Lamp Changed")]
 	[UnitSurtitle("Gamelogic Engine")]
-	[UnitCategory("Events\\Visual Pinball")]
+	[UnitCategory("Events\\Pinball")]
 	public sealed class LampEventUnit : GleEventUnit<LampEventArgs>, IMultiInputUnit
 	{
 		[SerializeAs(nameof(inputCount))]
