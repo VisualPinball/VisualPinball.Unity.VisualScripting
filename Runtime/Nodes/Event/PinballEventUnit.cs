@@ -27,7 +27,7 @@ namespace VisualPinball.Unity.VisualScripting
 	/// A special named event with any amount of parameters called manually with the 'Trigger Custom Event' unit.
 	/// </summary>
 	[UnitTitle("On Pinball Event")]
-	[UnitCategory("Events/Visual Pinball")]
+	[UnitCategory("Events/Pinball")]
 	public class PinballEventUnit : GleEventUnit<PinballEventArgs>
 	{
 		[Serialize, Inspectable, UnitHeaderInspectable]

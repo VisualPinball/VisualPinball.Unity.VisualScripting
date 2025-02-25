@@ -23,7 +23,7 @@ namespace VisualPinball.Unity.VisualScripting
 	[DisallowMultipleComponent]
 	[RequireComponent(typeof(IGamelogicEngine))]
 	[RequireComponent(typeof(Player))]
-	[AddComponentMenu("Visual Pinball/Gamelogic Engine/Visual Scripting Bridge")]
+	[AddComponentMenu("Pinball/Gamelogic Engine/Visual Scripting Bridge")]
 	public class VisualScriptingGamelogicBridge : MonoBehaviour
 	{
 		private Player _player;

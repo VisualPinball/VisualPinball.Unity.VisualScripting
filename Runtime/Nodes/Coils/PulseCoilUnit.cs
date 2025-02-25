@@ -23,7 +23,7 @@ namespace VisualPinball.Unity.VisualScripting
 {
 	[UnitTitle("Pulse Coil")]
 	[UnitSurtitle("Gamelogic Engine")]
-	[UnitCategory("Visual Pinball")]
+	[UnitCategory("Pinball")]
 	public class PulseCoilUnit : GleUnit, IMultiInputUnit
 	{
 		[DoNotSerialize]

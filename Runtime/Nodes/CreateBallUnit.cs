@@ -21,7 +21,7 @@ namespace VisualPinball.Unity.VisualScripting
 {
 
 	[UnitTitle("Create Ball")]
-	[UnitCategory("Visual Pinball")]
+	[UnitCategory("Pinball")]
 	public class CreateBallUnit : GleUnit
 	{
 		[DoNotSerialize]

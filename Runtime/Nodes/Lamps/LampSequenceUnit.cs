@@ -35,7 +35,7 @@ namespace VisualPinball.Unity.VisualScripting
 
 	[UnitTitle("Lamp Sequence")]
 	[UnitSurtitle("Gamelogic Engine")]
-	[UnitCategory("Visual Pinball")]
+	[UnitCategory("Pinball")]
 	public class LampSequenceUnit : GleUnit, IMultiInputUnit
 	{
 		[Serialize, Inspectable, UnitHeaderInspectable("Value")]

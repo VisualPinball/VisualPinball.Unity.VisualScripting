@@ -22,7 +22,7 @@ namespace VisualPinball.Unity.VisualScripting
 {
 	[UnitTitle("Get Player ID")]
 	[UnitSurtitle("Player State")]
-	[UnitCategory("Visual Pinball/Variables")]
+	[UnitCategory("Pinball/Variables")]
 	public class GetPlayerIdUnit : GleUnit
 	{
 		[Serialize, Inspectable, UnitHeaderInspectable]

@@ -21,7 +21,7 @@ namespace VisualPinball.Unity.VisualScripting
 {
 	[UnitTitle("Get Player Variable")]
 	[UnitSurtitle("Player State")]
-	[UnitCategory("Visual Pinball/Variables")]
+	[UnitCategory("Pinball/Variables")]
 	public class GetPlayerVariableUnit : GetVariableUnit
 	{
 		[Serialize, Inspectable, UnitHeaderInspectable]
@@ -33,7 +33,7 @@ namespace VisualPinball.Unity.VisualScripting
 
 	[UnitTitle("Get Table Variable")]
 	[UnitSurtitle("Table State")]
-	[UnitCategory("Visual Pinball/Variables")]
+	[UnitCategory("Pinball/Variables")]
 	public class GetTableVariableUnit : GetVariableUnit
 	{
 		[Serialize, Inspectable, UnitHeaderInspectable]

@@ -21,7 +21,7 @@ namespace VisualPinball.Unity.VisualScripting
 {
 	[UnitTitle("On Player Variable Changed")]
 	[UnitSurtitle("Player State")]
-	[UnitCategory("Events\\Visual Pinball")]
+	[UnitCategory("Events\\Pinball")]
 	public class PlayerVariableChangedEventUnit : VariableChangedEventUnit
 	{
 		[Serialize, Inspectable, UnitHeaderInspectable]
@@ -34,7 +34,7 @@ namespace VisualPinball.Unity.VisualScripting
 
 	[UnitTitle("On Table Variable Changed")]
 	[UnitSurtitle("Table State")]
-	[UnitCategory("Events\\Visual Pinball")]
+	[UnitCategory("Events\\Pinball")]
 	public class TableVariableChangedEventUnit : VariableChangedEventUnit
 	{
 		[Serialize, Inspectable, UnitHeaderInspectable]

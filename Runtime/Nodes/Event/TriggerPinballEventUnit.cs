@@ -30,7 +30,7 @@ namespace VisualPinball.Unity.VisualScripting
 	[UnitSurtitle("Pinball Event")]
 	[UnitShortTitle("Trigger")]
 	[TypeIcon(typeof(CustomEvent))]
-	[UnitCategory("Events/Visual Pinball")]
+	[UnitCategory("Events/Pinball")]
 	public sealed class TriggerPinballEventUnit : GleUnit
 	{
 		[Serialize, Inspectable, UnitHeaderInspectable]

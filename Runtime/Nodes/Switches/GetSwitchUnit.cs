@@ -21,7 +21,7 @@ namespace VisualPinball.Unity.VisualScripting
 {
 	[UnitTitle("Get Switch Value")]
 	[UnitSurtitle("Gamelogic Engine")]
-	[UnitCategory("Visual Pinball")]
+	[UnitCategory("Pinball")]
 	public class GetSwitchUnit : GleUnit
 	{
 		[DoNotSerialize]

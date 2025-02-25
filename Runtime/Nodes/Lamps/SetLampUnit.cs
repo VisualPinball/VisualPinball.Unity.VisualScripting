@@ -28,7 +28,7 @@ namespace VisualPinball.Unity.VisualScripting
 	[UnitShortTitle("Set Lamp")]
 	[UnitTitle("Set Lamp")]
 	[UnitSurtitle("Gamelogic Engine")]
-	[UnitCategory("Visual Pinball")]
+	[UnitCategory("Pinball")]
 	public class SetLampUnit : GleUnit, IMultiInputUnit
 	{
 		[Serialize, Inspectable, UnitHeaderInspectable]
