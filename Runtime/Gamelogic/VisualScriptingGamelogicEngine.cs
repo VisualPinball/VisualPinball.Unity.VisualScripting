@@ -27,11 +27,13 @@ using System.Threading;
 
 namespace VisualPinball.Unity.VisualScripting
 {
+	[PackAs("VisualScriptingGameLogic")]
 	[DisallowMultipleComponent]
 	[AddComponentMenu("Pinball/Gamelogic Engine/Visual Scripting Game Logic")]
-	public class VisualScriptingGamelogicEngine : MonoBehaviour, IGamelogicEngine, ISerializationCallbackReceiver
+	public class VisualScriptingGamelogicEngine : MonoBehaviour, IGamelogicEngine, IGamelogicInputThreading, ISerializationCallbackReceiver, IPackable
 	{
 		public string Name => "Visual Scripting Gamelogic Engine";
+		public GamelogicInputDispatchMode SwitchDispatchMode => GamelogicInputDispatchMode.MainThread;
 
 		[Tooltip("Define here the global variables of the Visual Scripting engine.")]
 		public List<TableVariableDefinition> TableVariableDefinitions;
@@ -251,5 +253,40 @@ namespace VisualPinball.Unity.VisualScripting
 		public void OnAfterDeserialize()
 		{
 		}
+
+		#region Packaging
+
+		// Graph assets recreated at runtime when unpacking a .vpe table. They are plain in-memory
+		// ScriptableObjects, so the table owns their lifetime and destroys them on teardown.
+		[NonSerialized] private List<ScriptableObject> _runtimeGraphAssets;
+
+		public byte[] Pack() => VisualScriptingGamelogicEnginePackable.Pack(this);
+
+		public byte[] PackReferences(Transform root, PackagedRefs refs, PackagedFiles files)
+			=> VisualScriptingGraphPackager.Pack(root, refs);
+
+		public void Unpack(byte[] bytes) => VisualScriptingGamelogicEnginePackable.Unpack(bytes, this);
+
+		public void UnpackReferences(byte[] bytes, Transform root, PackagedRefs refs, PackagedFiles files)
+			=> _runtimeGraphAssets = VisualScriptingGraphPackager.Unpack(bytes, root, refs);
+
+		private void OnDestroy()
+		{
+			if (_runtimeGraphAssets == null) {
+				return;
+			}
+			foreach (var asset in _runtimeGraphAssets) {
+				if (asset != null) {
+					if (Application.isPlaying) {
+						Destroy(asset);
+					} else {
+						DestroyImmediate(asset);
+					}
+				}
+			}
+			_runtimeGraphAssets = null;
+		}
+
+		#endregion
 	}
 }
