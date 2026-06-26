@@ -190,7 +190,7 @@ namespace VisualPinball.Unity.VisualScripting
 		{
 			var serialized = asset.Serialize(true);
 			return new VisualScriptingGraphData.GraphAsset {
-				Id = graphIds[asset.GetInstanceID()],
+				Id = graphIds[VisualPinball.Unity.UnityObjectId.Get(asset)],
 				TypeName = asset.GetType().FullName,
 				Name = asset.name,
 				Json = serialized.json,
@@ -216,7 +216,7 @@ namespace VisualPinball.Unity.VisualScripting
 				}
 
 				if (obj is IMacro && obj is ScriptableObject macro) {
-					var instanceId = macro.GetInstanceID();
+					var instanceId = VisualPinball.Unity.UnityObjectId.Get(macro);
 					if (!graphIds.TryGetValue(instanceId, out var id)) {
 						id = "g" + graphIds.Count;
 						graphIds[instanceId] = id;
